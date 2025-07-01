@@ -31,37 +31,38 @@ fn vs_main(
 }
 
 
+fn rect(pt: vec2<f32>, anchor: vec2<f32>, size: vec2<f32>, center: vec2<f32>) -> f32{
+    let halfsize = size * 0.5;
+    let p = pt - center;
+    let horz = step(-halfsize.x - anchor.x, p.x) - step(halfsize.x- anchor.x, p.x);
+    let vert = step(-halfsize.y - anchor.y, p.y) - step(halfsize.y - anchor.y, p.y);
+    return horz * vert;
+}
 
-//* using step
+fn getRotationMatrix(theta: f32) -> mat2x2<f32>{
+  let s = sin(theta);
+  let c = cos(theta);
+  return mat2x2<f32>(c, -s, s, c);
+}
+
+//* draw a rect and rotate around his own center
 @fragment
 fn fs_main(
   @location(0) fragColor: vec4<f32>,
   @location(1) uv: vec2<f32>,
   @location(2) worldPos: vec3<f32>
 ) -> @location(0) vec4<f32> {
-
-let mx = transform.params[0][0];
-  let my = transform.params[0][1];
-
-  // resolution in pixels:
-  let rx = transform.params[1].x;
-  let ry = transform.params[1].y;
-
-  // normalize to [0,1]:
-  let u = -1.0 + (mx / rx) * 2.0 ;
-  let v = my / ry;
-
-  //* this is moving based on the mouse / and screen position
-  var color = vec3<f32>(0.0);
-  color.r = step(u, worldPos.x);
-  color.g = step(v - 0.5, worldPos.y);
-//   return vec4<f32>(color2, 1.0);
-
-  let mouseUV = vec2<f32>(mx / rx, my / ry);
-  let dist = distance(uv, mouseUV);
-  var color2 = vec3<f32>(0.0);
-  color2.r = step(mouseUV.x, dist);
-  color2.g = step(mouseUV.y, dist);
-  return vec4<f32>(color2, 1.0);
   
+    let radius = 0.25;
+    let angle = transform.params[0][2];
+    let center = vec2<f32>(0.5, 0.0);
+    var pt = worldPos.xy - center;
+    let matRot = getRotationMatrix(angle);
+    pt = matRot * pt;
+    pt += center;
+    let sq = rect(pt, vec2(0.2, 0), vec2(0.3), center);
+
+    let color = vec3<f32>(1.0, 1.0, 0.0) * sq;
+    return vec4<f32>(color, 1.0);
 }
+
