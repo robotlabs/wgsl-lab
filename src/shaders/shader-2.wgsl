@@ -31,19 +31,20 @@ fn fs_main(
   @location(0) fragColor: vec4<f32>,
 ) -> @location(0) vec4<f32> {
   
-  let finalColor = fragColor.rgba;
-//   let finalColor = fragColor.grba;
-let r = transform.params[0][0];
-let g = transform.params[0][1];
-let b = transform.params[0][2];
-let a = transform.params[0][3];
-let pc = transform.params[0];
-let paramsColor = vec4<f32>(r, g, b, a);
+ // mouse in pixels:
+  let mx = transform.params[0][0];
+  let my = transform.params[0][1];
 
-// let r2 = transform.params[1][0];
-// let g2 = transform.params[1][1];
-// let b2 = transform.params[1][2];
-//   return vec4<f32>(r2, g2, b2, 1.0);
-  
-  return vec4<f32>(paramsColor);
+  // resolution in pixels:
+  let rx = transform.params[1].x;
+  let ry = transform.params[1].y;
+
+  // normalize to [0,1]:
+  let u = 1.0 - (mx / rx);
+  let v = my / ry;
+
+  // now you can use u,v however you like:
+  // return vec4<f32>(u, u, 0.0, 1.0);
+  return vec4<f32>(u, v, 0.0, 1.0);
+  // return vec4<f32>(paramsColor);
 }

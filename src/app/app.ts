@@ -28,6 +28,7 @@ export default class App {
   private stats!: ReturnType<typeof Stats>;
   private engine!: Engine;
   private scene!: Scene;
+  private plane: Plane;
 
   constructor() {}
 
@@ -56,7 +57,7 @@ export default class App {
     // this.testCubes(device, format);
     this.testPlanes(device, format);
 
-    this.setupResizeListener();
+    this.setupListeners();
     this.startRendering();
   }
 
@@ -98,15 +99,56 @@ export default class App {
     this.testPlanes(device, format);
   }
 
-  private setupResizeListener(): void {
+  updateResolution = () => {
+    const canvas = this.engine.getCanvas();
+    const rect = canvas.getBoundingClientRect();
+    const w = rect.width;
+    const h = rect.height;
+    if (this.plane) {
+      console.log(w, h);
+      this.plane.updateProps((p) => {
+        p.params[1][0] = w;
+        p.params[1][1] = h;
+        p.params[1][2] = 0;
+        p.params[1][3] = 0;
+      });
+    }
+  };
+
+  private setupListeners(): void {
+    const canvas = this.engine.getCanvas();
+
+    // 1a) initial
+
+    // 1b) on resize
     window.addEventListener("resize", () => {
       this.engine.resize();
       this.engine
         .getCamera()
-        .setAspect(
-          this.engine.getCanvas().width / this.engine.getCanvas().height
-        );
+        .setAspect(canvas.clientWidth / canvas.clientHeight);
       this.scene.updateCameraTransform();
+      this.updateResolution();
+    });
+
+    this.updateResolution();
+
+    // 2) pointermove in CSS space
+    canvas.addEventListener("pointermove", (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left; // CSS px
+      const y = e.clientY - rect.top; // CSS px
+
+      // debug
+      console.log("mouse CSS px:", x, y);
+
+      if (this.plane) {
+        this.plane.updateProps((p) => {
+          p.params[0][0] = x;
+          p.params[0][1] = y;
+          p.params[0][2] = 0;
+          p.params[0][3] = 0;
+        });
+      }
     });
   }
 
@@ -211,12 +253,15 @@ export default class App {
         color: [1.0, 0, 0, 1.0],
         useTexture: false,
         params: [
-          [1.0, 0.0, 0.0, 1.0],
-          [1.0, 1.0, 0.0, 1.0],
+          [0.0, 0.0, 0.0, 0.0],
+          [0.0, 0.0, 0.0, 0.0],
         ],
       }
     );
     this.scene.add(plane);
+
+    this.plane = plane;
+    this.updateResolution();
 
     // setTimeout(() => {
     //   plane.updateProps((p) => {
@@ -224,19 +269,19 @@ export default class App {
     //   });
     // }, 1000);
 
-    gsap.to(plane.getProps().params[0], {
-      duration: 2,
-      ease: "sine.inOut",
-      repeat: -1,
-      yoyo: true,
+    // gsap.to(plane.getProps().params[0], {
+    //   duration: 2,
+    //   ease: "sine.inOut",
+    //   repeat: -1,
+    //   yoyo: true,
 
-      // GSAP lets you target array indices by numeric keys
-      0: 0.0, // animate element [0] of the array → transform.params[0].x
+    //   // GSAP lets you target array indices by numeric keys
+    //   0: 0.0, // animate element [0] of the array → transform.params[0].x
 
-      onUpdate: () => {
-        // after each tween tick, write the new uniforms
-        plane.updateCameraTransform();
-      },
-    });
+    //   onUpdate: () => {
+    //     // after each tween tick, write the new uniforms
+    //     plane.updateCameraTransform();
+    //   },
+    // });
   }
 }

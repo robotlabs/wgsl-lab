@@ -113,7 +113,7 @@ select {
   left: 0;
   width: 100vw;
   height: 100vh;
-  pointer-events: none; /* Allows interactions with AR */
+  pointer-events: auto; /* Allows interactions with AR */
   z-index: 999999 !important; /* Make sure it stays on top */
   background: transparent;
 }
