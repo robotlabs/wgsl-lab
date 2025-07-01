@@ -12,6 +12,7 @@ struct Transform {
 struct VertexOutput {
   @builtin(position) Position: vec4<f32>,
   @location(0) fragColor: vec4<f32>,
+  @location(1) uv: vec2<f32>,
 };
 
 @vertex
@@ -22,35 +23,33 @@ fn vs_main(
   var output: VertexOutput;
   output.Position = transform.projMatrix * transform.viewMatrix * world;
   output.fragColor = transform.color;
+  output.uv = (position.xy + vec2<f32>(1.0)) * 0.5;
   
   return output;
 }
 
-// changing color with time
 
+// mix color based on screen position
+
+//* using frag coord, so based on the total screen
+// @fragment
+// fn fs_main(
+//   @location(0) fragColor: vec4<f32>,
+//   @builtin(position) fragCoord: vec4<f32>
+// ) -> @location(0) vec4<f32> {
+//   let res = transform.params[1].xy;
+//   let uv = fragCoord.xy / res;
+
+//   let color = mix(vec3<f32>(1.0, 0.0, 0.0), vec3<f32>(0.0, 0.0, 1.0), uv.y);
+//   return vec4<f32>(color, 1.0);
+// }
+
+//* using uv coord, so based on my geometry
 @fragment
 fn fs_main(
   @location(0) fragColor: vec4<f32>,
+  @location(1) uv: vec2<f32>
 ) -> @location(0) vec4<f32> {
-  
- // mouse in pixels:
-//   let mx = transform.params[0][0];
-//   let my = transform.params[0][1];
-
-//   // resolution in pixels:
-//   let rx = transform.params[1].x;
-//   let ry = transform.params[1].y;
-
-//   // normalize to [0,1]:
-//   let u = 1.0 - (mx / rx);
-//   let v = my / ry;
-
-  // now you can use u,v however you like:
-  // return vec4<f32>(u, u, 0.0, 1.0);
-  let time = transform.params[0][0] / 10.0;
-  let r = (sin(time) + 1.0) / 2.0;
-  let g = 0.0;
-  let b = (cos(time) + 1.0) / 2.0;
-  return vec4<f32>(r, g, b, 1.0);
-  // return vec4<f32>(paramsColor);
+  let color = mix(vec3<f32>(1.0, 0.0, 0.0), vec3<f32>(0.0, 0.0, 1.0), uv.y);
+  return vec4<f32>(color, 1.0);
 }
