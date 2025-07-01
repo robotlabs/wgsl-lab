@@ -12,6 +12,9 @@ EX - 1 [shader-ex-1 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/w
 change color with time
 EX - 2 [shader-ex-2 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-2).
 
+change color based on uv and screen position
+EX - 4 [shader-ex-4 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-3).
+
 ## License
 
 MIT © robotlabs
