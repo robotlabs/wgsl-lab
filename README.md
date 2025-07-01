@@ -6,6 +6,12 @@ A low-level playground to experiment with **WGSL** (WebGPU Shading Language), bu
 
 BASE [shader-base branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-base).
 
+change color with mouse position
+EX - 1 [shader-ex-1 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-1).
+
+change color with time
+EX - 2 [shader-ex-2 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-2).
+
 ## License
 
 MIT © robotlabs
