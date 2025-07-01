@@ -39,7 +39,7 @@ fn rect(pt: vec2<f32>, size: vec2<f32>, center: vec2<f32>) -> f32{
     return horz * vert;
 }
 
-//* draw a rect
+//* draw a rect and rotate around
 @fragment
 fn fs_main(
   @location(0) fragColor: vec4<f32>,
@@ -47,7 +47,9 @@ fn fs_main(
   @location(2) worldPos: vec3<f32>
 ) -> @location(0) vec4<f32> {
   
-    let center = vec2<f32>(0.70, 0);
+    let radius = 0.25;
+    let angle = transform.params[0][2];
+    let center = vec2<f32>(cos(angle)*radius, sin(angle)*radius);
     let square = rect(worldPos.xy, vec2<f32>(0.5, 0.5), center);
 
     let color = vec3<f32>(1.0, 1.0, 0.0) * square;
