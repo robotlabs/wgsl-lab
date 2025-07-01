@@ -8,6 +8,7 @@ import cubeShader from "@/shaders/cube-shader.wgsl";
 import singlePlaneShader from "@/shaders/plane-shader.wgsl";
 import shader1 from "@/shaders/shader-1.wgsl";
 import shader2 from "@/shaders/shader-2.wgsl";
+import shader3 from "@/shaders/shader-3.wgsl";
 
 //* gpu lab */
 import { Engine } from "@/gpulab/core/engine";
@@ -166,6 +167,12 @@ export default class App {
       if (startTimer) {
         time += 0.05;
         this.scene.run(time);
+
+        if (this.plane) {
+          this.plane.updateProps((p) => {
+            p.params[0] = [time, 0.0, 0.0, 1.0];
+          });
+        }
       }
       this.engine.render();
       this.stats.end();
@@ -219,7 +226,7 @@ export default class App {
     format: GPUTextureFormat
   ): Promise<void> {
     const planeShaderModule = device.createShaderModule({
-      code: shader2,
+      code: shader3,
     });
 
     // Create shared texture and sampler
