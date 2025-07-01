@@ -13,6 +13,7 @@ import shader4 from "@/shaders/shader-4.wgsl";
 import shader5 from "@/shaders/shader-5.wgsl";
 import shader6 from "@/shaders/shader-6.wgsl";
 import shader9 from "@/shaders/shader-9.wgsl";
+import shader12 from "@/shaders/shader-12.wgsl";
 
 //* gpu lab */
 import { Engine } from "@/gpulab/core/engine";
@@ -228,7 +229,7 @@ export default class App {
     format: GPUTextureFormat
   ): Promise<void> {
     const planeShaderModule = device.createShaderModule({
-      code: shader9,
+      code: shader12,
     });
 
     // Create shared texture and sampler
