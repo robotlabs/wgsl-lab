@@ -19,7 +19,7 @@ change color based on uv world position. see 3 as well
 EX - 4 [shader-ex-4 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-4).
 
 step and smoothstep ( divide screen in boxes based on mouse position)
-EX - 4 [shader-ex-4 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-4).
+EX - 5 [shader-ex-5 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-5).
 
 ## License
 
