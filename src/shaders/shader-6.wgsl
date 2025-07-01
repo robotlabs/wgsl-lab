@@ -31,36 +31,25 @@ fn vs_main(
 }
 
 
+fn rect(pt: vec2<f32>, size: vec2<f32>, center: vec2<f32>) -> f32{
+    let halfsize = size * 0.5;
+    let p = pt - center;
+    let horz = step(-halfsize.x, p.x) - step(halfsize.x, p.x);
+    let vert = step(-halfsize.y, p.y) - step(halfsize.y, p.y);
+    return horz * vert;
+}
 
-//* using step
+//* draw a rect
 @fragment
 fn fs_main(
   @location(0) fragColor: vec4<f32>,
   @location(1) uv: vec2<f32>,
   @location(2) worldPos: vec3<f32>
 ) -> @location(0) vec4<f32> {
-
-let mx = transform.params[0][0];
-  let my = transform.params[0][1];
-
-  // resolution in pixels:
-  let rx = transform.params[1].x;
-  let ry = transform.params[1].y;
-
-  // normalize to [0,1]:
-  let u = -1.0 + (mx / rx) * 2.0 ;
-  let v = 1.0 - (my / ry) * 2.0;
-
-  //* step and smoothstep example
-  var color = vec3<f32>(0.0);
-  color.r = step(u, worldPos.x);
-  color.g = step(v, worldPos.y);
-//   return vec4<f32>(color, 1.0);
-
-    var color2= vec3<f32>(0.0);
-  color2.r = smoothstep(u, u+ 0.1, worldPos.x);
-  color2.g = smoothstep(v, v + 0.1, worldPos.y);
-  return vec4<f32>(color2, 1.0);
-
   
+    let center = vec2<f32>(0.70, 0);
+    let square = rect(worldPos.xy, vec2<f32>(0.5, 0.5), center);
+
+    let color = vec3<f32>(1.0, 1.0, 0.0) * square;
+    return vec4<f32>(color, 1.0);
 }
