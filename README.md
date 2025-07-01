@@ -21,6 +21,9 @@ EX - 4 [shader-ex-4 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/w
 step and smoothstep ( divide screen in boxes based on mouse position)
 EX - 5 [shader-ex-5 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-5).
 
+draw simple rect
+EX - 6 [shader-ex-6 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-6).
+
 ## License
 
 MIT © robotlabs
