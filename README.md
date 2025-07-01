@@ -24,6 +24,9 @@ EX - 5 [shader-ex-5 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/w
 draw simple rect
 EX - 6 [shader-ex-6 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-6).
 
+rotate simple rect around the center of the shader
+EX - 7 [shader-ex-7 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-7).
+
 ## License
 
 MIT © robotlabs
