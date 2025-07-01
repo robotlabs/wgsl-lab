@@ -55,18 +55,25 @@ fn circle(pt: vec2<f32>, center: vec2<f32>, radius: f32, edge_thickness: f32) ->
     return result;
 }
 
-//* draw a circle
+
+//* draw a circle. tile 
 @fragment
 fn fs_main(
   @location(0) fragColor: vec4<f32>,
   @location(1) uv: vec2<f32>,
   @location(2) worldPos: vec3<f32>
 ) -> @location(0) vec4<f32> {
-  
+    
     let center = vec2(0.0, 0.0);
     let radius = 0.3;
     let edge_thickness = 0.02;
-    let c = circle(worldPos.xy, center, radius, edge_thickness);
+
+    let tileCount = 3.0;
+    let scaled = worldPos.xy * tileCount;
+    let wrapped = fract(scaled);
+    let p = wrapped - 0.5;
+
+    let c = circle(p, center, radius, edge_thickness);
 
     let color = vec3<f32>(1.0, 1.0, 0.0) * c;
     return vec4<f32>(color, 1.0);
