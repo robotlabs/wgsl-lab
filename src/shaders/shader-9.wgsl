@@ -47,8 +47,11 @@ fn getRotationMatrix(theta: f32) -> mat2x2<f32>{
 
 fn circle(pt: vec2<f32>, center: vec2<f32>, radius: f32, edge_thickness: f32) -> f32{
     let p = pt - center;
+    //* you can use len or distance.
+    //** IMPORTANT THING TO UNDERSTAND: distance(a, b) == length(a - b)
     let len = length(p);
-    let result = 1.0 - smoothstep(radius - edge_thickness, radius, len);
+    let pct = distance(pt, center);
+    let result = 1.0 - smoothstep(radius - edge_thickness, radius, pct);
     return result;
 }
 
@@ -60,7 +63,7 @@ fn fs_main(
   @location(2) worldPos: vec3<f32>
 ) -> @location(0) vec4<f32> {
   
-    let center = vec2(0.4, 0.0);
+    let center = vec2(0.0, 0.0);
     let radius = 0.3;
     let edge_thickness = 0.02;
     let c = circle(worldPos.xy, center, radius, edge_thickness);
