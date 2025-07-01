@@ -9,6 +9,7 @@ import singlePlaneShader from "@/shaders/plane-shader.wgsl";
 import shader1 from "@/shaders/shader-1.wgsl";
 import shader2 from "@/shaders/shader-2.wgsl";
 import shader3 from "@/shaders/shader-3.wgsl";
+import shader4 from "@/shaders/shader-4.wgsl";
 
 //* gpu lab */
 import { Engine } from "@/gpulab/core/engine";
@@ -106,7 +107,6 @@ export default class App {
     const w = rect.width;
     const h = rect.height;
     if (this.plane) {
-      console.log(w, h);
       this.plane.updateProps((p) => {
         p.params[1][0] = w;
         p.params[1][1] = h;
@@ -140,7 +140,6 @@ export default class App {
       const y = e.clientY - rect.top; // CSS px
 
       // debug
-      console.log("mouse CSS px:", x, y);
 
       if (this.plane) {
         this.plane.updateProps((p) => {
@@ -226,7 +225,7 @@ export default class App {
     format: GPUTextureFormat
   ): Promise<void> {
     const planeShaderModule = device.createShaderModule({
-      code: shader3,
+      code: shader4,
     });
 
     // Create shared texture and sampler
