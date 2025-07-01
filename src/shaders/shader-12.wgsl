@@ -62,7 +62,7 @@ fn fs_main(
     let u_time = transform.params[0][2] / 10.0;
 
     var st = uv;
-    st -= vec2<f32>(0.5); // center at (0,0)
+    st -= vec2<f32>((sin(u_time / 2.0) + 1.0 )/ 2.0, 0.5); // center at (0,0)
     st = rotate2d(sin(u_time) * 3.1415926) * st;
     st += vec2<f32>(0.5); // back to uv space
 
