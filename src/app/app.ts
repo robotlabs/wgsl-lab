@@ -36,6 +36,9 @@ export default class App {
   private scene!: Scene;
   private plane: Plane;
 
+  private rawMouse = { x: 0, y: 0 };
+  private easedMouse = { x: 0, y: 0 };
+
   constructor() {}
 
   async init(canvas: HTMLCanvasElement): Promise<void> {
@@ -143,18 +146,41 @@ export default class App {
       const x = e.clientX - rect.left; // CSS px
       const y = e.clientY - rect.top; // CSS px
 
+      this.rawMouse.x = e.clientX - rect.left;
+      this.rawMouse.y = e.clientY - rect.top;
+
       // debug
 
-      if (this.plane) {
-        this.plane.updateProps((p) => {
-          p.params[0][0] = x;
-          p.params[0][1] = y;
-          p.params[0][2] = 0;
-          p.params[0][3] = 0;
-        });
-      }
+      // if (this.plane) {
+      //   this.plane.updateProps((p) => {
+      //     p.params[0][0] = x;
+      //     p.params[0][1] = y;
+      //     p.params[0][2] = 0;
+      //     p.params[0][3] = 0;
+      //   });
+      // }
     });
   }
+
+  // private easingMcAdvanced2(
+  //   mc: any,
+  //   end_value: number,
+  //   nameProp: string
+  // ): void {
+  //   const current = mc[nameProp];
+  //   const difference = end_value - current;
+
+  //   if (Math.abs(difference) < 0.0001) {
+  //     mc[nameProp] = end_value;
+  //     return;
+  //   }
+
+  //   if (end_value > current) {
+  //     mc[nameProp] += difference * 0.1;
+  //   } else {
+  //     mc[nameProp] += difference * 0.1 * this.breakSpeed;
+  //   }
+  // }
 
   private startRendering(): void {
     const camera = this.engine.getCamera();
@@ -171,8 +197,19 @@ export default class App {
         time += 0.05;
         this.scene.run(time);
 
+        // if (this.plane) {
+        //   this.plane.updateProps((p) => {
+        //     p.params[0][2] = time;
+        //   });
+        // }
         if (this.plane) {
+          // Interpolate
+          this.easedMouse.x += (this.rawMouse.x - this.easedMouse.x) * 0.05;
+          this.easedMouse.y += (this.rawMouse.y - this.easedMouse.y) * 0.05;
+
           this.plane.updateProps((p) => {
+            p.params[0][0] = this.easedMouse.x;
+            p.params[0][1] = this.easedMouse.y;
             p.params[0][2] = time;
           });
         }

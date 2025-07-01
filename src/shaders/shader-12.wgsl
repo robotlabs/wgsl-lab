@@ -60,9 +60,12 @@ fn fs_main(
   @builtin(position) fragCoord: vec4<f32>
 ) -> @location(0) vec4<f32> {
     let u_time = transform.params[0][2] / 10.0;
+    let u_mouse_x = transform.params[0][0] / 1.0 / transform.params[1][0];
+    let u_mouse_y = 1.0 - transform.params[0][1] / 1.0 / transform.params[1][1];
 
     var st = uv;
-    st -= vec2<f32>((sin(u_time / 2.0) + 1.0 )/ 2.0, 0.5); // center at (0,0)
+    
+    st -= vec2<f32>(u_mouse_x, u_mouse_y); // center at (0,0)
     st = rotate2d(sin(u_time) * 3.1415926) * st;
     st += vec2<f32>(0.5); // back to uv space
 
