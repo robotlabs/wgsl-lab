@@ -168,11 +168,11 @@ export default class App {
         time += 0.05;
         this.scene.run(time);
 
-        if (this.plane) {
-          this.plane.updateProps((p) => {
-            p.params[0] = [time, 0.0, 0.0, 1.0];
-          });
-        }
+        // if (this.plane) {
+        //   this.plane.updateProps((p) => {
+        //     p.params[0] = [time, 0.0, 0.0, 1.0];
+        //   });
+        // }
       }
       this.engine.render();
       this.stats.end();

@@ -49,18 +49,17 @@ let mx = transform.params[0][0];
 
   // normalize to [0,1]:
   let u = -1.0 + (mx / rx) * 2.0 ;
-  let v = 1.0 - (my / ry) * 2.0;
+  let v = my / ry;
 
-  //* step and smoothstep example
+  //* this is moving based on the mouse / and screen position
   var color = vec3<f32>(0.0);
   color.r = step(u, worldPos.x);
-  color.g = step(v, worldPos.y);
-//   return vec4<f32>(color, 1.0);
+  color.g = step(v - 0.5, worldPos.y);
+//   return vec4<f32>(color2, 1.0);
 
-    var color2= vec3<f32>(0.0);
-  color2.r = smoothstep(u, u+ 0.1, worldPos.x);
-  color2.g = smoothstep(v, v + 0.1, worldPos.y);
-  return vec4<f32>(color2, 1.0);
-
+  let mouseUV = vec2<f32>(mx / rx, my / ry);
+  let dist = distance(uv, mouseUV);
+  let glow = smoothstep(0.1, 0.0, dist);
+  return vec4<f32>(glow, glow, glow, 1.0);
   
 }
