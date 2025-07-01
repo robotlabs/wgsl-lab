@@ -36,6 +36,9 @@ EX - 9 [shader-ex-9 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/w
 create circle tiles
 EX - 10 [shader-ex-10 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-10).
 
+special shape effects ( playing with values and funcs)
+EX - 11 [shader-ex-11 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-11).
+
 ## License
 
 MIT © robotlabs
