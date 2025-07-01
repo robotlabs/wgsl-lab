@@ -50,5 +50,8 @@ fn fs_main(
 
   let color = vec3<f32>(fract(d * 10.0));
 
+  
+
   return vec4<f32>(color, 1.0);
+  return vec4<f32>(vec3<f32>( smoothstep(0.3, 0.4,d)* smoothstep(0.6,0.5,d)) ,1.0);
 }
