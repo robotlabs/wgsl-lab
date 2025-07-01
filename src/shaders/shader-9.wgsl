@@ -31,50 +31,24 @@ fn vs_main(
 }
 
 
-fn rect(pt: vec2<f32>, anchor: vec2<f32>, size: vec2<f32>, center: vec2<f32>) -> f32{
-    let halfsize = size * 0.5;
-    let p = pt - center;
-    let horz = step(-halfsize.x - anchor.x, p.x) - step(halfsize.x- anchor.x, p.x);
-    let vert = step(-halfsize.y - anchor.y, p.y) - step(halfsize.y - anchor.y, p.y);
-    return horz * vert;
-}
-
-fn getRotationMatrix(theta: f32) -> mat2x2<f32>{
-  let s = sin(theta);
-  let c = cos(theta);
-  return mat2x2<f32>(c, -s, s, c);
-}
-
-fn circle(pt: vec2<f32>, center: vec2<f32>, radius: f32, edge_thickness: f32) -> f32{
-    let p = pt - center;
-    //* you can use len or distance.
-    //** IMPORTANT THING TO UNDERSTAND: distance(a, b) == length(a - b)
-    let len = length(p);
-    let pct = distance(pt, center);
-    let result = 1.0 - smoothstep(radius - edge_thickness, radius, pct);
-    return result;
-}
 
 
-//* draw a circle. tile 
 @fragment
 fn fs_main(
-  @location(0) fragColor: vec4<f32>,
-  @location(1) uv: vec2<f32>,
-  @location(2) worldPos: vec3<f32>
+  @builtin(position) fragCoord: vec4<f32>,
+  @location(1) uv: vec2<f32>
 ) -> @location(0) vec4<f32> {
-    
-    let center = vec2(0.0, 0.0);
-    let radius = 0.3;
-    let edge_thickness = 0.02;
+  // Normalize coordinates
+//   let uResX = transform.params[1][0];
+//   let uResY = transform.params[1][1];
+//   var st = uv / uResX;
+//   st.x *= transform.params[1][0] / uResY;
 
-    let tileCount = 3.0;
-    let scaled = worldPos.xy * tileCount;
-    let wrapped = fract(scaled);
-    let p = wrapped - 0.5;
+     var st = uv * 2.0 - vec2<f32>(1.0);
+  let normalizedTime = sin(transform.params[0][2] / 10.0);
+  let d = length(abs(st) - normalizedTime);
 
-    let c = circle(p, center, radius, edge_thickness);
+  let color = vec3<f32>(fract(d * 10.0));
 
-    let color = vec3<f32>(1.0, 1.0, 0.0) * c;
-    return vec4<f32>(color, 1.0);
+  return vec4<f32>(color, 1.0);
 }
