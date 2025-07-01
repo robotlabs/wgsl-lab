@@ -31,11 +31,11 @@ fn vs_main(
 }
 
 
-fn rect(pt: vec2<f32>, size: vec2<f32>, center: vec2<f32>) -> f32{
+fn rect(pt: vec2<f32>, anchor: vec2<f32>, size: vec2<f32>, center: vec2<f32>) -> f32{
     let halfsize = size * 0.5;
     let p = pt - center;
-    let horz = step(-halfsize.x, p.x) - step(halfsize.x, p.x);
-    let vert = step(-halfsize.y, p.y) - step(halfsize.y, p.y);
+    let horz = step(-halfsize.x - anchor.x, p.x) - step(halfsize.x- anchor.x, p.x);
+    let vert = step(-halfsize.y - anchor.y, p.y) - step(halfsize.y - anchor.y, p.y);
     return horz * vert;
 }
 
@@ -60,10 +60,42 @@ fn fs_main(
     let matRot = getRotationMatrix(angle);
     pt = matRot * pt;
     pt += center;
-    let sq = rect(pt, vec2(0.3), center);
+    let sq = rect(pt, vec2(0.2, 0), vec2(0.3), center);
 
     let color = vec3<f32>(1.0, 1.0, 0.0) * sq;
     return vec4<f32>(color, 1.0);
 }
 
 
+// float rect(vec2 pt, vec2 anchor, vec2 size, vec2 center){
+//   //return 0 if not in rect and 1 if it is
+//   //step(edge, x) 0.0 is returned if x < edge, and 1.0 is returned otherwise.
+//   vec2 p = pt - center;
+//   vec2 halfsize = size/2.0;
+//   float horz = step(-halfsize.x - anchor.x, p.x) - step(halfsize.x - anchor.x, p.x);
+//   float vert = step(-halfsize.y - anchor.y, p.y) - step(halfsize.y - anchor.y, p.y);
+//   return horz*vert;
+// }
+
+// mat2 getRotationMatrix(float theta){
+//   float s = sin(theta);
+//   float c = cos(theta);
+//   return mat2(c, -s, s, c);
+// }
+
+// mat2 getScaleMatrix(float scale){
+//   return mat2(scale,0,0,scale);
+// }
+
+// void main (void)
+// {
+//   vec2 center = vec2(0.1, 0.3);
+//   vec2 pt = vPosition.xy - center;
+//   mat2 matr = getRotationMatrix(u_time);
+//   mat2 mats = getScaleMatrix((sin(u_time)+1.0)/3.0 + 0.5);
+//   pt = mats * matr * pt;
+//   pt += center;
+//   vec3 color = u_color * rect(pt, vec2(0.0), vec2(0.3), center);
+//   gl_FragColor = vec4(color, 1.0); 
+// }
+// `
