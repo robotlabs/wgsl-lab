@@ -39,7 +39,13 @@ fn rect(pt: vec2<f32>, size: vec2<f32>, center: vec2<f32>) -> f32{
     return horz * vert;
 }
 
-//* draw a rect and rotate around
+fn getRotationMatrix(theta: f32) -> mat2x2<f32>{
+  let s = sin(theta);
+  let c = cos(theta);
+  return mat2x2<f32>(c, -s, s, c);
+}
+
+//* draw a rect and rotate around his own center
 @fragment
 fn fs_main(
   @location(0) fragColor: vec4<f32>,
@@ -49,9 +55,15 @@ fn fs_main(
   
     let radius = 0.25;
     let angle = transform.params[0][2];
-    let center = vec2<f32>(cos(angle)*radius, sin(angle)*radius);
-    let square = rect(worldPos.xy, vec2<f32>(0.5, 0.5), center);
+    let center = vec2<f32>(0.5, 0.0);
+    var pt = worldPos.xy - center;
+    let matRot = getRotationMatrix(angle);
+    pt = matRot * pt;
+    pt += center;
+    let sq = rect(pt, vec2(0.3), center);
 
-    let color = vec3<f32>(1.0, 1.0, 0.0) * square;
+    let color = vec3<f32>(1.0, 1.0, 0.0) * sq;
     return vec4<f32>(color, 1.0);
 }
+
+
