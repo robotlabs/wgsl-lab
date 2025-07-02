@@ -39,6 +39,15 @@ EX - 10 [shader-ex-10 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 special shape effects ( playing with values and funcs)
 EX - 11 [shader-ex-11 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-11).
 
+cross rotating and moving left and right
+EX - 12 [shader-ex-12 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-12).
+
+cross rotating and following mouse with easing
+EX - 13 [shader-ex-13 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-13).
+
+color with UV (geometry and not resolution!)
+EX - 14 [shader-ex-14 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-14).
+
 ## License
 
 MIT © robotlabs
