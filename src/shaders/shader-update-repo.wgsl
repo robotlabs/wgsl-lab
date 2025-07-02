@@ -28,6 +28,11 @@ fn vs_main(
   return output;
 }
 
+fn plot(st: vec2<f32>) -> f32 {    
+    return smoothstep(0.01, 0.0, abs(st.y - st.x));
+}
+
+
 @fragment
 fn fs_main(
   @location(0) fragColor: vec4<f32>,
@@ -35,8 +40,9 @@ fn fs_main(
      @location(1) uv: vec2<f32>,
 ) -> @location(0) vec4<f32> {
   
-    let finalColor = vec4(uv.x,uv.y,0.0,1.0);
+    var color = vec3(uv.x);
+    let pct = plot(uv);
+    color = (1.0-pct)*color+pct*vec3(0.0,1.0,0.0);
 
-
-    return vec4<f32>(finalColor);
+    return vec4<f32>(color, 1.0);
 }
