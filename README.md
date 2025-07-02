@@ -48,6 +48,9 @@ EX - 13 [shader-ex-13 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 color with UV (geometry and not resolution!)
 EX - 14 [shader-ex-14 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-14).
 
+straight diagonal line
+EX - 15 [shader-ex-15 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-15).
+
 ## License
 
 MIT © robotlabs
