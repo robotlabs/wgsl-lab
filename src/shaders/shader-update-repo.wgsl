@@ -31,6 +31,10 @@ fn vs_main(
 fn plot(st: vec2<f32>) -> f32 {    
     return smoothstep(0.01, 0.0, abs(st.y - st.x));
 }
+fn plotPower(st: vec2<f32>, pct:f32)  -> f32 {
+  return  smoothstep( pct-0.02, pct, st.y) -
+          smoothstep( pct, pct+0.02, st.y);
+}
 
 
 @fragment
@@ -41,7 +45,10 @@ fn fs_main(
 ) -> @location(0) vec4<f32> {
   
     var color = vec3(uv.x);
-    let pct = plot(uv);
+
+    
+    let y = pow(uv.x, 5.0);
+    let pct = plotPower(uv, y);
     color = (1.0-pct)*color+pct*vec3(0.0,1.0,0.0);
 
     return vec4<f32>(color, 1.0);
