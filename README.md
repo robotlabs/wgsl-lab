@@ -63,6 +63,9 @@ EX - 18 [shader-ex-18 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 sin line
 EX - 19 [shader-ex-19 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-19).
 
+playing with sin and time
+EX - 20 [shader-ex-20 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-20).
+
 ## License
 
 MIT © robotlabs
