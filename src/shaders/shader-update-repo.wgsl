@@ -43,16 +43,12 @@ fn fs_main(
     @builtin(position) fragCoord: vec4<f32>,
      @location(1) uv: vec2<f32>,
 ) -> @location(0) vec4<f32> {
-  
     
-
-    
-    let timeMild =  0.0;//transform.params[0][2] / 5.0;
-    let z = timeMild * (sin((uv.x)) / 2.0 + 0.5);
-    let y = sin((uv.x * 6.28)) / 2.0 + 0.5;
-    let pct = plot2(uv, y);
-    var color = vec3(pct);
-    color = (1.0-pct)*color+pct*vec3(0.0,1.0,0.0);
+    let timeMild =  1pl0 - transform.params[0][2] / 5.0;
+    let y = sin((uv.x * 6.28)) / (2.2* timeMild) + 0.5;
+    let curve = plot2(uv, y);
+    let base = select(vec3<f32>(1.0, 1.0, 0.0), vec3<f32>(1.0), uv.y < y);
+    let color = mix(base, vec3<f32>(0.0, 1.0, 0.0), curve);
 
     return vec4<f32>(color, 1.0);
 }

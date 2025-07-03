@@ -60,6 +60,9 @@ EX - 17 [shader-ex-17 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 easing line
 EX - 18 [shader-ex-18 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-18).
 
+sin line
+EX - 19 [shader-ex-19 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-19).
+
 ## License
 
 MIT © robotlabs
