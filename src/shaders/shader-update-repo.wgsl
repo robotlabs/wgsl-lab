@@ -36,7 +36,8 @@ fn fs_main(
   @location(1) uv:        vec2<f32>,
 ) -> @location(0) vec4<f32> {
     var color = vec3(0.0);
-    let tileCount = 10.0;
+    let time = transform.params[0][2] / 3.0;
+    let tileCount = 0.0 + time  ;
     let st = fract(uv * tileCount);
     color = vec3(st,0.0);
     return vec4<f32>(color, 1.0);
