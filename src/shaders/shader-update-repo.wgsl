@@ -1,18 +1,19 @@
 struct Transform {
   modelMatrix: mat4x4<f32>,
-  viewMatrix: mat4x4<f32>,
-  projMatrix: mat4x4<f32>,
-  color: vec4<f32>,
-  useTexture  : vec4<f32>,
-  params: array<vec4<f32>, 2>
+  viewMatrix:  mat4x4<f32>,
+  projMatrix:  mat4x4<f32>,
+  color:       vec4<f32>,
+  useTexture:  vec4<f32>,
+  params:      array<vec4<f32>, 2>,
 };
 
 @group(0) @binding(0) var<uniform> transform: Transform;
 
 struct VertexOutput {
   @builtin(position) Position: vec4<f32>,
-  @location(0) fragColor: vec4<f32>,
-  @location(1) uv: vec2<f32>,
+  @location(0)        fragColor: vec4<f32>,
+  @location(1)        uv:        vec2<f32>,
+  @location(2)        worldPos: vec3<f32>,
 };
 
 @vertex
@@ -20,87 +21,33 @@ fn vs_main(
   @location(0) position: vec3<f32>,
 ) -> VertexOutput {
   let world = transform.modelMatrix * vec4<f32>(position, 1.0);
-  var output: VertexOutput;
-  output.Position = transform.projMatrix * transform.viewMatrix * world;
-  output.fragColor = transform.color;
-  output.uv = (position.xy + vec2<f32>(1.0)) * 0.5;
-  
-  return output;
+  var o: VertexOutput;
+  o.Position  = transform.projMatrix * transform.viewMatrix * world;
+  o.fragColor = transform.color;
+  o.uv        = (position.xy + vec2<f32>(1.0)) * 0.5;
+  o.worldPos  = world.xyz;
+  return o;
 }
 
-fn plot(st: vec2<f32>) -> f32 {    
-    return smoothstep(0.01, 0.0, abs(st.y - st.x));
-}
-fn plot2(st: vec2<f32>, pct:f32)  -> f32 {
-  return  smoothstep( pct-0.02, pct, st.y) -
-          smoothstep( pct, pct+0.02, st.y);
-}
-
-fn slopeFromT(t: f32, A: f32, B: f32, C: f32) -> f32 {
-  return 1.0 / (3.0 * A * t * t + 2.0 * B * t + C);
-}
-
-fn xFromT(t: f32, A: f32, B: f32, C: f32, D: f32) -> f32 {
-  return A * t * t * t + B * t * t + C * t + D;
-}
-
-fn yFromT(t: f32, E: f32, F: f32, G: f32, H: f32) -> f32 {
-  return E * t * t * t + F * t * t + G * t + H;
-}
-
-fn constrain(x: f32, minVal: f32, maxVal: f32) -> f32 {
-  return clamp(x, minVal, maxVal);
-}
-
-fn cubicBezier(x: f32, a: f32, b: f32, c: f32, d: f32) -> f32 {
-  let y0a = 0.0;
-  let x0a = 0.0;
-  let y1a = b;
-  let x1a = a;
-  let y2a = d;
-  let x2a = c;
-  let y3a = 1.0;
-  let x3a = 1.0;
-
-  let A = x3a - 3.0 * x2a + 3.0 * x1a - x0a;
-  let B = 3.0 * x2a - 6.0 * x1a + 3.0 * x0a;
-  let C = 3.0 * x1a - 3.0 * x0a;
-  let D = x0a;
-
-  let E = y3a - 3.0 * y2a + 3.0 * y1a - y0a;
-  let F = 3.0 * y2a - 6.0 * y1a + 3.0 * y0a;
-  let G = 3.0 * y1a - 3.0 * y0a;
-  let H = y0a;
-
-  var currentt = x;
-  for (var i = 0; i < 5; i = i + 1) {
-    let currentx = xFromT(currentt, A, B, C, D);
-    let slope = slopeFromT(currentt, A, B, C);
-    currentt = constrain(currentt - (currentx - x) * slope, 0.0, 1.0);
-  }
-
-  return yFromT(currentt, E, F, G, H);
+// ----------------------------------------
+// HSB → RGB conversion (fract variant)
+// ----------------------------------------
+fn hsb2rgb(c: vec3<f32>) -> vec3<f32> {
+  let t = c.x * 6.0 + vec3<f32>(0.0, 4.0, 2.0);
+  let m = fract(t * (1.0 / 6.0)) * 6.0;
+  var rgb = abs(m - vec3<f32>(3.0)) - vec3<f32>(1.0);
+  rgb = clamp(rgb, vec3<f32>(0.0), vec3<f32>(1.0));
+  rgb = rgb * rgb * (vec3<f32>(3.0) - 2.0 * rgb);
+  let whiteMix = vec3<f32>(1.0) * (1.0 - c.y) + rgb * c.y;
+  return c.z * whiteMix;
 }
 
 @fragment
-fn fs_main(@location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
-  let w = 0.002;              // line half-thickness
-  var col = vec3<f32>(0.0);   // accumulate RGB
-
-  // Curve #1 (red): control points (0.2,0.8) → (0.8,0.2)
-  let y1 = cubicBezier(uv.x, 0.2, 0.8, 0.8, 0.2);
-  let e1 = smoothstep(y1 - w, y1, uv.y) - smoothstep(y1, y1 + w, uv.y);
-  col += e1 * vec3<f32>(1.0, 0.0, 0.0);
-
-  // Curve #2 (green): control points (0.1,0.3) → (0.9,0.7)
-  let y2 = cubicBezier(uv.x, 0.1, 0.3, 0.9, 0.7);
-  let e2 = smoothstep(y2 - w, y2, uv.y) - smoothstep(y2, y2 + w, uv.y);
-  col += e2 * vec3<f32>(0.0, 1.0, 0.0);
-
-  // Curve #3 (blue): control points (0.5,0.1) → (0.5,0.9)
-  let y3 = cubicBezier(uv.x, 0.5, 0.1, 0.5, 0.9);
-  let e3 = smoothstep(y3 - w, y3, uv.y) - smoothstep(y3, y3 + w, uv.y);
-  col += e3 * vec3<f32>(0.0, 0.0, 1.0);
-
-  return vec4<f32>(col, 1.0);
+fn fs_main(
+  @location(0) fragColor: vec4<f32>,
+  @location(1) uv:        vec2<f32>,
+  @location(2) worldPos:  vec3<f32>
+) -> @location(0) vec4<f32> {
+  let col = hsb2rgb(vec3<f32>(uv.x, 1.0, uv.y));
+  return vec4<f32>(col, fragColor.a);
 }
