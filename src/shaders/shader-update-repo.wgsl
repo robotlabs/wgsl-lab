@@ -68,7 +68,7 @@ fn fs_main(
   @location(1) uv:        vec2<f32>,
 ) -> @location(0) vec4<f32> {
   // start with normalized UV
-  let time = transform.params[0][2] / 10.0;
+  let time = 0.0;//transform.params[0][2] / 10.0;
 
   let tileCount = 4.0;
   let grid = uv * tileCount;
@@ -76,18 +76,21 @@ fn fs_main(
   let row      = i32(floor(grid.y));
 
   var st = fract(grid);
+  var b = box(st, vec2<f32>(0.7, 0.7), 0.01);
 
-  // 2) Rotate each tile by 45°
+    // 2) Rotate each tile by 45°
     if ((col == 0 && row == 0) ||
-      (col == 1 && row == 1) ||
-      (col == 2 && row == 2)) {
-    // shape = 1;
-    st = rotate2D(st, PI * 0.25 + time);
-  }
+        (col == 1 && row == 1) ||
+        (col == 2 && row == 2)) {
+            
+            // st = rotate2D(st, PI * 0.25 + time);
+            // st = rotate2D(st, PI * 0.25 + time);
+            b = box(st, vec2<f32>(1.0, 1.0), 0.01);
+    }
   
 
   // 3) Draw the box inside each rotated tile
-  let b = box(st, vec2<f32>(0.7, 0.7), 0.01);
+  
 
   // 4) Output as grayscale
   let color = vec3<f32>(b);
