@@ -84,20 +84,23 @@ fn cubicBezier(x: f32, a: f32, b: f32, c: f32, d: f32) -> f32 {
 
 @fragment
 fn fs_main(@location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
-  // control points
-  let p0x = 0.6; // x1
-  let p0y = 0.0; // y1
-  let p1x = 0.2; // x2
-  let p1y = 1.0; // y2
+  let w = 0.002;              // line half-thickness
+  var col = vec3<f32>(0.0);   // accumulate RGB
 
-  let y = cubicBezier(uv.x, p0x, p0y, p1x, p1y);
+  // Curve #1 (red): control points (0.2,0.8) → (0.8,0.2)
+  let y1 = cubicBezier(uv.x, 0.2, 0.8, 0.8, 0.2);
+  let e1 = smoothstep(y1 - w, y1, uv.y) - smoothstep(y1, y1 + w, uv.y);
+  col += e1 * vec3<f32>(1.0, 0.0, 0.0);
 
-  // draw green curve line
-  let edge = smoothstep(y - 0.01, y, uv.y) - smoothstep(y, y + 0.01, uv.y);
+  // Curve #2 (green): control points (0.1,0.3) → (0.9,0.7)
+  let y2 = cubicBezier(uv.x, 0.1, 0.3, 0.9, 0.7);
+  let e2 = smoothstep(y2 - w, y2, uv.y) - smoothstep(y2, y2 + w, uv.y);
+  col += e2 * vec3<f32>(0.0, 1.0, 0.0);
 
-  // below the curve white, above black
-  let base = select(vec3<f32>(0.0), vec3<f32>(1.0), uv.y < y);
-  let color = mix(base, vec3<f32>(0.0, 1.0, 0.0), edge);
+  // Curve #3 (blue): control points (0.5,0.1) → (0.5,0.9)
+  let y3 = cubicBezier(uv.x, 0.5, 0.1, 0.5, 0.9);
+  let e3 = smoothstep(y3 - w, y3, uv.y) - smoothstep(y3, y3 + w, uv.y);
+  col += e3 * vec3<f32>(0.0, 0.0, 1.0);
 
-  return vec4<f32>(color, 1.0);
+  return vec4<f32>(col, 1.0);
 }
