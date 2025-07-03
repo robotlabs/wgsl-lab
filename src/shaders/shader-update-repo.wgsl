@@ -48,6 +48,16 @@ fn fs_main(
   @location(1) uv:        vec2<f32>,
   @location(2) worldPos:  vec3<f32>
 ) -> @location(0) vec4<f32> {
-  let col = hsb2rgb(vec3<f32>(uv.x, 1.0, uv.y));
-  return vec4<f32>(col, fragColor.a);
+    let TWO_PI: f32 = 6.28318530718;
+    // let col = hsb2rgb(vec3<f32>(uv.x, 1.0, uv.y));
+    var color = vec3(0.0);
+    let toCenter = vec2(0.5)-uv;
+    let angle = atan2(toCenter.y,toCenter.x);
+    let radius = length(toCenter)*2.0;
+
+    // Map the angle (-PI to PI) to the Hue (from 0 to 1)
+    // and the Saturation to the radius
+    color = hsb2rgb(vec3((angle/TWO_PI)+0.5,radius,1.0));
+
+    return vec4<f32>(color, fragColor.a);
 }
