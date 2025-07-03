@@ -52,7 +52,10 @@ straight diagonal line
 EX - 15 [shader-ex-15 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-15).
 
 pow line
-EX - 16 [shader-ex-15 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-16).
+EX - 16 [shader-ex-16 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-16).
+
+double line
+EX - 17 [shader-ex-17 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-17).
 
 ## License
 
