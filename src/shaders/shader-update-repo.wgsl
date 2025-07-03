@@ -102,11 +102,31 @@ fn fs_main(
   let row  = i32(floor(grid.y));
 
 
-  grid.x += step(1., modf(grid.y,2.0)) * 0.5;
+    let sinTime = sin(time);
+    if (sinTime > 0){
+ if (col % 2 == 0){
+        // grid.x += step(1., modf(grid.y,2.0)) * 0.5 + time;
+        grid.y += sinTime;
+    } else{
+        // grid.x += step(1., modf(grid.y,2.0)) * 0.5 - time;
+        grid.y -= sinTime;
+    }
+    } else {
+         if (row % 2 == 0){
+        // grid.x += step(1., modf(grid.y,2.0)) * 0.5 + time;
+        grid.x += sinTime;
+    } else{
+        // grid.x += step(1., modf(grid.y,2.0)) * 0.5 - time;
+        grid.x -= sinTime;
+    }
+    }
+   
+  
   var st = fract(grid);
 
   var boxMask = box(st, vec2<f32>(0.7, 0.7), 0.01);
-  var color   = vec3<f32>(1.0) * boxMask;  // white square
+  var circleMask = circle(st, vec2<f32>(0.5, 0.5), 0.3, 0.02);
+  var color   = vec3<f32>(1.0) * circleMask;  // white square
 
     // if (col == 1 && row == 2) {
     //     let base = color;
