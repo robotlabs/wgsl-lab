@@ -36,67 +36,68 @@ fn plot2(st: vec2<f32>, pct:f32)  -> f32 {
           smoothstep( pct, pct+0.02, st.y);
 }
 
-fn quadraticBezier(x: f32, a: f32, b: f32) -> f32 {
-    let epsilon = 0.00001;
-    let a_clamped = clamp(a, 0.0, 1.0);
-    let b_clamped = clamp(b, 0.0, 1.0);
-
-    // avoid division by zero if a == 0.5
-    let a_safe = select(a_clamped, a_clamped + epsilon, a_clamped == 0.5);
-
-    let om2a = 1.0 - 2.0 * a_safe;
-    let t = (sqrt(a_safe * a_safe + om2a * x) - a_safe) / om2a;
-    let y = (1.0 - 2.0 * b_clamped) * (t * t) + (2.0 * b_clamped) * t;
-
-    return y;
+fn slopeFromT(t: f32, A: f32, B: f32, C: f32) -> f32 {
+  return 1.0 / (3.0 * A * t * t + 2.0 * B * t + C);
 }
 
-fn oscillateBetween(a: f32, b: f32, time: f32, speed: f32) -> f32 {
-  let t = sin(time * speed) * 0.5 + 0.5; // oscillates in [0, 1]
-  return mix(a, b, t);
+fn xFromT(t: f32, A: f32, B: f32, C: f32, D: f32) -> f32 {
+  return A * t * t * t + B * t * t + C * t + D;
+}
+
+fn yFromT(t: f32, E: f32, F: f32, G: f32, H: f32) -> f32 {
+  return E * t * t * t + F * t * t + G * t + H;
+}
+
+fn constrain(x: f32, minVal: f32, maxVal: f32) -> f32 {
+  return clamp(x, minVal, maxVal);
+}
+
+fn cubicBezier(x: f32, a: f32, b: f32, c: f32, d: f32) -> f32 {
+  let y0a = 0.0;
+  let x0a = 0.0;
+  let y1a = b;
+  let x1a = a;
+  let y2a = d;
+  let x2a = c;
+  let y3a = 1.0;
+  let x3a = 1.0;
+
+  let A = x3a - 3.0 * x2a + 3.0 * x1a - x0a;
+  let B = 3.0 * x2a - 6.0 * x1a + 3.0 * x0a;
+  let C = 3.0 * x1a - 3.0 * x0a;
+  let D = x0a;
+
+  let E = y3a - 3.0 * y2a + 3.0 * y1a - y0a;
+  let F = 3.0 * y2a - 6.0 * y1a + 3.0 * y0a;
+  let G = 3.0 * y1a - 3.0 * y0a;
+  let H = y0a;
+
+  var currentt = x;
+  for (var i = 0; i < 5; i = i + 1) {
+    let currentx = xFromT(currentt, A, B, C, D);
+    let slope = slopeFromT(currentt, A, B, C);
+    currentt = constrain(currentt - (currentx - x) * slope, 0.0, 1.0);
+  }
+
+  return yFromT(currentt, E, F, G, H);
 }
 
 @fragment
 fn fs_main(@location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
-    // Control points a and b
-    let anchorA_Base = 0.75;
-    let anchorB_Base = 0.25;
+  // control points
+  let p0x = 0.6; // x1
+  let p0y = 0.0; // y1
+  let p1x = 0.2; // x2
+  let p1y = 1.0; // y2
 
+  let y = cubicBezier(uv.x, p0x, p0y, p1x, p1y);
 
+  // draw green curve line
+  let edge = smoothstep(y - 0.01, y, uv.y) - smoothstep(y, y + 0.01, uv.y);
 
-    let speed1 = 0.5; // 1 cycle per 2π seconds
-    let speed2 = 1.0; // 1 cycle per 2π seconds
-    let maxOscillate = 0.75;
-    let animatedA = oscillateBetween(anchorA_Base, anchorA_Base - maxOscillate, transform.params[0][2], speed1);
-    let animatedB = oscillateBetween(anchorB_Base, anchorB_Base + maxOscillate, transform.params[0][2], speed2);
-    // Bézier curve value at uv.x
-    let y = quadraticBezier(uv.x, animatedA, animatedB);
-    //   let y = quadraticBezier(uv.x, 0.5, 0.5); // a & b centered
+  // below the curve white, above black
+  let base = select(vec3<f32>(0.0), vec3<f32>(1.0), uv.y < y);
+  let color = mix(base, vec3<f32>(0.0, 1.0, 0.0), edge);
 
-    // Draw the green curve
-    let edge = plot2(uv, y);
-
-    // White below, black above
-    let baseColor = select(vec3<f32>(0.0), vec3<f32>(1.0), uv.y < y);
-
-    // Mix in green curve line
-    let finalColor = mix(baseColor, vec3<f32>(0.0, 1.0, 0.0), edge);
-
-    return vec4<f32>(finalColor, 1.0);
+  return vec4<f32>(color, 1.0);
 }
-
-// fn fs_main(@location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
-//   let anchorA = 0.75;
-//   let anchorB = 0.25;
-//   let speed = 1.0;
-//   let amp = 0.75;
-
-//   let animatedA = oscillateBetween(anchorA, anchorA - amp, transform.params[0][2], speed);
-//   let animatedB = 0.0;//oscillateBetween(anchorB, anchorB + amp, transform.params[0][2], speed);
-
-//   let y = quadraticBezier(uv.x, animatedA, animatedB);
-//   let edge = plot2(uv, y);
-//   let base = select(vec3<f32>(0.0), vec3<f32>(1.0), uv.y < y);
-//   let color = mix(base, vec3<f32>(0.0, 1.0, 0.0), edge);
-//   return vec4<f32>(color, 1.0);
-// }
