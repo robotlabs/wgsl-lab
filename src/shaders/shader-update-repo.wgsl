@@ -29,35 +29,55 @@ fn vs_main(
   return o;
 }
 
-// ----------------------------------------
-// HSB → RGB conversion (fract variant)
-// ----------------------------------------
-fn hsb2rgb(c: vec3<f32>) -> vec3<f32> {
-  let t = c.x * 6.0 + vec3<f32>(0.0, 4.0, 2.0);
-  let m = fract(t * (1.0 / 6.0)) * 6.0;
-  var rgb = abs(m - vec3<f32>(3.0)) - vec3<f32>(1.0);
-  rgb = clamp(rgb, vec3<f32>(0.0), vec3<f32>(1.0));
-  rgb = rgb * rgb * (vec3<f32>(3.0) - 2.0 * rgb);
-  let whiteMix = vec3<f32>(1.0) * (1.0 - c.y) + rgb * c.y;
-  return c.z * whiteMix;
+fn rect(st: vec2<f32>, sizeParam: vec2<f32>) -> f32 {
+  // size = 0.25 - sizeParam*0.25
+  let s = vec2<f32>(0.25) - sizeParam * vec2<f32>(0.25);
+  // smooth edges
+  let uv = smoothstep(
+    s,
+    s + s * vec2<f32>(0.002),
+    st * (vec2<f32>(1.0) - st)
+  );
+  return uv.x * uv.y;
 }
 
+// ------------------------------------------------------------------
+// Fragment shader
+// ------------------------------------------------------------------
 @fragment
 fn fs_main(
   @location(0) fragColor: vec4<f32>,
   @location(1) uv:        vec2<f32>,
-  @location(2) worldPos:  vec3<f32>
 ) -> @location(0) vec4<f32> {
-    let TWO_PI: f32 = 6.28318530718;
-    // let col = hsb2rgb(vec3<f32>(uv.x, 1.0, uv.y));
-    var color = vec3(0.0);
-    let toCenter = vec2(0.5)-uv;
-    let angle = atan2(toCenter.y,toCenter.x);
-    let radius = length(toCenter)*2.0;
+    let st = uv;
+  // --- your colors ---
+  let influenced_color      = vec3<f32>(0.745, 0.696, 0.529);
+  let influencing_color_A   = vec3<f32>(0.418, 0.735, 0.780);
+  let influencing_color_a   = vec3<f32>(0.065, 0.066, 0.290);
+  let influencing_color_b   = vec3<f32>(0.865, 0.842, 0.162);
+  let influencing_color_B   = vec3<f32>(0.980, 0.603, 0.086);
 
-    // Map the angle (-PI to PI) to the Hue (from 0 to 1)
-    // and the Saturation to the radius
-    color = hsb2rgb(vec3((angle/TWO_PI)+0.5,radius,1.0));
+  // --- build the vertical bands ---
+  let mixA = mix(
+    influencing_color_A,
+    influencing_color_a,
+    step(0.3, st.y)
+  );
+  let mixB = mix(
+    influencing_color_b,
+    influencing_color_B,
+    step(0.7, st.y)
+  );
+  var color = mix(
+    mixA,
+    mixB,
+    step(0.5, st.y)
+  );
 
-    return vec4<f32>(color, fragColor.a);
+  // --- draw the center rectangle blend ---
+  let shifted = (st - vec2<f32>(0.0, 0.5)) * vec2<f32>(1.0, 1.75);
+  let r       = rect(abs(shifted), vec2<f32>(0.025, 0.09));
+  color = mix(color, influenced_color, r);
+
+  return vec4<f32>(color, 1.0);
 }
