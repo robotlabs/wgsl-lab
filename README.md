@@ -126,6 +126,10 @@ EX - 28 [shader-ex-28 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 tiles example but animated
 EX - 29 [shader-ex-29 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-29).
 
+//\* tiles
+tiles example but animated and partial rotation
+EX - 30 [shader-ex-30 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-30).
+
 ## License
 
 MIT © robotlabs
