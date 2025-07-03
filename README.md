@@ -84,6 +84,12 @@ EX - 25 [shader-ex-25 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 HSB to RGB: polar rainbow
 EX - 25 [shader-ex-25 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-25).
 
+playing with color and boxes
+EX - 26 [shader-ex-26 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-26).
+
+radar example
+EX - 27 [shader-ex-27 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-27).
+
 ## License
 
 MIT © robotlabs
