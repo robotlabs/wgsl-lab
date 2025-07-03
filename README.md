@@ -57,6 +57,9 @@ EX - 16 [shader-ex-16 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 double line
 EX - 17 [shader-ex-17 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-17).
 
+easing line
+EX - 18 [shader-ex-18 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-18).
+
 ## License
 
 MIT © robotlabs
