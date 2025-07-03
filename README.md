@@ -66,6 +66,9 @@ EX - 19 [shader-ex-19 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 playing with sin and time
 EX - 20 [shader-ex-20 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-20).
 
+quadratic bezier
+EX - 21 [shader-ex-21 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-21).
+
 ## License
 
 MIT © robotlabs
