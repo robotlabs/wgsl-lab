@@ -47,10 +47,11 @@ fn fs_main(
     
 
     
-    // let y = pow(uv.x, 5.0);
-    let y = smoothstep(0.2, 0.8, uv.x);
+    let timeMild =  0.0;//transform.params[0][2] / 5.0;
+    let z = timeMild * (sin((uv.x)) / 2.0 + 0.5);
+    let y = sin((uv.x * 6.28)) / 2.0 + 0.5;
     let pct = plot2(uv, y);
-    var color = vec3(y);
+    var color = vec3(pct);
     color = (1.0-pct)*color+pct*vec3(0.0,1.0,0.0);
 
     return vec4<f32>(color, 1.0);
