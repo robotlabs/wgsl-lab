@@ -48,7 +48,7 @@ fn fs_main(
 
     
     // let y = pow(uv.x, 5.0);
-    let y = step(0.5, uv.x);
+    let y = smoothstep(0.2, 0.8, uv.x);
     let pct = plot2(uv, y);
     var color = vec3(y);
     color = (1.0-pct)*color+pct*vec3(0.0,1.0,0.0);
