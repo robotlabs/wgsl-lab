@@ -72,6 +72,9 @@ EX - 21 [shader-ex-21 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 cubix bezier
 EX - 22 [shader-ex-22 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-22).
 
+cubicBezierNearlyThroughTwoPoints
+EX - 23 [shader-ex-23 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-23).
+
 ## License
 
 MIT © robotlabs
