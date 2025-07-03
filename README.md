@@ -78,7 +78,10 @@ EX - 23 [shader-ex-23 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 multiple cubic bezier
 EX - 24 [shader-ex-24 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-24).
 
-HSB to RGB
+HSB to RGB: rainbow
+EX - 25 [shader-ex-25 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-25).
+
+HSB to RGB: polar rainbow
 EX - 25 [shader-ex-25 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-25).
 
 ## License
