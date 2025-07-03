@@ -59,6 +59,16 @@ fn box(st: vec2<f32>, size: vec2<f32>, smoothEdges: f32) -> f32 {
   return uv1.x * uv1.y * uv2.x * uv2.y;
 }
 
+
+fn circle(pt: vec2<f32>, center: vec2<f32>, radius: f32, edge_thickness: f32) -> f32{
+    let p = pt - center;
+    //* you can use len or distance.
+    //** IMPORTANT THING TO UNDERSTAND: distance(a, b) == length(a - b)
+    let len = length(p);
+    let pct = distance(pt, center);
+    let result = 1.0 - smoothstep(radius - edge_thickness, radius, pct);
+    return result;
+}
 // -----------------------------------------
 // Fragment shader
 // -----------------------------------------
@@ -67,32 +77,45 @@ fn fs_main(
   @location(0) fragColor: vec4<f32>,
   @location(1) uv:        vec2<f32>,
 ) -> @location(0) vec4<f32> {
-  // start with normalized UV
-  let time = 0.0;//transform.params[0][2] / 10.0;
-
+  // 1) Grid setup
   let tileCount = 4.0;
   let grid = uv * tileCount;
-  let col      = i32(floor(grid.x));
-  let row      = i32(floor(grid.y));
+  let col  = i32(floor(grid.x));
+  let row  = i32(floor(grid.y));
 
+  // 2) Local UV in each cell
   var st = fract(grid);
-  var b = box(st, vec2<f32>(0.7, 0.7), 0.01);
 
-    // 2) Rotate each tile by 45°
-    if ((col == 0 && row == 0) ||
-        (col == 1 && row == 1) ||
-        (col == 2 && row == 2)) {
-            
-            // st = rotate2D(st, PI * 0.25 + time);
-            // st = rotate2D(st, PI * 0.25 + time);
-            b = box(st, vec2<f32>(1.0, 1.0), 0.01);
-    }
-  
+  // 3) Draw the white box in every tile
+  let boxMask = box(st, vec2<f32>(0.7, 0.7), 0.01);
+  var color   = vec3<f32>(1.0) * boxMask;  // white square
 
-  // 3) Draw the box inside each rotated tile
-  
+  // 4) In the chosen tiles, also draw a red circle inside the same box
+  if ((col == 0 && row == 0) ||
+      (col == 1 && row == 1) ||
+      (col == 2 && row == 2)) {
 
-  // 4) Output as grayscale
-  let color = vec3<f32>(b);
+    // white square
+  let base = color;
+
+  // circle 1: red
+  let m1 = circle(st, vec2<f32>(0.4), 0.2, 0.01);
+  let c1 = vec3<f32>(1.0, 0.0, 0.0);
+  var colOut = mix(base, c1, m1);
+
+  // circle 2: green
+  let m2 = circle(st, vec2<f32>(0.8), 0.1, 0.01);
+  let c2 = vec3<f32>(0.0, 1.0, 0.0);
+  colOut = mix(colOut, c2, m2);
+
+  // circle 3: blue
+  let m3 = circle(st, vec2<f32>(0.4), 0.15, 0.01);
+  let c3 = vec3<f32>(0.0, 0.0, 1.0);
+  colOut = mix(colOut, c3, m3);
+
+  color = colOut;
+
+  }
+
   return vec4<f32>(color, 1.0);
 }
