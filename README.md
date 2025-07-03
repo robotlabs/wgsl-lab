@@ -118,6 +118,10 @@ EX - 26 [shader-ex-26 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 radar example
 EX - 27 [shader-ex-27 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-27).
 
+//\* tiles
+tiles example
+EX - 28 [shader-ex-28 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-28).
+
 ## License
 
 MIT © robotlabs
