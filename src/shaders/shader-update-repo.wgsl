@@ -31,7 +31,7 @@ fn vs_main(
 fn plot(st: vec2<f32>) -> f32 {    
     return smoothstep(0.01, 0.0, abs(st.y - st.x));
 }
-fn plotPower(st: vec2<f32>, pct:f32)  -> f32 {
+fn plot2(st: vec2<f32>, pct:f32)  -> f32 {
   return  smoothstep( pct-0.02, pct, st.y) -
           smoothstep( pct, pct+0.02, st.y);
 }
@@ -44,11 +44,13 @@ fn fs_main(
      @location(1) uv: vec2<f32>,
 ) -> @location(0) vec4<f32> {
   
-    var color = vec3(uv.x);
+    
 
     
-    let y = pow(uv.x, 5.0);
-    let pct = plotPower(uv, y);
+    // let y = pow(uv.x, 5.0);
+    let y = step(0.5, uv.x);
+    let pct = plot2(uv, y);
+    var color = vec3(y);
     color = (1.0-pct)*color+pct*vec3(0.0,1.0,0.0);
 
     return vec4<f32>(color, 1.0);
