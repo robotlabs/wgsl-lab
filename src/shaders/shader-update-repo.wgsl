@@ -47,13 +47,9 @@ fn rect(st: vec2<f32>, sizeParam: vec2<f32>) -> f32 {
 @fragment
 fn fs_main(
   @location(0) fragColor: vec4<f32>,
-  @builtin(position) fragCoord: vec4<f32>
+  @location(1) uv:        vec2<f32>,
 ) -> @location(0) vec4<f32> {
-  // --- get st = [0..1] coords (flipped Y) ---
-  let res = transform.params[1].xy;
-  var st  = fragCoord.xy / res;
-  st.y = 1.0 - st.y;
-
+    let st = uv;
   // --- your colors ---
   let influenced_color      = vec3<f32>(0.745, 0.696, 0.529);
   let influencing_color_A   = vec3<f32>(0.418, 0.735, 0.780);
