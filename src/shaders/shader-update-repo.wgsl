@@ -82,6 +82,9 @@ fn circle(pt: vec2<f32>, center: vec2<f32>, radius: f32, edge_thickness: f32) ->
     let result = 1.0 - smoothstep(radius - edge_thickness, radius, pct);
     return result;
 }
+fn modf(x: f32, y: f32) -> f32 {
+  return x - y * floor(x / y);
+}
 // -----------------------------------------
 // Fragment shader
 // -----------------------------------------
@@ -93,58 +96,58 @@ fn fs_main(
   // 1) Grid setup
   let time = transform.params[0][2] / 10.0;
 
-  let tileCount = 4.0;
-  let grid = uv * tileCount;
+  let tileCount = 20.0;
+  var grid = uv * tileCount;
   let col  = i32(floor(grid.x));
   let row  = i32(floor(grid.y));
 
-  // 2) Local UV in each cell
+
+  grid.x += step(1., modf(grid.y,2.0)) * 0.5;
   var st = fract(grid);
 
-  // 3) Draw the white box in every tile
   var boxMask = box(st, vec2<f32>(0.7, 0.7), 0.01);
   var color   = vec3<f32>(1.0) * boxMask;  // white square
 
-    if (col == 1 && row == 2) {
-        let base = color;
-        let stScaled00 =   scale2D(st, vec2<f32>(0.2),  sin(time / 2.0) *1.4);
-        let m1 = circle(stScaled00, vec2<f32>(0.2), 0.2, 0.01);
-        let c1 = vec3<f32>(1.0, 0.0, 1.0);
-        var colOut = mix(base, c1, m1);
-        color = colOut;
-    }
-  // 4) In the chosen tiles, also draw a red circle inside the same box
-  if ((col == 0 && row == 0) ||
-      (col == 1 && row == 1) ||
-      (col == 2 && row == 2)) {
+    // if (col == 1 && row == 2) {
+    //     let base = color;
+    //     let stScaled00 =   scale2D(st, vec2<f32>(0.2),  sin(time / 2.0) *1.4);
+    //     let m1 = circle(stScaled00, vec2<f32>(0.2), 0.2, 0.01);
+    //     let c1 = vec3<f32>(1.0, 0.0, 1.0);
+    //     var colOut = mix(base, c1, m1);
+    //     color = colOut;
+    // }
+    // // 4) In the chosen tiles, also draw a red circle inside the same box
+    // if ((col == 0 && row == 0) ||
+    //     (col == 1 && row == 1) ||
+    //     (col == 2 && row == 2)) {
 
-          // 3) Draw the white box in every tile
-        st = rotate2D(st, PI * 0.25 + time);
-        boxMask = box(st, vec2<f32>(0.9, 0.9), 0.01);
-        color   = vec3<f32>(1.0) * boxMask;  // white square
+    //         // 3) Draw the white box in every tile
+    //     st = rotate2D(st, PI * 0.25 + time);
+    //     boxMask = box(st, vec2<f32>(0.9, 0.9), 0.01);
+    //     color   = vec3<f32>(1.0) * boxMask;  // white square
 
-        // white square
-        let base = color;
+    //     // white square
+    //     let base = color;
 
-        // circle 1: red
-        let stScaled =   scale2D(st, vec2<f32>(0.4), 1.4);
-        let m1 = circle(stScaled, vec2<f32>(0.4), 0.2, 0.01);
-        let c1 = vec3<f32>(1.0, 0.0, 0.0);
-        var colOut = mix(base, c1, m1);
+    //     // circle 1: red
+    //     let stScaled =   scale2D(st, vec2<f32>(0.4), 1.4);
+    //     let m1 = circle(stScaled, vec2<f32>(0.4), 0.2, 0.01);
+    //     let c1 = vec3<f32>(1.0, 0.0, 0.0);
+    //     var colOut = mix(base, c1, m1);
 
-        // circle 2: green
-        let m2 = circle(st, vec2<f32>(0.8), 0.1, 0.01);
-        let c2 = vec3<f32>(0.0, 1.0, 0.0);
-        colOut = mix(colOut, c2, m2);
+    //     // circle 2: green
+    //     let m2 = circle(st, vec2<f32>(0.8), 0.1, 0.01);
+    //     let c2 = vec3<f32>(0.0, 1.0, 0.0);
+    //     colOut = mix(colOut, c2, m2);
 
-        // circle 3: blue
-        let stScaled2 =   scale2D(st, vec2<f32>(0.4), sin(time) * 2.0);
-        let m3 = circle(stScaled2, vec2<f32>(0.4), 0.15, 0.01);
-        let c3 = vec3<f32>(0.0, 0.0, 1.0);
-        colOut = mix(colOut, c3, m3);
+    //     // circle 3: blue
+    //     let stScaled2 =   scale2D(st, vec2<f32>(0.4), sin(time) * 2.0);
+    //     let m3 = circle(stScaled2, vec2<f32>(0.4), 0.15, 0.01);
+    //     let c3 = vec3<f32>(0.0, 0.0, 1.0);
+    //     colOut = mix(colOut, c3, m3);
 
-        color = colOut;
-  }
+    //     color = colOut;
+    // }
 
   return vec4<f32>(color, 1.0);
 }
