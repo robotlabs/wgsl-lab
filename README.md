@@ -142,6 +142,10 @@ EX - 32 [shader-ex-32 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 offset pattern brick
 EX - 33 [shader-ex-33 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-33).
 
+//\* patterns
+patterns and animating offset
+EX - 34 [shader-ex-34 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-34).
+
 ## License
 
 MIT © robotlabs
