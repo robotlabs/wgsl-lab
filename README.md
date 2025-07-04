@@ -160,7 +160,11 @@ EX - 37 [shader-ex-37 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 
 //\* random and patterns
 truchet!
-EX - 38 [shader-ex-37 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-38).
+EX - 38 [shader-ex-38 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-38).
+
+//\* random and patterns
+cool random pattern animation ( mastering random)
+EX - 39 [shader-ex-37 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-39).
 
 ## License
 
