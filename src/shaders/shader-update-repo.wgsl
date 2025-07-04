@@ -62,7 +62,7 @@ fn fs_main(
     st *= 10.0; // Scale the coordinate system by 10
     let y = uv.y / 10.0;
     let y_fract = fract(y);
-    st.x += time*3.0 * y_fract;
+    st.x += time*13.0 * y_fract;
     
     let ipos = floor(st);  // get the integer coords
     let fpos = fract(st);  // get the fractional coords
