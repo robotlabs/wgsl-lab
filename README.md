@@ -158,6 +158,10 @@ EX - 36 [shader-ex-36 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 noise + grid pattern
 EX - 37 [shader-ex-37 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-37).
 
+//\* noise and patterns
+truchet!
+EX - 38 [shader-ex-37 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-38).
+
 ## License
 
 MIT © robotlabs
