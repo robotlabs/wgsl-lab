@@ -36,73 +36,79 @@ fn vs_main(@location(0) position: vec3<f32>) -> VertexOutput {
 // -----------------------------------------
 // Portable random()  
 // -----------------------------------------
+fn random2 (x: f32) -> f32{
+    return fract(sin(x)*10000.0);
+}
 fn random(st: vec2<f32>) -> f32 {
   return fract(sin(dot(st, vec2<f32>(12.9898, 78.233))) * 43758.5453123);
 }
 
-// -----------------------------------------
-// Portable truchetPattern()
-// -----------------------------------------
-fn truchetPattern(st: vec2<f32>, idx_in: f32) -> vec2<f32> {
-  var idx = fract((idx_in - 0.5) * 2.0);
-  var p   = st;
-  if (idx > 0.75) {
-    p = vec2<f32>(1.0) - p;
-  } else if (idx > 0.5) {
-    p = vec2<f32>(1.0 - p.x, p.y);
-  } else if (idx > 0.25) {
-    p = vec2<f32>(1.0 - p.x, 1.0 - p.y);
-  }
-  return p;
+fn randomBand(x: f32, freq: f32) -> f32{
+    return step(0.6, random2(floor(x * freq) - floor(x)));
 }
 
-// -----------------------------------------
-// Fragment shader: Truchet maze + variants
-// -----------------------------------------
 @fragment
 fn fs_main(
     @location(0) fragColor: vec4<f32>,
     @location(1) uv:        vec2<f32>,
 ) -> @location(0) vec4<f32> {
     // time (in seconds)
-    let time = transform.params[0][2];
+     let time   = transform.params[0][2];
+    
+        let basePeriod         = 4.0;
+    let rndIdx             = floor(time / basePeriod);
+    let period             = 10.0;//mix(1.0, 4.0, random2(rndIdx));
+    let period_speed             = mix(1.0, 4.0, random2(rndIdx));
 
-    // normalized coords from uv
-    var st = uv;
 
-    // scale up to 10×10 grid
-    st *= 10.0;
+    let period_direction = 20.0;
+    
+    let cycle = floor(time / period_speed);
+    let rnd   = random2(cycle);
 
-    // optional experiments:
-    // st = (st - vec2<f32>(5.0)) * (abs(sin(time * 0.2)) * 5.0);
-    // st.x += time * 3.0;
+    let cycle_i = i32(floor(time / period_direction));
 
-    // integer + fractional parts
-    let ipos = floor(st);  // integer tile coords
-    let fpos = fract(st);  // local 0–1 within tile
+    let toggle  = cycle_i & 1;  // int 0 or 1
 
-    // apply static
-    var tile = truchetPattern(fpos, random(ipos));
-    // or animate random patterns
-    let speed1 = 0.0000001;
-    let speed2 = 0.0000001;
-    let seed = random(ipos + vec2<f32>(time * speed1, time * speed2));
-    tile = truchetPattern(fpos, seed);
+    let dir = 1.0 - f32(toggle) * 2.0;
+    let phase = fract(time / period);
+    
 
-    // base color
-    var colorVal: f32 = 0.0;
+    let numRows:   f32 = 14.0;                              // ← your dynamic row count
+    let rowIdx:    i32 = i32(floor(uv.y * numRows));       // which row [0..numRows-1]
+    let parity:    i32 = 1;//rowIdx & 1;                       // even/odd
+    let rowDir:    f32 = 1.0 - f32(parity) * 2.0;           // +1 for even rows, –1 for odd
+    // ─────────────────────
 
-    // Maze pattern
-    colorVal = smoothstep(tile.x - 0.3, tile.x, tile.y)
-             - smoothstep(tile.x, tile.x + 0.3, tile.y);
+    // 5) build your band frequency (unchanged)
+    let freqA              = mix(20.0, 100.0, rnd);
+    let freqB              = mix(10.0,  80.0, rnd);
+    let isTop              = step(0.5, uv.y);               // still used for color
+    let freq               = mix(freqA, freqB, isTop);
 
-    // Circles
-    colorVal = (step(length(tile), 0.6) - step(length(tile), 0.4))
-             + (step(length(tile - vec2<f32>(1.0)), 0.6)
-              - step(length(tile - vec2<f32>(1.0)), 0.4));
+    // 6) ONE‐LINE shift for *every* row using rowDir
+    let shiftAmt          = 0.25;
 
-    // Truchet (2 triangles)
-    // colorVal = step(tile.x, tile.y);
+    let numRowsF = numRows; 
+    let idxF     = f32(rowIdx) + 1.0;
+    let half     = numRowsF * 0.5; 
+    let denom = select(
+        // else‐case: rowIdx > half
+        numRowsF + 1.0 - idxF, 
+        // then‐case: rowIdx <= half
+        idxF, 
+        idxF <= half
+    );
+    let x                 = uv.x + rowDir * dir * shiftAmt * phase * 4.0 / denom;
+    
+    let band = randomBand(x, freq);
 
-    return vec4<f32>(vec3<f32>(colorVal), 1.0);
+    // 8) paint it
+    let colorA = vec3<f32>(0.9686, 0.6235, 0.4745);
+    let colorB = vec3<f32>(0.9686, 0.8157, 0.5412);
+    let base   = mix(colorA, colorB, isTop);
+    let bgColor = vec3<f32>(0.8902, 0.9412, 0.6078);
+    let c = mix(bgColor, base, band);
+
+    return vec4<f32>(c, 1.0);
 }
