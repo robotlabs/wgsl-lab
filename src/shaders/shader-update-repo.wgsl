@@ -40,6 +40,11 @@ fn random (st: vec2<f32>) -> f32 {
         43758.5453123);
 }
 
+fn pattern(st: vec2<f32>, v: vec2<f32>, t: f32) -> f32 {
+    let p = floor(st+v);
+    return step(t, random(100.+p*.000001)+random2(p.x)*0.5 );
+}
+
 @fragment
 fn fs_main(
   @location(0) fragColor: vec4<f32>,
@@ -59,18 +64,28 @@ fn fs_main(
     // let color = vec3<f32>(rnd);
 
     var st = uv;
-    st *= 10.0; // Scale the coordinate system by 10
-    let y = uv.y / 10.0;
-    let y_fract = fract(y);
-    st.x += time*13.0 * y_fract;
+    let grid = vec2(100.0, 50.0);
+    st *= grid;
+    // let y = uv.y / 10.0;
+    // let y_fract = fract(y);
+    // st.x += time*13.0 * y_fract;
     
     let ipos = floor(st);  // get the integer coords
     let fpos = fract(st);  // get the fractional coords
 
-    // Assign a random value based on the integer coord
-    let color = vec3(random( ipos ));
-    // let color = vec3(fpos, 0.0);
-    // let color = vec3(random( fpos ));
+    var vel = vec2(time*2.*max(grid.x,grid.y)); // time
+    vel *= vec2(-1.,0.0) * random(1.0+ipos.y); // direction
+
+    // Assign a random value base on the integer coord
+    let offset = vec2(0.1,0.);
+
+    var color = vec3(0.);
+    color.r = pattern(st+offset,vel,0.5 + 0.0);
+    color.g = pattern(st,vel, 0.5 + 0.0);
+    color.b = pattern(st-offset,vel, 0.5 + 0.0);
+
+    // Margins
+    color *= step(0.2,fpos.y);
 
     return vec4<f32>(color, 1.0);
 }
