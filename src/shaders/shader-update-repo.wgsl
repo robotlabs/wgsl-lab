@@ -45,18 +45,29 @@ fn fs_main(
   @location(0) fragColor: vec4<f32>,
   @location(1) uv:        vec2<f32>,
 ) -> @location(0) vec4<f32> {
-    var time = transform.params[0][2] / 40.0;
-    var mouseX = transform.params[1][2] / 1.0;
+    var time = transform.params[0][2] / 2.0;
+    // var mouseX = transform.params[1][2] / 1.0;
 
 
-    let tileCount = 1.0;
-    var grid = uv * tileCount;
-    let col  = i32(floor(grid.x));
-    let row  = i32(floor(grid.y));
-    var st = fract(grid);
+    // let tileCount = 10.0;
+    // var grid = uv * tileCount;
+    // let col  = i32(floor(grid.x));
+    // let row  = i32(floor(grid.y));
+    // var st = fract(grid);
 
-    let rnd = random( st * mouseX );
-    let color = vec3<f32>(rnd);
+    // let rnd = random( st * mouseX );
+    // let color = vec3<f32>(rnd);
+
+    var st = uv;
+    st *= 10.0; // Scale the coordinate system by 10
+    st.x += time*3.0;
+    let ipos = floor(st);  // get the integer coords
+    let fpos = fract(st);  // get the fractional coords
+
+    // Assign a random value based on the integer coord
+    let color = vec3(random( ipos ));
+    // let color = vec3(fpos, 0.0);
+    // let color = vec3(random( fpos ));
 
     return vec4<f32>(color, 1.0);
 }
