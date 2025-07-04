@@ -170,6 +170,10 @@ EX - 39 [shader-ex-37 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 deform grid test
 EX - 40 [shader-ex-40 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-40).
 
+//\* random and patterns
+deform grid test
+EX - 41 [shader-ex-40 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-41).
+
 ## License
 
 MIT © robotlabs
