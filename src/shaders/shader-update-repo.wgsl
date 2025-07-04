@@ -46,15 +46,16 @@ fn fs_main(
   @location(1) uv:        vec2<f32>,
 ) -> @location(0) vec4<f32> {
     var time = transform.params[0][2] / 40.0;
+    var mouseX = transform.params[1][2] / 1.0;
 
 
-    let tileCount = 4.0;
+    let tileCount = 1.0;
     var grid = uv * tileCount;
     let col  = i32(floor(grid.x));
     let row  = i32(floor(grid.y));
     var st = fract(grid);
 
-    let rnd = random( uv * time );
+    let rnd = random( st * mouseX );
     let color = vec3<f32>(rnd);
 
     return vec4<f32>(color, 1.0);

@@ -152,14 +152,12 @@ export default class App {
 
       // debug
 
-      // if (this.plane) {
-      //   this.plane.updateProps((p) => {
-      //     p.params[0][0] = x;
-      //     p.params[0][1] = y;
-      //     p.params[0][2] = 0;
-      //     p.params[0][3] = 0;
-      //   });
-      // }
+      if (this.plane) {
+        this.plane.updateProps((p) => {
+          p.params[1][2] = x;
+          p.params[1][3] = y;
+        });
+      }
     });
   }
 
