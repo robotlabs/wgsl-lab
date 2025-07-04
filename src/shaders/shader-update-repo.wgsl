@@ -54,7 +54,7 @@ fn fs_main(
   @location(1) uv:        vec2<f32>,
 ) -> @location(0) vec4<f32> {
     // var time = 0.0;//transform.params[0][2] / 2.0;
-    var time = transform.params[0][2] / 4.0;
+    var time = transform.params[0][2] / 2.0;
     // var mouseX = transform.params[1][2] / 1.0;
 
 
@@ -68,7 +68,7 @@ fn fs_main(
     // let color = vec3<f32>(rnd);
 
     var st = uv;
-    let grid = vec2(100.0, 100.0);
+    let grid = vec2(200.0, 50.0);
     st *= grid;
     // let y = uv.y / 10.0;
     // let y_fract = fract(y);

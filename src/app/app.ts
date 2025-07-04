@@ -39,6 +39,7 @@ export default class App {
 
   private rawMouse = { x: 0, y: 0 };
   private easedMouse = { x: 0, y: 0 };
+  private activePlanes: Plane[] = [];
 
   constructor() {}
 
@@ -212,6 +213,12 @@ export default class App {
             p.params[0][2] = time;
           });
         }
+        for (let i = 0; i < this.activePlanes.length; i++) {
+          const p = this.activePlanes[i];
+          p.updateProps((p) => {
+            p.params[0][2] = time;
+          });
+        }
       }
       this.engine.render();
       this.stats.end();
@@ -279,34 +286,82 @@ export default class App {
       addressModeU: "repeat",
       addressModeV: "repeat",
     });
+    // Create multiple single planes
+    const rnMultiplierPos = 10;
+    for (let i = 0; i < 1000; i++) {
+      const plane = new Plane(
+        device,
+        format,
+        planeShaderModule,
+        planeTexture,
+        planeSampler,
+        {
+          posX: Math.random() * rnMultiplierPos - 5,
+          posY: Math.random() * rnMultiplierPos - 5,
+          posZ: Math.random() * rnMultiplierPos - 5,
+          rotX: Math.random() * Math.PI * 2,
+          rotY: Math.random() * Math.PI * 2,
+          rotZ: Math.random() * Math.PI * 2,
+          scaleX: Math.random() * 2 + 0.5,
+          scaleY: Math.random() * 2 + 0.5,
+          scaleZ: 1,
+          color: [Math.random(), Math.random(), Math.random(), 1],
+          useTexture: false, //Math.random() > 0.5,
+          params: [
+            [0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0],
+          ],
+        }
+      );
+      this.scene.add(plane);
+      this.activePlanes.push(plane);
 
-    const plane = new Plane(
-      device,
-      format,
-      planeShaderModule,
-      planeTexture,
-      planeSampler,
-      {
-        posX: 0,
-        posY: 0,
-        posZ: 5,
-        rotX: 0,
-        rotY: 0,
-        rotZ: 0,
-        scaleX: 1,
-        scaleY: 1,
-        scaleZ: 1,
-        color: [1.0, 0, 0, 1.0],
-        useTexture: false,
-        params: [
-          [0.0, 0.0, 0.0, 0.0],
-          [0.0, 0.0, 0.0, 0.0],
-        ],
-      }
-    );
-    this.scene.add(plane);
+      // Animate the plane
+      const tween = gsap.to(plane.getProps(), {
+        posX: Math.random() * rnMultiplierPos - 5,
+        posY: Math.random() * rnMultiplierPos - 5,
+        posZ: Math.random() * rnMultiplierPos - 5,
+        rotX: Math.random() * Math.PI * 2,
+        rotY: Math.random() * Math.PI * 2,
+        rotZ: Math.random() * Math.PI * 2,
+        scaleX: Math.random() * 2 + 0.5,
+        scaleY: Math.random() * 2 + 0.5,
+        duration: 4,
+        repeat: -1,
+        yoyo: true,
+        ease: "power4.inOut",
+        onUpdate: () => plane.updateCameraTransform(),
+      });
 
-    this.plane = plane;
+      plane.addTween(tween);
+    }
+    // const plane = new Plane(
+    //   device,
+    //   format,
+    //   planeShaderModule,
+    //   planeTexture,
+    //   planeSampler,
+    //   {
+    //     posX: 0,
+    //     posY: 0,
+    //     posZ: 5,
+    //     rotX: 0,
+    //     rotY: 0,
+    //     rotZ: 0,
+    //     scaleX: 1,
+    //     scaleY: 1,
+    //     scaleZ: 1,
+    //     color: [1.0, 0, 0, 1.0],
+    //     useTexture: false,
+    //     params: [
+    //       [0.0, 0.0, 0.0, 0.0],
+    //       [0.0, 0.0, 0.0, 0.0],
+    //     ],
+    //   }
+    // );
+    // this.scene.add(plane);
+
+    // this.plane = plane;
     this.updateResolution();
 
     // setTimeout(() => {
