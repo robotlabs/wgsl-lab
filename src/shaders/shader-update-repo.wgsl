@@ -56,6 +56,10 @@ fn yFromT(t: f32, E: f32, F: f32, G: f32, H: f32) -> f32 {
 fn constrain(x: f32, minVal: f32, maxVal: f32) -> f32 {
   return clamp(x, minVal, maxVal);
 }
+fn oscillateBetween(a: f32, b: f32, time: f32, speed: f32) -> f32 {
+  let t = sin(time * speed) * 0.5 + 0.5; // oscillates in [0, 1]
+  return mix(a, b, t);
+}
 
 fn cubicBezier(x: f32, a: f32, b: f32, c: f32, d: f32) -> f32 {
   let y0a = 0.0;
@@ -93,9 +97,9 @@ fn fs_main(
   @location(1) uv:        vec2<f32>,
 ) -> @location(0) vec4<f32> {
   // 1) Grid setup
-  let time = transform.params[0][2] / 10.0;
+  let time = transform.params[0][2] / 1.0;
 
-  let tileCount = 20.0;
+  let tileCount = 4.0;
   var grid = uv * tileCount;
   let col  = i32(floor(grid.x));
   let row  = i32(floor(grid.y));
@@ -119,7 +123,6 @@ fn fs_main(
 //         grid.x -= sinTime;
 //     }
 //     }
-   
   
   var st = fract(grid);
 
@@ -132,7 +135,17 @@ fn fs_main(
             let ap0y = 0.0; 
             let ap1x = 0.2; 
             let ap1y = 1.0; 
-            y = cubicBezier(st.x, ap0x, ap0y, ap1x, ap1y);
+
+            let speed1 = 0.5;
+            let speed2 = 1.0;
+            let maxOscillate = 0.4;
+            let anchorA_Base = 0.6;
+            let anchorB_Base = 0.2;
+            let animatedA = oscillateBetween(anchorA_Base, anchorA_Base - maxOscillate, time, speed1);
+            let animatedB = oscillateBetween(anchorB_Base, anchorB_Base - maxOscillate, time, speed1);
+            y = cubicBezier(st.x, animatedA, ap0y, animatedB, ap1y);
+            // y = cubicBezier(st.x, ap0x, ap0y, ap1x, ap1y);
+
             edge = smoothstep(y - 0.01, y, st.y) - smoothstep(y, y + 0.01, st.y);
             base = select(vec3<f32>(0.0), vec3<f32>(1.0), st.y < y);
         } else {
@@ -140,7 +153,17 @@ fn fs_main(
             let ap0y = 1.0; 
             let ap1x = 0.6; 
             let ap1y = 0.0; 
-            let y = cubicBezier(st.x, ap0x, ap0y, ap1x, ap1y);
+            
+            let speed1 = 0.5;
+            let speed2 = 1.0;
+            let maxOscillate = 0.4;
+            let anchorA_Base = 0.2;
+            let anchorB_Base = 0.6;
+            let animatedA = oscillateBetween(anchorA_Base, anchorA_Base + maxOscillate, time, speed1);
+            let animatedB = oscillateBetween(anchorB_Base, anchorB_Base + maxOscillate, time, speed1);
+            y = cubicBezier(st.x, animatedA, ap0y, animatedB, ap1y);
+            // y = cubicBezier(st.x, ap0x, ap0y, ap1x, ap1y);
+            
             edge = smoothstep(y - 0.01, y, st.y) - smoothstep(y, y + 0.01, st.y);
             base = select(vec3<f32>(0.0), vec3<f32>(1.0), st.y > y);
         }
@@ -150,7 +173,18 @@ fn fs_main(
             let ap0y = 1.0; 
             let ap1x = 0.6; 
             let ap1y = 0.0; 
-            let y = cubicBezier(st.x, ap0x, ap0y, ap1x, ap1y);
+
+            let speed1 = 0.5;
+            let speed2 = 1.0;
+            let maxOscillate = 0.2;
+            let anchorA_Base = 0.2;
+            let anchorB_Base = 0.6;
+            let animatedA = oscillateBetween(anchorA_Base, anchorA_Base - maxOscillate, time, speed1);
+            let animatedB = oscillateBetween(anchorB_Base, anchorB_Base - maxOscillate, time, speed1);
+            y = cubicBezier(st.x, animatedA, ap0y, animatedB, ap1y);
+
+            // let y = cubicBezier(st.x, ap0x, ap0y, ap1x, ap1y);
+
             edge = smoothstep(y - 0.01, y, st.y) - smoothstep(y, y + 0.01, st.y);
             base = select(vec3<f32>(0.0), vec3<f32>(1.0), st.y > y);
         } else {
@@ -158,7 +192,17 @@ fn fs_main(
             let ap0y = 0.0; 
             let ap1x = 0.2; 
             let ap1y = 1.0; 
-            y = cubicBezier(st.x, ap0x, ap0y, ap1x, ap1y);
+            
+            let speed1 = 0.5;
+            let speed2 = 1.0;
+            let maxOscillate = 0.3;
+            let anchorA_Base = 0.6;
+            let anchorB_Base = 0.2;
+            let animatedA = oscillateBetween(anchorA_Base, anchorA_Base - maxOscillate, time, speed1);
+            let animatedB = oscillateBetween(anchorB_Base, anchorB_Base - maxOscillate, time, speed1);
+            y = cubicBezier(st.x, animatedA, ap0y, animatedB, ap1y);
+            // y = cubicBezier(st.x, ap0x, ap0y, ap1x, ap1y);
+
             edge = smoothstep(y - 0.01, y, st.y) - smoothstep(y, y + 0.01, st.y);
             base = select(vec3<f32>(0.0), vec3<f32>(1.0), st.y < y);
         }
