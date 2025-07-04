@@ -39,10 +39,13 @@ fn random (st: vec2<f32>) -> f32 {
                          vec2(12.9898,78.233)))*
         43758.5453123);
 }
+fn random2 (x: f32) -> f32{
+    return fract(sin(x)*10000.0);
+}
 
 fn pattern(st: vec2<f32>, v: vec2<f32>, t: f32) -> f32 {
     let p = floor(st+v);
-    return step(t, random(100.+p*.000001)+random2(p.x)*0.5 );
+    return step(t, random(100. + p * .000001)+random2(p.x)*0.1 );
 }
 
 @fragment
@@ -50,7 +53,8 @@ fn fs_main(
   @location(0) fragColor: vec4<f32>,
   @location(1) uv:        vec2<f32>,
 ) -> @location(0) vec4<f32> {
-    var time = transform.params[0][2] / 2.0;
+    // var time = 0.0;//transform.params[0][2] / 2.0;
+    var time = transform.params[0][2] / 4.0;
     // var mouseX = transform.params[1][2] / 1.0;
 
 
@@ -64,7 +68,7 @@ fn fs_main(
     // let color = vec3<f32>(rnd);
 
     var st = uv;
-    let grid = vec2(100.0, 50.0);
+    let grid = vec2(100.0, 100.0);
     st *= grid;
     // let y = uv.y / 10.0;
     // let y_fract = fract(y);
@@ -73,19 +77,26 @@ fn fs_main(
     let ipos = floor(st);  // get the integer coords
     let fpos = fract(st);  // get the fractional coords
 
-    var vel = vec2(time*2.*max(grid.x,grid.y)); // time
-    vel *= vec2(-1.,0.0) * random(1.0+ipos.y); // direction
+    var vel = vec2(time*0.5*max(grid.x,grid.y)); // time
+    vel *= vec2(-1.,0.0) * random2(1.0+ipos.y); // direction
 
     // Assign a random value base on the integer coord
     let offset = vec2(0.1,0.);
 
     var color = vec3(0.);
-    color.r = pattern(st+offset,vel,0.5 + 0.0);
-    color.g = pattern(st,vel, 0.5 + 0.0);
-    color.b = pattern(st-offset,vel, 0.5 + 0.0);
+    var density = 0.2;
+    color.r = pattern(st + offset,vel, 0.5 + density);
+    color.g = pattern(st, vel, 0.5 + density);
+    color.b = pattern(st - offset,vel, 0.5 + density);
 
     // Margins
-    color *= step(0.2,fpos.y);
+    // color *= step(0.9,fpos.y);
 
-    return vec4<f32>(color, 1.0);
+    let mask   = step(0.2, fpos.y);               // 0 below, 1 above
+    let bgColor = vec3<f32>(0.1, 1.0, 1.0);     
+    let barColor   = vec3<f32>(1.0, 1.0, 0.0);
+    color = mix(bgColor, color, mask);
+    let finalColor = mix(bgColor, barColor, color);   
+
+    return vec4<f32>(finalColor, 1.0);
 }
