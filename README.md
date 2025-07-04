@@ -146,6 +146,10 @@ EX - 33 [shader-ex-33 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 patterns and animating offset
 EX - 34 [shader-ex-34 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-34).
 
+//\* patterns
+patterns animation with bezier
+EX - 35 [shader-ex-35 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-35).
+
 ## License
 
 MIT © robotlabs
