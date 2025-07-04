@@ -150,15 +150,15 @@ EX - 34 [shader-ex-34 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 patterns animation with bezier
 EX - 35 [shader-ex-35 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-35).
 
-//\* noise
-noise base
+//\* random
+random base
 EX - 36 [shader-ex-36 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-36).
 
-//\* noise and patterns
-noise + grid pattern
+//\* random and patterns
+random + grid pattern
 EX - 37 [shader-ex-37 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-37).
 
-//\* noise and patterns
+//\* random and patterns
 truchet!
 EX - 38 [shader-ex-37 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-38).
 
