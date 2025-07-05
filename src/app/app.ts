@@ -15,6 +15,7 @@ import shader6 from "@/shaders/shader-6.wgsl";
 import shader9 from "@/shaders/shader-9.wgsl";
 import shader12 from "@/shaders/shader-12.wgsl";
 import shaderRepo from "@/shaders/shader-update-repo.wgsl";
+import shaderRepo_r from "@/shaders/shader-update-repo_r.wgsl";
 
 //* gpu lab */
 import { Engine } from "@/gpulab/core/engine";
@@ -40,6 +41,7 @@ export default class App {
   private rawMouse = { x: 0, y: 0 };
   private easedMouse = { x: 0, y: 0 };
   private activePlanes: Plane[] = [];
+  private activePlanes2: Plane[] = [];
 
   constructor() {}
 
@@ -202,21 +204,41 @@ export default class App {
         //     p.params[0][2] = time;
         //   });
         // }
-        if (this.plane) {
-          // Interpolate
-          this.easedMouse.x += (this.rawMouse.x - this.easedMouse.x) * 0.05;
-          this.easedMouse.y += (this.rawMouse.y - this.easedMouse.y) * 0.05;
+        this.easedMouse.x += (this.rawMouse.x - this.easedMouse.x) * 0.03;
+        this.easedMouse.y += (this.rawMouse.y - this.easedMouse.y) * 0.03;
 
-          this.plane.updateProps((p) => {
-            p.params[0][0] = this.easedMouse.x;
-            p.params[0][1] = this.easedMouse.y;
-            p.params[0][2] = time;
-          });
-        }
+        // this.updateCameraAxis("x", this.easedMouse.x / 10);
+
+        const canvas = this.engine.getCanvas();
+        const rect = canvas.getBoundingClientRect();
+        const w = rect.width;
+        const h = rect.height;
+
+        const endCameraX = (this.easedMouse.x * 10) / w - 5;
+        const endCameraY = (this.easedMouse.y * 10) / h - 5;
+        this.updateCameraAxis("x", endCameraX);
+        this.updateCameraAxis("y", endCameraY);
+        // if (this.plane) {
+        //   // Interpolate
+        //   this.easedMouse.x += (this.rawMouse.x - this.easedMouse.x) * 0.05;
+        //   this.easedMouse.y += (this.rawMouse.y - this.easedMouse.y) * 0.05;
+
+        //   this.plane.updateProps((p) => {
+        //     p.params[0][0] = this.easedMouse.x;
+        //     p.params[0][1] = this.easedMouse.y;
+        //     p.params[0][2] = time;
+        //   });
+        // }
         for (let i = 0; i < this.activePlanes.length; i++) {
           const p = this.activePlanes[i];
           p.updateProps((p) => {
             p.params[0][2] = time;
+          });
+        }
+        for (let i = 0; i < this.activePlanes2.length; i++) {
+          const p = this.activePlanes2[i];
+          p.updateProps((p) => {
+            p.params[0][2] = -time;
           });
         }
       }
@@ -274,6 +296,9 @@ export default class App {
     const planeShaderModule = device.createShaderModule({
       code: shaderRepo,
     });
+    const planeShaderModuleR = device.createShaderModule({
+      code: shaderRepo_r,
+    });
 
     // Create shared texture and sampler
     const planeTexture = await createTextureFromImage(
@@ -287,8 +312,29 @@ export default class App {
       addressModeV: "repeat",
     });
     // Create multiple single planes
-    const rnMultiplierPos = 10;
-    for (let i = 0; i < 1000; i++) {
+
+    const COUNT = 128;
+    const COLS = 8;
+    const SX = 2;
+    const SY = 2;
+    const angle = Math.PI * 0.25; // 45° tip around Y
+    const c = Math.cos(angle);
+    const s = Math.sin(angle);
+    const offsetX = 14;
+    const offsetY = 12;
+    for (let i = 0; i < COUNT; i++) {
+      const col = i % COLS; // 0…COLS-1
+      const row = Math.floor(i / COLS); //    0…∞
+
+      // 2) un-rotated position
+      const x0 = col * SX - offsetX;
+      const y0 = row * SY - offsetY; // your vertical offset
+      const z0 = 0;
+
+      // 3) rotate that point around world-Y
+      const posX = x0 * c + z0 * s;
+      const posZ = -x0 * s + z0 * c;
+      const posY = y0;
       const plane = new Plane(
         device,
         format,
@@ -296,20 +342,20 @@ export default class App {
         planeTexture,
         planeSampler,
         {
-          posX: Math.random() * rnMultiplierPos - 5,
-          posY: Math.random() * rnMultiplierPos - 5,
-          posZ: Math.random() * rnMultiplierPos - 5,
-          rotX: Math.random() * Math.PI * 2,
-          rotY: Math.random() * Math.PI * 2,
-          rotZ: Math.random() * Math.PI * 2,
-          scaleX: Math.random() * 2 + 0.5,
-          scaleY: Math.random() * 2 + 0.5,
+          posX,
+          posY,
+          posZ,
+          rotX: 0,
+          rotY: angle, // so the faces point “into” the grid-plane
+          rotZ: 0,
+          scaleX: 2,
+          scaleY: 1,
           scaleZ: 1,
           color: [Math.random(), Math.random(), Math.random(), 1],
-          useTexture: false, //Math.random() > 0.5,
+          useTexture: false,
           params: [
-            [0.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
           ],
         }
       );
@@ -318,15 +364,15 @@ export default class App {
 
       // Animate the plane
       const tween = gsap.to(plane.getProps(), {
-        posX: Math.random() * rnMultiplierPos - 5,
-        posY: Math.random() * rnMultiplierPos - 5,
-        posZ: Math.random() * rnMultiplierPos - 5,
-        rotX: Math.random() * Math.PI * 2,
-        rotY: Math.random() * Math.PI * 2,
-        rotZ: Math.random() * Math.PI * 2,
-        scaleX: Math.random() * 2 + 0.5,
-        scaleY: Math.random() * 2 + 0.5,
-        duration: 4,
+        // posX: posX + i * 0.01,
+        // posY: posY + Math.random() * 1 - 0,
+        // posZ: Math.random() * rnMultiplierPos - 5,
+        // rotX: Math.random() * Math.PI * 2,
+        // rotY: Math.random() * Math.PI * 2,
+        // rotZ: Math.random() * Math.PI * 2,
+        scaleX: Math.random() * 4 + 0.5,
+        // scaleY: Math.random() * 4 + 0.5,
+        duration: 2 + Math.random() * 3,
         repeat: -1,
         yoyo: true,
         ease: "power4.inOut",
@@ -335,6 +381,76 @@ export default class App {
 
       plane.addTween(tween);
     }
+
+    const COUNT_R = 128;
+    const COLS_R = 8;
+    const SX_R = 2;
+    const SY_R = 2;
+    const angle_R = -Math.PI * 0.25; // 45° tip around Y
+    const c_R = Math.cos(angle_R);
+    const s_R = Math.sin(angle_R);
+    const offsetX_R = 1;
+    const offsetY_R = 12;
+    for (let i = 0; i < COUNT_R; i++) {
+      const col = i % COLS_R; // 0…COLS-1
+      const row = Math.floor(i / COLS_R); //    0…∞
+
+      // 2) un-rotated position
+      const x0 = col * SX_R + offsetX_R;
+      const y0 = row * SY_R - offsetY_R; // your vertical offset
+      const z0 = 0;
+
+      // 3) rotate that point around world-Y
+      const posX = x0 * c_R + z0 * s_R;
+      const posZ = -x0 * s_R + z0 * c_R;
+      const posY = y0;
+      const plane = new Plane(
+        device,
+        format,
+        planeShaderModuleR,
+        planeTexture,
+        planeSampler,
+        {
+          posX,
+          posY,
+          posZ,
+          rotX: 0,
+          rotY: angle_R, // so the faces point “into” the grid-plane
+          rotZ: 0,
+          scaleX: 1,
+          scaleY: 1,
+          scaleZ: 1,
+          color: [Math.random(), Math.random(), Math.random(), 1],
+          useTexture: false,
+          params: [
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+          ],
+        }
+      );
+      this.scene.add(plane);
+      this.activePlanes2.push(plane);
+
+      // Animate the plane
+      const tween = gsap.to(plane.getProps(), {
+        // posX: posX + i * 0.01,
+        // posY: posY + Math.random() * 1 - 0,
+        // posZ: Math.random() * rnMultiplierPos - 5,
+        // rotX: Math.random() * Math.PI * 2,
+        // rotY: Math.random() * Math.PI * 0.002,
+        // rotZ: Math.random() * Math.PI * 2,
+        scaleX: Math.random() * 4 + 0.5,
+        // scaleY: Math.random() * 4 + 0.5,
+        duration: 2 + Math.random() * 3,
+        repeat: -1,
+        yoyo: true,
+        ease: "power4.inOut",
+        onUpdate: () => plane.updateCameraTransform(),
+      });
+
+      plane.addTween(tween);
+    }
+
     // const plane = new Plane(
     //   device,
     //   format,

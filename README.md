@@ -167,11 +167,11 @@ cool random pattern animation ( mastering random)
 EX - 39 [shader-ex-37 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-39).
 
 //\* random and patterns
-deform grid test
+line animations
 EX - 40 [shader-ex-40 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-40).
 
 //\* random and patterns
-deform grid test
+multiple line animations
 EX - 41 [shader-ex-40 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-41).
 
 ## License

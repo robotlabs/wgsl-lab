@@ -92,7 +92,7 @@ fn fs_main(
     // Margins
     // color *= step(0.9,fpos.y);
 
-    let mask   = step(0.2, fpos.y);               // 0 below, 1 above
+    let mask   = step(0.2, ipos.y);               // 0 below, 1 above
     let bgColor = vec3<f32>(0.9, 0.8, 0.0);     
     let bgColor2 = vec3<f32>(0.8, 0.1, 0.5);   
     let barColor   = vec3<f32>(1.0, 1.0, 0.0);
