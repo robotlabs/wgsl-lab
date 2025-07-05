@@ -172,7 +172,11 @@ EX - 40 [shader-ex-40 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 
 //\* random and patterns
 multiple line animations
-EX - 41 [shader-ex-40 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-41).
+EX - 41 [shader-ex-41 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-41).
+
+//\* random and patterns
+fun with random and planes
+EX - 42 [shader-ex-42 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-42).
 
 ## License
 
