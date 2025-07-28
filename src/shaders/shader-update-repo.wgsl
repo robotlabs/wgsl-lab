@@ -96,8 +96,9 @@ fn fs_main(
     var time = transform.params[0][2] / 2000000.0;
     let x = uv.x * 10.0;
     let y = noise(x, time); 
-    let dist = abs(1.0 - uv.y - y); 
-    let line = step(dist, 0.01);    
+    let curve = 1.0 - y;
+    let line = step(uv.y, curve);  
+      
     return vec4<f32>(vec3<f32>(line), 1.0);
 
 
