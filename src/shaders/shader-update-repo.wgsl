@@ -70,10 +70,10 @@ fn fs_main(
     let v     : f32 = sin(transform.params[0][2] * speed);
 
     // noise periodica
-    let cycles = 8.0;   
+    let cycles = 2.0;   
     let raw    = a * cycles + time * 0.2+ 0;
     let n      = noisePeriodic(raw, cycles);
-    let r      = 0.5 + n * (0.05  + v / 10);
+    let r      = 0.3 + n;// * (0.05  + v / 10);
 
     //** smooth border
     let thickness = 0.05;

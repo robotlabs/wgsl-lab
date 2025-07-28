@@ -198,6 +198,10 @@ EX - 46 [shader-ex-46 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 nice animated blob
 EX - 47 [shader-ex-47 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-47).
 
+//\* noise
+organic blob with noise
+EX - 48 [shader-ex-48 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-48).
+
 ## License
 
 MIT © robotlabs
