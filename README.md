@@ -182,6 +182,10 @@ EX - 42 [shader-ex-42 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 animated line
 EX - 43 [shader-ex-43 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-43).
 
+//\* noise
+animated wave
+EX - 44 [shader-ex-43 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-44).
+
 ## License
 
 MIT © robotlabs
