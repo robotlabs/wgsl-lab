@@ -93,24 +93,24 @@ fn fs_main(
 ) -> @location(0) vec4<f32> {
 
     // 1
-    var time = transform.params[0][2] / 2000000.0;
-    let x = uv.x * 10.0;
-    let y = noise(x, time); 
-    let curve = 1.0 - y;
-    let line = step(uv.y, curve);  
+    // var time = transform.params[0][2] / 2000000.0;
+    // let x = uv.x * 10.0;
+    // let y = noise(x, time); 
+    // let curve = 1.0 - y;
+    // let line = step(uv.y, curve);  
       
-    return vec4<f32>(vec3<f32>(line), 1.0);
+    // return vec4<f32>(vec3<f32>(line), 1.0);
 
 
     // 2
-    // let t = transform.params[0][2] / 1; // tempo
-    // let rnNr = random(uv);
-    // let n = noise1(t * 0.5); // noise animato
-    // let n2 = noise1(t * 0.5);// - noise1(t * 0.5) + noise1(t * 0.5); 
-    // let center = vec2<f32>(n, n2); // centro del cerchio che si muove
-    // let d = distance(uv, center);
-    // let circle = step(d, 0.1);
-    // return vec4<f32>(vec3<f32>(circle), 1.0);
+    let t = transform.params[0][2] / 1; // tempo
+    let rnNr = random(uv);
+    let n = noise1(t * 0.5); // noise animato
+    let n2 = noise1(t * 0.5);// - noise1(t * 0.5) + noise1(t * 0.5); 
+    let center = vec2<f32>(n, n2); // centro del cerchio che si muove
+    let d = distance(uv, center);
+    let circle = step(d, 0.1);
+    return vec4<f32>(vec3<f32>(circle), 1.0);
 
     // 3
     // let t = transform.params[0][2] / 10; // tempo
