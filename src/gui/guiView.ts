@@ -48,13 +48,13 @@ export class GUIView {
         });
     }
 
-    //@ts-ignore
-    this.pane.addButton({ title: "Run Planes" }).on("click", () => {
-      if ("runPlanes" in this.app && typeof this.app.runPlanes === "function") {
-        this.app.runPlanes();
-      } else {
-        console.warn("runPlanes() is not defined on app.");
-      }
-    });
+    // //@ts-ignore
+    // this.pane.addButton({ title: "Run Planes" }).on("click", () => {
+    //   if ("runPlanes" in this.app && typeof this.app.runPlanes === "function") {
+    //     this.app.runPlanes();
+    //   } else {
+    //     console.warn("runPlanes() is not defined on app.");
+    //   }
+    // });
   }
 }
