@@ -190,6 +190,10 @@ EX - 44 [shader-ex-44 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 animated cicle with noise
 EX - 45 [shader-ex-45 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-45).
 
+//\* noise
+animated blob noise
+EX - 46 [shader-ex-46 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-46).
+
 ## License
 
 MIT © robotlabs
