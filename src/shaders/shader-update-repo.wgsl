@@ -48,57 +48,29 @@ fn pattern(st: vec2<f32>, v: vec2<f32>, t: f32) -> f32 {
     return step(t, random(100. + p * .000001)+random2(p.x)*0.1 );
 }
 
+fn noise(x: f32) -> f32 {
+    let i = floor(x);
+    let f = fract(x);
+    let a = random2(i);
+    let b = random2(i + 1.0);
+    let u = mix(a, b, f);
+    let u2 = mix(a, b, smoothstep(0., 1., f));
+    return u2;
+}
+
 @fragment
 fn fs_main(
   @location(0) fragColor: vec4<f32>,
-  @location(1) uv:        vec2<f32>,
+  @location(1) uv: vec2<f32>,
 ) -> @location(0) vec4<f32> {
-    // var time = 0.0;//transform.params[0][2] / 2.0;
-    var time = transform.params[0][2] / 2.0;
-    // var mouseX = transform.params[1][2] / 1.0;
+    let scale = 5.0;
+    let x = uv.x * scale;
+    let n = noise(x);
 
+    // Invert y (perché UV va da 0 in basso a 1 in alto)
+    let y = 1.0 - uv.y;
 
-    // let tileCount = 10.0;
-    // var grid = uv * tileCount;
-    // let col  = i32(floor(grid.x));
-    // let row  = i32(floor(grid.y));
-    // var st = fract(grid);
-
-    // let rnd = random( st * mouseX );
-    // let color = vec3<f32>(rnd);
-
-    var st = uv;
-    let grid = vec2(200.0, 50.0);
-    st *= grid;
-    // let y = uv.y / 10.0;
-    // let y_fract = fract(y);
-    // st.x += time*13.0 * y_fract;
-    
-    let ipos = floor(st);  // get the integer coords
-    let fpos = fract(st);  // get the fractional coords
-
-    var vel = vec2(time*0.5*max(grid.x,grid.y)); // time
-    vel *= vec2(-1.,0.0) * random2(1.0+ipos.y); // direction
-
-    // Assign a random value base on the integer coord
-    let offset = vec2(0.1,0.);
-
-    var color = vec3(0.);
-    var density = 0.2;
-    color.r = pattern(st + offset,vel, 0.5 + density);
-    color.g = pattern(st, vel, 0.5 + density);
-    color.b = pattern(st - offset,vel, 0.5 + density);
-
-    // Margins
-    // color *= step(0.9,fpos.y);
-
-    let mask   = step(0.2, fpos.y);               // 0 below, 1 above
-    let bgColor = vec3<f32>(0.9, 0.8, 0.0);     
-    let bgColor2 = vec3<f32>(0.8, 0.1, 0.5);   
-    let barColor   = vec3<f32>(1.0, 1.0, 0.0);
-    let barColor2   = vec3<f32>(1.0, 0.0, 0.6);
-    color = mix(bgColor, color, mask);
-    let finalColor = mix(bgColor2, barColor2, color);   
-
-    return vec4<f32>(finalColor, 1.0);
+    // Disegna un punto bianco se uv.y è vicino a noise(x)
+    let line = step(abs(y - n), 0.01); // più piccolo = linea più sottile
+    return vec4<f32>(vec3<f32>(line), 1.0);
 }
