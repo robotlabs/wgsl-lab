@@ -34,101 +34,61 @@ fn vs_main(@location(0) position: vec3<f32>) -> VertexOutput {
 }
 
 
-fn random (st: vec2<f32>) -> f32 {
-    return fract(sin(dot(st.xy,
-                         vec2(12.9898,78.233)))*
-        43758.5453123);
-}
-fn random2 (x: f32, seed: f32) -> f32{
-    return fract(sin(x)*43758.5453123 * seed);
-}
-fn random1 (x: f32) -> f32{
-    return fract(sin(x)*43758.5453123);
+
+
+// hash 1D
+fn random1(x: f32) -> f32 {
+    return fract(sin(x) * 43758.5453123);
 }
 
-
-
-fn noise(x: f32, time: f32) -> f32 {
-    let i = floor(x);
-    let f = fract(x);
-    let a = random2(i, time);
-    let b = random2(i + 1.0, time);
-    let u = mix(a, b, f);
-    let u2 = mix(a, b, smoothstep(0., 1., f));
-    return u2;
-
-}
-
-fn noise1(x: f32) -> f32 {
-    let i = floor(x);
-    let f = fract(x);
+// noise 1D periodica di periodo `p`
+fn noisePeriodic(x: f32, p: f32) -> f32 {
+    let i  = floor(x);
+    let f  = fract(x);
+    // wrap degli indici interi in [0, p)
+    let i0 = i - floor(i / p) * p;
+    let i1 = i0 + 1.0;
+    let i1w = i1 - floor(i1 / p) * p;
+    // easing cubico
     let u = f * f * (3.0 - 2.0 * f);
-    // return mix(random1(i), random1(i + 1.0), u);
-    return mix(random1(i), random1(i + 1.0), smoothstep(0., 1., u));
+    // interpolazione tra random1(i0) e random1(i1w)
+    return mix(random1(i0), random1(i1w), u);
 }
-
-// @fragment
-// fn fs_main(
-//   @location(0) fragColor: vec4<f32>,
-//   @location(1) uv: vec2<f32>,
-// ) -> @location(0) vec4<f32> {
-//   var time = transform.params[0][2] / 200000.0;
-
-//     let scale = 5.0;
-//     let x = uv.x * scale;
-//     let n = noise(x, time);
-
-//     // Invert y (perché UV va da 0 in basso a 1 in alto)
-//     let y = 1.0 - uv.y;
-
-//     // Disegna un punto bianco se uv.y è vicino a noise(x)
-//     let line = step(abs(y - n), 0.01); // più piccolo = linea più sottile
-//     return vec4<f32>(vec3<f32>(line), 1.0);
-// }
 
 @fragment
 fn fs_main(
   @location(0) fragColor: vec4<f32>,
   @location(1) uv: vec2<f32>,
 ) -> @location(0) vec4<f32> {
+    let time = transform.params[0][2];
+    let st = uv * 2.0 - vec2<f32>(1.0);
+    let angle  = atan2(st.y, st.x);
+    let radius = length(st);
+    let a = (angle + PI) / (2.0 * PI);
 
-    // 1
-    // var time = transform.params[0][2] / 2000000.0;
-    // let x = uv.x * 10.0;
-    // let y = noise(x, time); 
-    // let curve = 1.0 - y;
-    // let line = step(uv.y, curve);  
-      
-    // return vec4<f32>(vec3<f32>(line), 1.0);
+    let speed : f32 = 0.2;                       
+    let v     : f32 = sin(transform.params[0][2] * speed);
+
+    // noise periodica
+    let cycles = 8.0;   
+    let raw    = a * cycles + time * 0.2+ 0;
+    let n      = noisePeriodic(raw, cycles);
+    let r      = 0.5 + n * (0.05  + v / 10);
+
+    //** smooth border
+    let thickness = 0.05;
+    // let d = smoothstep(r, r - thickness, radius);
+    // let outsideCol  = vec3<f32>(1.0, 1.0, 0.0); 
+    // let insideCol = vec3<f32>(0.0, v, v); 
+
+    //no smooth border
+    let d = step(r, radius);
+    let insideCol  = vec3<f32>(1.0, 1.0, 0.0); 
+    let outsideCol = vec3<f32>(0.0, v, v); 
+    
 
 
-    // 2
-    // let t = transform.params[0][2] / 1; // tempo
-    // let rnNr = random(uv);
-    // let n = noise1(t * 0.5); // noise animato
-    // let n2 = noise1(t * 0.5);// - noise1(t * 0.5) + noise1(t * 0.5); 
-    // let center = vec2<f32>(n, n2); // centro del cerchio che si muove
-    // let d = distance(uv, center);
-    // let circle = step(d, 0.1);
-    // return vec4<f32>(vec3<f32>(circle), 1.0);
+    let color = mix(outsideCol, insideCol, d);
 
-    // 3
-    // let t = transform.params[0][2] / 10; // tempo
-    // let rnNr = random(uv);
-    // let n = noise1((sin(t) + 2.0) * uv.y); // noise animato
-    // let n2 = noise1((sin(t) + 2.0) * uv.x);// - noise1(t * 0.5) + noise1(t * 0.5); 
-    // let center = vec2<f32>(n, n2); // centro del cerchio che si muove
-    // let d = distance(uv, center);
-    // let circle = step(d, 0.1);
-    // return vec4<f32>(vec3<f32>(circle), 1.0);
-
-        // 4
-    let t = transform.params[0][2] / 10; // tempo
-    let rnNr = random(uv);
-    let n = noise1(t + 2.0 * uv.y); // noise animato
-    let n2 = noise1(t + 2.0 * uv.x);// - noise1(t * 0.5) + noise1(t * 0.5); 
-    let center = vec2<f32>(n, n2); // centro del cerchio che si muove
-    let d = distance(uv, center);
-    let circle = step(d, 0.1);
-    return vec4<f32>(vec3<f32>(circle), 1.0);
+    return vec4<f32>(color, 1.0);
 }
