@@ -113,22 +113,22 @@ fn fs_main(
     // return vec4<f32>(vec3<f32>(circle), 1.0);
 
     // 3
-    let t = transform.params[0][2] / 10; // tempo
-    let rnNr = random(uv);
-    let n = noise1((sin(t) + 2.0) * uv.y); // noise animato
-    let n2 = noise1((sin(t) + 2.0) * uv.x);// - noise1(t * 0.5) + noise1(t * 0.5); 
-    let center = vec2<f32>(n, n2); // centro del cerchio che si muove
-    let d = distance(uv, center);
-    let circle = step(d, 0.1);
-    return vec4<f32>(vec3<f32>(circle), 1.0);
-
-        // 4
     // let t = transform.params[0][2] / 10; // tempo
     // let rnNr = random(uv);
-    // let n = noise1(t + 2.0 * uv.y); // noise animato
-    // let n2 = noise1(t + 2.0 * uv.x);// - noise1(t * 0.5) + noise1(t * 0.5); 
+    // let n = noise1((sin(t) + 2.0) * uv.y); // noise animato
+    // let n2 = noise1((sin(t) + 2.0) * uv.x);// - noise1(t * 0.5) + noise1(t * 0.5); 
     // let center = vec2<f32>(n, n2); // centro del cerchio che si muove
     // let d = distance(uv, center);
     // let circle = step(d, 0.1);
     // return vec4<f32>(vec3<f32>(circle), 1.0);
+
+        // 4
+    let t = transform.params[0][2] / 10; // tempo
+    let rnNr = random(uv);
+    let n = noise1(t + 2.0 * uv.y); // noise animato
+    let n2 = noise1(t + 2.0 * uv.x);// - noise1(t * 0.5) + noise1(t * 0.5); 
+    let center = vec2<f32>(n, n2); // centro del cerchio che si muove
+    let d = distance(uv, center);
+    let circle = step(d, 0.1);
+    return vec4<f32>(vec3<f32>(circle), 1.0);
 }
