@@ -178,6 +178,10 @@ EX - 41 [shader-ex-41 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 fun with random and planes
 EX - 42 [shader-ex-42 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-42).
 
+//\* noise
+animated line
+EX - 43 [shader-ex-43 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-43).
+
 ## License
 
 MIT © robotlabs
