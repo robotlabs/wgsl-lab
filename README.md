@@ -210,6 +210,10 @@ EX - 49 [shader-ex-49 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 circular organic blobs ( 48 variant )
 EX - 50 [shader-ex-50 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-50).
 
+//\* noise
+same as 51, but for loop and a lot more circles. circular organic blobs (50 variant )
+EX - 51 [shader-ex-51 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-51).
+
 ## License
 
 MIT © robotlabs
