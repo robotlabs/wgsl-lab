@@ -102,9 +102,9 @@ fn fs_main(
 
     // 3) estimate gradient via small offsets
     let eps = 0.1;
-    let timeM = 0.0;//time * 0.01;
-    let dx  = noise(st + vec2<f32>(eps, timeM)) - noise(st - vec2<f32>(eps, timeM ));
-    let dy  = noise(st + vec2<f32>(timeM, eps)) - noise(st - vec2<f32>(timeM, eps));
+    let timeM = time * 0.01;
+    let dx  = noise(st + vec2<f32>(eps, timeM)) - noise(st - vec2<f32>(eps, 2.0 ));
+    let dy  = noise(st + vec2<f32>(1.0, eps)) - noise(st - vec2<f32>(timeM, eps));
 
     // 4) gradient magnitude = “distance field”
     let dist = length(vec2<f32>(dx, dy));
