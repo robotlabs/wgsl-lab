@@ -73,7 +73,7 @@ fn fs_main(
     
     
     // 2) how many pattern‑switches per second
-    let rate  : f32 = 0.1;
+    let rate  : f32 = 1.0;
     let tFull : f32 = time * rate;
     let tFrac : f32 = fract(tFull);        // blend factor 0→1
     let frame : f32 = floor(tFull);        // integer frame index
