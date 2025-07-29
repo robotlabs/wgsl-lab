@@ -68,15 +68,36 @@ fn rotate2d(angle: f32) -> mat2x2<f32> {
 // a simple “striped” function
 fn lines(pos: vec2<f32>, b: f32) -> f32 {
     // stretch the pattern
-    let scale = 20.0;
+    let scale = 5.0;
     let p = pos * scale;
 
-    // smoothstep(edge0, edge1, x)
-    return smoothstep(
-        0.0,
-        0.5 + b * 0.5,
-        abs(sin(p.x * 3.1415) + b * 2.0) * 0.5
-    );
+    // // smoothstep(edge0, edge1, x)
+    // return smoothstep(
+    //     0.0,
+    //     0.5 + b * 0.5,
+    //     abs(sin(p.x * 3.1415) + b * 2.0) * 0.5
+    // );
+
+    let v = abs(sin(p.x * 3.1415) + b * 2.0) * 0.5;
+    let threshold: f32 = 0.5;            // regola spessore qui
+    return step(threshold, v);           // linee “piene”, non sfumate
+}
+
+fn noiseSeeded(st: vec2<f32>, seed: f32) -> f32 {
+    let i = floor(st);
+    let f = fract(st);
+    let u = f * f * (3.0 - 2.0 * f);
+    // offset the random lookup by seed (same at all corners)
+    let svec = vec2<f32>(seed, seed * 1.37);
+
+    let a = random(i + svec + vec2<f32>(0.0, 0.0));
+    let b = random(i + svec + vec2<f32>(1.0, 0.0));
+    let c = random(i + svec + vec2<f32>(0.0, 1.0));
+    let d = random(i + svec + vec2<f32>(1.0, 1.0));
+
+    let aa = mix(a, b, u.x);
+    let bb = mix(c, d, u.x);
+    return mix(aa, bb, u.y);
 }
 
 @fragment
@@ -84,20 +105,50 @@ fn fs_main(
   @location(0) fragColor: vec4<f32>,
   @location(1) uv:        vec2<f32>,
 ) -> @location(0) vec4<f32> {
-    let time = transform.params[0][2];
+    let time = transform.params[0][2] / 50;
 
-    let speed : f32 = 0.1;                       
-    let v     : f32 = 1.0;//sin(transform.params[0][2] * speed) / 1;
+    // Prepare base UV for stripe pattern
+    var st = uv.yx * vec2<f32>(5.0, 3.0);
 
-    var st = uv.yx * vec2(10., 3. + v / 1);
-    var pattern = st.x;
+    // --- Multi-octave noise approach (inspired by your GLSL snippet) ---
+    var n: vec2<f32> = vec2<f32>(0.0);
+    var pos: vec2<f32>;
+    // octave 1 for x
+    pos = vec2<f32>(uv.x * 1.4 + 0.01, uv.y - time * 0.69);
+    n.x     = noise(pos * 12.0);
+    // octave 2 for x
+    pos = vec2<f32>(uv.x * 0.5 - 0.033, uv.y * 2.0 - time * 0.12);
+    n.x    += noise(pos * 8.0);
+    // octave 3 for x
+    pos = vec2<f32>(uv.x * 0.94 + 0.02, uv.y * 3.0 - time * 0.61);
+    n.x    += noise(pos * 4.0);
 
-    st = rotate2d(noise(st * 1.0)) * st;
+    // octave 1 for y
+    pos = vec2<f32>(uv.x * 0.7 - 0.01, uv.y - time * 0.27);
+    n.y     = noise(pos * 12.0);
+    // octave 2 for y
+    pos = vec2<f32>(uv.x * 0.45 + 0.033, uv.y * 1.9 - time * 0.61);
+    n.y    += noise(pos * 8.0);
+    // octave 3 for y
+    pos = vec2<f32>(uv.x * 0.8 - 0.02, uv.y * 2.5 - time * 0.51);
+    n.y    += noise(pos * 4.0);
+    // normalize
+    n       = n / 2.3;
+    // -------------------------------------------------------------------
 
-    pattern = lines(st, 0.5);
-    
+    // Use n.x to drive rotation angle organically
+    let angle = (n.x * 2.0 - 1.0) * PI;  // remap [0,1]→[-π,π]
+    st = rotate2d(angle) * st;
 
-    let col = vec3<f32>(pattern);
+    // Use n.y to vary stripe softness parameter b
+    let b     = mix(0.2, 0.5, n.y);      // blend between 0.2 and 0.8
+    let pattern = lines(st, b);
 
+    // define your two colors here:
+    let colorA = vec3<f32>(1.0, 0.0, 0.6); // warm red
+    let colorB = vec3<f32>(1.0, 0.3, 1.0); // cool blue
+    // mix based on pattern (0 = all A, 1 = all B)
+    let col = mix(colorA, colorB, pattern);
     return vec4<f32>(col, 1.0);
+
 }
