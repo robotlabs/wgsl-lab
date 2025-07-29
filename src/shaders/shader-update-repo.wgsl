@@ -62,15 +62,11 @@ fn fs_main(
 ) -> @location(0) vec4<f32> {
     let time = transform.params[0][2];
 
-    let speed : f32 = 0.2;                       
-    let v     : f32 = sin(transform.params[0][2] * speed);
+    let speed : f32 = -0.3;                       
+    let v     : f32 = transform.params[1][1];//sin(transform.params[0][2] * speed);
 
-    let mousePx    = transform.params[0].xy;
-    let resolution = transform.params[1].xy;
-    let mouseUV    = mousePx / resolution;
     // let st = uv * 2.0 - vec2<f32>(1.0);
-
-    let centerUV = vec2<f32>(mouseUV.x, 1.0 - mouseUV.y);
+    let centerUV = vec2<f32>(0.5, 0.5);
     let st = (uv - centerUV) * 2.0;
 
     let angle  = atan2(st.y, st.x);
@@ -83,9 +79,6 @@ fn fs_main(
     let raw    = a * cycles + time * 0.2+ 0;
     let n      = noisePeriodic(raw, cycles);
     let r      = 0.3 + n * (0.05  + v / 10);
-
-    let r2      = (0.29 + 0.0 / 40) + n * (0.06  + v / 15);
-    let r3      = (0.31 + 0.0 / 40) + n * (0.05  + v / 25);
 
     //** smooth border
     let thickness = (v + 1.0) / 20;

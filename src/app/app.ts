@@ -39,6 +39,10 @@ export default class App {
 
   private rawMouse = { x: 0, y: 0 };
   private easedMouse = { x: 0, y: 0 };
+  private easedTurbolence = -0.3;
+  private turbulenceTarget = -0.3;
+  private readonly restValue = -0.5;
+  private readonly clickValue = 0.2;
 
   constructor() {}
 
@@ -117,7 +121,7 @@ export default class App {
     if (this.plane) {
       this.plane.updateProps((p) => {
         p.params[1][0] = w;
-        p.params[1][1] = h;
+        // p.params[1][1] = h;
         p.params[1][2] = 0;
         p.params[1][3] = 0;
       });
@@ -154,10 +158,25 @@ export default class App {
 
       if (this.plane) {
         this.plane.updateProps((p) => {
-          p.params[1][2] = x;
-          p.params[1][3] = y;
+          p.params[1][1] = 0.3;
         });
       }
+    });
+
+    canvas.addEventListener("pointerdown", (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left; // CSS px
+      const y = e.clientY - rect.top; // CSS px
+
+      this.rawMouse.x = e.clientX - rect.left;
+      this.rawMouse.y = e.clientY - rect.top;
+
+      // debug
+
+      // p.params[1][2] = x;
+      // p.params[1][3] = y;
+      // this.easedTurbolence = 0.2;
+      this.turbulenceTarget = this.clickValue;
     });
   }
 
@@ -206,11 +225,28 @@ export default class App {
           this.easedMouse.x += (this.rawMouse.x - this.easedMouse.x) * 0.02;
           this.easedMouse.y += (this.rawMouse.y - this.easedMouse.y) * 0.02;
 
-          console.log(this.easedMouse.x);
+          // 1) compute difference
+          const diff = this.turbulenceTarget - this.easedTurbolence;
+          if (Math.abs(diff) > 0.0001) {
+            // 2) pick ease factor based on direction
+            const speedUp = 0.25; // faster toward clickValue
+            const speedDown = 0.01; // slower back to restValue
+            const easeF =
+              this.turbulenceTarget > this.easedTurbolence
+                ? speedUp
+                : speedDown;
+            // 3) apply easing
+            this.easedTurbolence += diff * easeF;
+          } else {
+            // once settled, reset target back to rest
+            this.turbulenceTarget = this.restValue;
+          }
+
           this.plane.updateProps((p) => {
             p.params[0][0] = this.easedMouse.x;
             p.params[0][1] = this.easedMouse.y;
             p.params[0][2] = time;
+            p.params[1][1] = this.easedTurbolence;
           });
         }
       }
