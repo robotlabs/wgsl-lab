@@ -121,6 +121,13 @@ fn fs_main(
     color += smoothstep(.15,.2,noise(st*10.)); // Black splatter
     color -= smoothstep(.35,.4,noise(st*2.)); // Holes on splatter
 
-    return vec4<f32>(color, 1.0);
+
+    // define your two colors here:
+    let colorA = vec3<f32>(1.0, 0.0, 0.6); // warm red
+    let colorB = vec3<f32>(1.0, 0.3, 1.0); // cool blue
+    // mix based on pattern (0 = all A, 1 = all B)
+    let col = mix(colorA, colorB, color);
+
+    return vec4<f32>(col, 1.0);
 
 }
