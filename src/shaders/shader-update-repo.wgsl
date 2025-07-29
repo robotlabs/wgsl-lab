@@ -41,11 +41,20 @@ fn random (st: vec2<f32>) -> f32 {
 }
 
 //* 2D noise (mcGuire)
-fn noise(st: vec2<f32>) -> vec2<f32> {
+fn noise(st: vec2<f32>) -> f32 {
     let i = floor(st);
     let f = fract(st);
+
+    let a = random(i);
+    let b = random(i + vec2(1.0, 0.0));
+    let c = random(i + vec2(0.0, 1.0));
+    let d = random(i + vec2(1.0, 1.0));
+
+    let u = f * f * (3.0 - 2.0 * f);
+
+    let finalValue = mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
     
-    return st;
+    return finalValue;
 }
 
 
@@ -56,9 +65,11 @@ fn fs_main(
 ) -> @location(0) vec4<f32> {
 
     var time = transform.params[0][2];
-    // let x = uv.x * 10.0;
-    let st = uv;
+    
+    let st = uv * 5.0;
     let color = vec3(st.x, st.y, 0.0);
-    return vec4<f32>(color, 1.0);
+
+    let n = noise(st);
+    return vec4<f32>(vec3(n), 1.0);
 
 }
