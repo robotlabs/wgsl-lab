@@ -40,49 +40,43 @@ fn random (st: vec2<f32>) -> f32 {
         43758.5453123);
 }
 
-//* 2D noise (mcGuire)
+//* value noise by Inigo Quilez
 fn noise(st: vec2<f32>) -> f32 {
     let i = floor(st);
     let f = fract(st);
 
-    let a = random(i);
-    let b = random(i + vec2(1.0, 0.0));
-    let c = random(i + vec2(0.0, 1.0));
-    let d = random(i + vec2(1.0, 1.0));
 
     let u = f * f * (3.0 - 2.0 * f);
 
-    let finalValue = mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+    let aa = mix(random(i + vec2<f32>(0.0, 0.0)), random(i + vec2<f32>(1.0, 0.0)), u.x );
+    let bb = mix(random(i + vec2<f32>(0.0, 1.0)), random(i + vec2<f32>(1.0, 1.0)), u.x );
+
+    let finalValue = mix(aa, bb, u.y);
     
     return finalValue;
 }
 
-// 3‑component hash
-fn random3(p: vec3<f32>) -> f32 {
-    return fract(sin(dot(p, vec3<f32>(12.9898,78.233,37.719))) * 43758.5453123);
+// 2×2 rotation matrix around the origin
+fn rotate2d(angle: f32) -> mat2x2<f32> {
+    // mat2x2<f32>(col0.x, col0.y, col1.x, col1.y)
+    return mat2x2<f32>(
+        cos(angle), -sin(angle),
+        sin(angle),  cos(angle)
+    );
 }
 
-// 3D noise by trilinear interpolation
-fn noise3(p: vec3<f32>) -> f32 {
-    let i = floor(p);
-    let f = fract(p);
-    let u = f * f * (3.0 - 2.0 * f);
+// a simple “striped” function
+fn lines(pos: vec2<f32>, b: f32) -> f32 {
+    // stretch the pattern
+    let scale = 20.0;
+    let p = pos * scale;
 
-    // eight corners of the cube
-    let a = random3(i + vec3<f32>(0,0,0));
-    let b = random3(i + vec3<f32>(1,0,0));
-    let c = random3(i + vec3<f32>(0,1,0));
-    let d = random3(i + vec3<f32>(1,1,0));
-    let e = random3(i + vec3<f32>(0,0,1));
-    let f1= random3(i + vec3<f32>(1,0,1));
-    let g = random3(i + vec3<f32>(0,1,1));
-    let h = random3(i + vec3<f32>(1,1,1));
-
-    // blend in X
-    let xy0 = mix(mix(a,b,u.x), mix(c,d,u.x), u.y);
-    let xy1 = mix(mix(e,f1,u.x), mix(g,h,u.x), u.y);
-    // blend in Z (time)
-    return mix(xy0, xy1, u.z);
+    // smoothstep(edge0, edge1, x)
+    return smoothstep(
+        0.0,
+        0.5 + b * 0.5,
+        abs(sin(p.x * 3.1415) + b * 2.0) * 0.5
+    );
 }
 
 @fragment
@@ -92,42 +86,18 @@ fn fs_main(
 ) -> @location(0) vec4<f32> {
     let time = transform.params[0][2];
 
-    // — base colors for our three bands —
-    let c0 = vec3<f32>(0.7, 0.1, 0.1);  // deep red
-    let c1 = vec3<f32>(0.8, 1.0, 0.0);  // brighter red
-    let c2 = vec3<f32>(0.9, 0.7, 0.2);  // golden
+    let speed : f32 = 0.1;                       
+    let v     : f32 = 1.0;//sin(transform.params[0][2] * speed) / 1;
 
-    // — simple 3D noise for texture & edge softening —
-    let scaleNoise = 10.0;
-    let speed      = 0.2;
-    let n          = noise3(vec3<f32>(uv * scaleNoise, time * speed));
+    var st = uv.yx * vec2(10., 3. + v / 1);
+    var pattern = st.x;
 
-    // a small, time‑varying wiggle on our boundaries:
-    let wiggle = n * 0.02;
+    st = rotate2d(noise(st * 1.0)) * st;
 
-    // — define three vertical masks with soft, noisy edges —
-    let eps = 0.01;
-    // left band: uv.x ∈ [0, 0.3]
-    let m0 = smoothstep(0.0 - eps + wiggle, 0.0 + eps + wiggle, uv.x)
-           * (1.0 - smoothstep(0.2 - eps + wiggle, 0.2 + eps + wiggle, uv.x));
-    // middle band: uv.x ∈ [0.3, 0.6]
-    let m1 = smoothstep(0.4 - eps - wiggle, 0.4 + eps - wiggle, uv.x)
-           * (1.0 - smoothstep(0.6 - eps - wiggle, 0.6 + eps - wiggle, uv.x));
-    // right band: uv.x ∈ [0.6, 1.0]
-    let m2 = smoothstep(0.78 - eps + wiggle, 0.78 + eps + wiggle, uv.x)
-           * (1.0 - smoothstep(0.98 - eps + wiggle, 0.98 + eps + wiggle, uv.x));
+    pattern = lines(st, 0.5);
+    
 
-    // — composite: start with black background —
-    var col = vec3<f32>(0.0);
-
-    // layer in each band
-    col = mix(col, c0, m0);
-    col = mix(col, c1, m1);
-    col = mix(col, c2, m2);
-
-    // — lightly modulate brightness by another noise for painterly texture —
-    let tex = noise3(vec3<f32>(uv * (scaleNoise*2.0), time * speed*0.5)) * 0.1;
-    col += tex;
+    let col = vec3<f32>(pattern);
 
     return vec4<f32>(col, 1.0);
 }
