@@ -182,6 +182,50 @@ EX - 42 [shader-ex-42 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 animated line
 EX - 43 [shader-ex-43 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-43).
 
+//\* noise
+animated wave
+EX - 44 [shader-ex-44 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-44).
+
+//\* noise
+animated cicle with noise
+EX - 45 [shader-ex-45 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-45).
+
+//\* noise
+animated blob noise
+EX - 46 [shader-ex-46 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-46).
+
+//\* noise
+nice animated blob
+EX - 47 [shader-ex-47 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-47).
+
+//\* noise
+organic blob with noise
+EX - 48 [shader-ex-48 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-48).
+
+//\* noise
+organic circular dancing blob ( 48 variant )
+EX - 49 [shader-ex-49 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-49).
+
+//\* noise
+circular organic blobs ( 48 variant )
+EX - 50 [shader-ex-50 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-50).
+
+//\* noise
+same as 50, but for loop and a lot more circles. circular organic blobs (50 variant )
+EX - 51 [shader-ex-51 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-51).
+
+//\* noise
+same as 51, but for loop and a lot more circles. circular organic blobs (50 variant )
+EX - 52 [shader-ex-52 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-52).
+
+//\* noise
+same but distortion on click
+EX - 53 [shader-ex-53 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-53).
+
+//\* noise
+2d noise
+EX - 55 [shader-ex-55 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-55).
+
 ## License
 
 MIT © robotlabs
