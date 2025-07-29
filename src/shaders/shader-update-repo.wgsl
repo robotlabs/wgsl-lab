@@ -92,38 +92,42 @@ fn fs_main(
 ) -> @location(0) vec4<f32> {
     let time = transform.params[0][2];
 
-    let speed : f32 = 1.0;                       
-    let v     : f32 = sin(transform.params[0][2] * speed) / 1;
-    // 1) map UV into noise space
-    let st = uv * (5.0);
+    // — base colors for our three bands —
+    let c0 = vec3<f32>(0.7, 0.1, 0.1);  // deep red
+    let c1 = vec3<f32>(0.8, 1.0, 0.0);  // brighter red
+    let c2 = vec3<f32>(0.9, 0.7, 0.2);  // golden
 
-    // 2) sample noise
-    // let n0 = noise(st);
+    // — simple 3D noise for texture & edge softening —
+    let scaleNoise = 10.0;
+    let speed      = 0.2;
+    let n          = noise3(vec3<f32>(uv * scaleNoise, time * speed));
 
-    // 3) estimate gradient via small offsets
-    let eps = 0.1;
-    let timeM = time * 0.01;
-    let dx  = noise(st + vec2<f32>(eps, timeM)) - noise(st - vec2<f32>(eps, 2.0 ));
-    let dy  = noise(st + vec2<f32>(1.0, eps)) - noise(st - vec2<f32>(timeM, eps));
+    // a small, time‑varying wiggle on our boundaries:
+    let wiggle = n * 0.02;
 
-    // 4) gradient magnitude = “distance field”
-    let dist = length(vec2<f32>(dx, dy));
+    // — define three vertical masks with soft, noisy edges —
+    let eps = 0.01;
+    // left band: uv.x ∈ [0, 0.3]
+    let m0 = smoothstep(0.0 - eps + wiggle, 0.0 + eps + wiggle, uv.x)
+           * (1.0 - smoothstep(0.2 - eps + wiggle, 0.2 + eps + wiggle, uv.x));
+    // middle band: uv.x ∈ [0.3, 0.6]
+    let m1 = smoothstep(0.4 - eps - wiggle, 0.4 + eps - wiggle, uv.x)
+           * (1.0 - smoothstep(0.6 - eps - wiggle, 0.6 + eps - wiggle, uv.x));
+    // right band: uv.x ∈ [0.6, 1.0]
+    let m2 = smoothstep(0.78 - eps + wiggle, 0.78 + eps + wiggle, uv.x)
+           * (1.0 - smoothstep(0.98 - eps + wiggle, 0.98 + eps + wiggle, uv.x));
 
-    // 5) turn that into contour stripes
-    let stripes = fract(dist * (20.0 + 0));
+    // — composite: start with black background —
+    var col = vec3<f32>(0.0);
 
-    // 6) smoothstep for soft lines
-    // let line = smoothstep(0.48, 0.52, stripes);
-    // let line = step(0.52, stripes);
-    let line = step(0.4, stripes);
+    // layer in each band
+    col = mix(col, c0, m0);
+    col = mix(col, c1, m1);
+    col = mix(col, c2, m2);
 
-    // 7) color ramp between two hues
-    let col = mix(
-      vec3<f32>(0.2, 0.7, 1.0),   // flat areas
-      vec3<f32>(1.0, 0.8, 0.2),   // edges
-      line
-    );
+    // — lightly modulate brightness by another noise for painterly texture —
+    let tex = noise3(vec3<f32>(uv * (scaleNoise*2.0), time * speed*0.5)) * 0.1;
+    col += tex;
 
-    // let col2 = vec3(n0);
     return vec4<f32>(col, 1.0);
 }
