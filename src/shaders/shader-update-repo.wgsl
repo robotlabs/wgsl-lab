@@ -71,12 +71,21 @@ fn fs_main(
 
     var st = uv * 5;
     
-    let frame = floor(time * 1.0);
+    
+    // 2) how many pattern‑switches per second
+    let rate  : f32 = 0.1;
+    let tFull : f32 = time * rate;
+    let tFrac : f32 = fract(tFull);        // blend factor 0→1
+    let frame : f32 = floor(tFull);        // integer frame index
 
-    // 3) offset your 2D lookup by that integer seed
-    //    multiplying the second component by an irrational helps decorrelate
-    let seed  = vec2<f32>(frame, frame * 1.618);
-    let n     = noise(st + seed);
+    // 3) two seeds (static per-frame)
+    let seedA = vec2<f32>(frame,        frame * 1.618);
+    let seedB = vec2<f32>(frame + 1.0,  (frame + 1.0) * 1.618);
+
+    // 4) sample both and blend
+    let nA = noise(st + seedA);
+    let nB = noise(st + seedB);
+    let n  = mix(nA, nB, tFrac);
 
     return vec4<f32>(vec3<f32>(n), 1.0);
 
