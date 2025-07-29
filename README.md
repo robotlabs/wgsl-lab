@@ -234,6 +234,16 @@ EX - 56 [shader-ex-56 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 2d noise. random changes, blending
 EX - 57 [shader-ex-57 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-57).
 
+//\* noise
+2d noise. gradient of the noise as distance field ( hill / mountain example)
+EX - 58 [shader-ex-58 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-58).
+
+//\* noise
+(!)
+2d noise. gradient of the noise as distance field ( hill / mountain example).
+Nice fluid animation.
+EX - 59 [shader-ex-59 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-59).
+
 ## License
 
 MIT © robotlabs
