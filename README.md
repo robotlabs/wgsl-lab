@@ -206,6 +206,10 @@ EX - 48 [shader-ex-48 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 organic circular dancing blob ( 48 variant )
 EX - 49 [shader-ex-49 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-49).
 
+//\* noise
+circular organic blobs ( 48 variant )
+EX - 50 [shader-ex-50 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-50).
+
 ## License
 
 MIT © robotlabs
