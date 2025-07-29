@@ -66,7 +66,11 @@ fn fs_main(
 
     var time = transform.params[0][2];
     
-    let st = uv * 5.0;
+    // let speed : f32 = 10.3;                       
+    // let v     : f32 = sin(transform.params[0][2] * speed) / 0.001;
+
+    var st = uv * 5;
+    st.y = st.y - time;
     let color = vec3(st.x, st.y, 0.0);
 
     let n = noise(st);
