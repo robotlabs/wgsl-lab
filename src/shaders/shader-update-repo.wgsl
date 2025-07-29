@@ -57,6 +57,33 @@ fn noise(st: vec2<f32>) -> f32 {
     return finalValue;
 }
 
+// 3‑component hash
+fn random3(p: vec3<f32>) -> f32 {
+    return fract(sin(dot(p, vec3<f32>(12.9898,78.233,37.719))) * 43758.5453123);
+}
+
+// 3D noise by trilinear interpolation
+fn noise3(p: vec3<f32>) -> f32 {
+    let i = floor(p);
+    let f = fract(p);
+    let u = f * f * (3.0 - 2.0 * f);
+
+    // eight corners of the cube
+    let a = random3(i + vec3<f32>(0,0,0));
+    let b = random3(i + vec3<f32>(1,0,0));
+    let c = random3(i + vec3<f32>(0,1,0));
+    let d = random3(i + vec3<f32>(1,1,0));
+    let e = random3(i + vec3<f32>(0,0,1));
+    let f1= random3(i + vec3<f32>(1,0,1));
+    let g = random3(i + vec3<f32>(0,1,1));
+    let h = random3(i + vec3<f32>(1,1,1));
+
+    // blend in X
+    let xy0 = mix(mix(a,b,u.x), mix(c,d,u.x), u.y);
+    let xy1 = mix(mix(e,f1,u.x), mix(g,h,u.x), u.y);
+    // blend in Z (time)
+    return mix(xy0, xy1, u.z);
+}
 
 @fragment
 fn fs_main(
@@ -71,12 +98,13 @@ fn fs_main(
     let st = uv * (5.0);
 
     // 2) sample noise
-    let n0 = noise(st);
+    // let n0 = noise(st);
 
     // 3) estimate gradient via small offsets
     let eps = 0.1;
-    let dx  = noise(st + vec2<f32>(eps, 0.0)) - noise(st - vec2<f32>(eps, 0.0));
-    let dy  = noise(st + vec2<f32>(0.0, eps)) - noise(st - vec2<f32>(0.0, eps));
+    let timeM = 0.0;//time * 0.01;
+    let dx  = noise(st + vec2<f32>(eps, timeM)) - noise(st - vec2<f32>(eps, timeM ));
+    let dy  = noise(st + vec2<f32>(timeM, eps)) - noise(st - vec2<f32>(timeM, eps));
 
     // 4) gradient magnitude = “distance field”
     let dist = length(vec2<f32>(dx, dy));
@@ -87,7 +115,7 @@ fn fs_main(
     // 6) smoothstep for soft lines
     // let line = smoothstep(0.48, 0.52, stripes);
     // let line = step(0.52, stripes);
-    let line = step(0.2, stripes);
+    let line = step(0.4, stripes);
 
     // 7) color ramp between two hues
     let col = mix(
@@ -95,7 +123,7 @@ fn fs_main(
       vec3<f32>(1.0, 0.8, 0.2),   // edges
       line
     );
-    let col2 = vec4<f32>(1.0); 
 
-    return vec4<f32>(col2, 1.0);
+    // let col2 = vec3(n0);
+    return vec4<f32>(col, 1.0);
 }
