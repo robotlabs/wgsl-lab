@@ -105,50 +105,22 @@ fn fs_main(
   @location(0) fragColor: vec4<f32>,
   @location(1) uv:        vec2<f32>,
 ) -> @location(0) vec4<f32> {
-    let time = transform.params[0][2] / 50;
+    let time = transform.params[0][2] / 2.0;
 
     // Prepare base UV for stripe pattern
-    var st = uv.yx * vec2<f32>(5.0, 3.0);
+    var st = uv;//.yx * vec2<f32>(5.0, 3.0);
 
-    // --- Multi-octave noise approach (inspired by your GLSL snippet) ---
-    var n: vec2<f32> = vec2<f32>(0.0);
-    var pos: vec2<f32>;
-    // octave 1 for x
-    pos = vec2<f32>(uv.x * 1.4 + 0.01, uv.y - time * 0.69);
-    n.x     = noise(pos * 12.0);
-    // octave 2 for x
-    pos = vec2<f32>(uv.x * 0.5 - 0.033, uv.y * 2.0 - time * 0.12);
-    n.x    += noise(pos * 8.0);
-    // octave 3 for x
-    pos = vec2<f32>(uv.x * 0.94 + 0.02, uv.y * 3.0 - time * 0.61);
-    n.x    += noise(pos * 4.0);
+    var color = vec3(0.2);
 
-    // octave 1 for y
-    pos = vec2<f32>(uv.x * 0.7 - 0.01, uv.y - time * 0.27);
-    n.y     = noise(pos * 12.0);
-    // octave 2 for y
-    pos = vec2<f32>(uv.x * 0.45 + 0.033, uv.y * 1.9 - time * 0.61);
-    n.y    += noise(pos * 8.0);
-    // octave 3 for y
-    pos = vec2<f32>(uv.x * 0.8 - 0.02, uv.y * 2.5 - time * 0.51);
-    n.y    += noise(pos * 4.0);
-    // normalize
-    n       = n / 2.3;
-    // -------------------------------------------------------------------
+    var t = 1.0;
+    // Uncomment to animate
+    t = abs(3.0-sin(time*.1))*5.;
+    // Comment and uncomment the following lines:
+    st += noise(st*5.)*t; // Animate the coordinate space
+    color = vec3(0.4) * smoothstep(.18,.2,noise(st)); // Big black drops
+    color += smoothstep(.15,.2,noise(st*10.)); // Black splatter
+    color -= smoothstep(.35,.4,noise(st*2.)); // Holes on splatter
 
-    // Use n.x to drive rotation angle organically
-    let angle = (n.x * 2.0 - 1.0) * PI;  // remap [0,1]→[-π,π]
-    st = rotate2d(angle) * st;
-
-    // Use n.y to vary stripe softness parameter b
-    let b     = mix(0.2, 0.5, n.y);      // blend between 0.2 and 0.8
-    let pattern = lines(st, b);
-
-    // define your two colors here:
-    let colorA = vec3<f32>(1.0, 0.0, 0.6); // warm red
-    let colorB = vec3<f32>(1.0, 0.3, 1.0); // cool blue
-    // mix based on pattern (0 = all A, 1 = all B)
-    let col = mix(colorA, colorB, pattern);
-    return vec4<f32>(col, 1.0);
+    return vec4<f32>(color, 1.0);
 
 }
