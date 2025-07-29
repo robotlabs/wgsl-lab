@@ -244,6 +244,10 @@ EX - 58 [shader-ex-58 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 Nice fluid animation.
 EX - 59 [shader-ex-59 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-59).
 
+//\* noise
+2d noise. mark rothko
+EX - 60 [shader-ex-60 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-60).
+
 ## License
 
 MIT © robotlabs
