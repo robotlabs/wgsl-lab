@@ -84,46 +84,20 @@ fn fs_main(
     // let outsideCol  = vec3<f32>(1.0, 1.0, 0.0); 
     // let insideCol = vec3<f32>(0.0, v, v); 
 
-    //no smooth border
-    let d = step(r, radius);
-    let d2 = step(r2 + 0.1, radius);
-    let d3 = step(r3 + 0.2, radius);
-    let d4 = step(r + 0.3, radius);
-    let d5 = step(r + 0.4, radius);
-    let d6 = step(r + 0.5, radius);
-    let d7 = step(r + 0.6, radius);
-    let d8 = step(r + 0.7, radius);
-    let d9 = step(r + 0.8, radius);
-    let d10 = step(r + 0.9, radius);
-    
-    let inner1Color = vec3<f32>(v, v, v); 
-    let inner2Color  = vec3<f32>(1.0, 1.0, 0.0); 
-    let inner3Color  = vec3<f32>(1.0, 0.0, 0.0); 
-    let inner4Color  = vec3<f32>(1.0, 0.3, 0.3); 
-    let inner5Color  = vec3<f32>(0.4, 0.3, 0.3); 
-    let inner6Color  = vec3<f32>(0.3, 0.2, 0.1); 
-    let inner7Color  = vec3<f32>(0.2, 0.1, 0.0); 
-    let inner8Color  = vec3<f32>(0.1, 0.0, 0.0); 
-    let inner9Color  = vec3<f32>(0.05, 0.0, 0.0); 
-    let inner10Color  = vec3<f32>(0.0, 0.0, 0.0); 
-
-    let insideCol2  = vec3<f32>(0.0, 0.4, 0.0); 
-    let fucsia  = vec3<f32>(1.0, 0.0, 0.6); 
-    let black  = vec3<f32>(0.0, 0.0, 0.0); 
-    let useless  = vec3<f32>(1.0, 0.0, 1.0); 
-    
-
-
-    var color = mix(inner1Color, inner2Color, d);
-    color = mix(color, mix(useless, inner3Color, d), d2);
-    color = mix(color, mix(useless, inner4Color, d2), d3);
-    color = mix(color, mix(useless, inner5Color, d3), d4);
-    color = mix(color, mix(useless, inner6Color, d4), d5);
-    color = mix(color, mix(useless, inner7Color, d5), d6);
-    color = mix(color, mix(useless, inner8Color, d6), d7);
-    color = mix(color, mix(useless, inner9Color, d7), d8);
-    color = mix(color, mix(useless, inner10Color, d8), d9);
-    color = mix(color, mix(useless, black, d9), d10);
+   // draw 10 rings with random colors
+    let ringCount : u32 = 150u;
+    var color : vec3<f32> = vec3<f32>(0.0);
+    for (var i: u32 = 0u; i < ringCount; i = i + 1u) {
+        let offset = f32(i) * 0.01;
+        let d      = step(r + offset, radius);
+        // random color per ring
+        let rc = vec3<f32>(
+            random1(f32(i) * 12.9898 + 0.0),
+            random1(f32(i) * 78.233 + 1.0),
+            random1(f32(i) * 39.425 + 2.0)
+        );
+        color = mix(color, rc, d);
+    }
 
     return vec4<f32>(color, 1.0);
 
