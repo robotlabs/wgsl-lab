@@ -226,6 +226,10 @@ EX - 53 [shader-ex-53 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 2d noise
 EX - 55 [shader-ex-55 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-55).
 
+//\* noise
+2d noise. random changes
+EX - 56 [shader-ex-56 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-56).
+
 ## License
 
 MIT © robotlabs
