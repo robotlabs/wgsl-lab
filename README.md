@@ -252,6 +252,11 @@ EX - 60 [shader-ex-60 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 2d noise. wood
 EX - 61 [shader-ex-61 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-61).
 
+//\* noise
+(!)
+2d noise. wood animated
+EX - 62 [shader-ex-62 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-62).
+
 ## License
 
 MIT © robotlabs
