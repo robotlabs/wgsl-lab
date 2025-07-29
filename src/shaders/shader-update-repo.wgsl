@@ -61,13 +61,22 @@ fn fs_main(
   @location(1) uv: vec2<f32>,
 ) -> @location(0) vec4<f32> {
     let time = transform.params[0][2];
-    let st = uv * 2.0 - vec2<f32>(1.0);
+
+    let speed : f32 = 0.2;                       
+    let v     : f32 = sin(transform.params[0][2] * speed);
+
+    let mousePx    = transform.params[0].xy;
+    let resolution = transform.params[1].xy;
+    let mouseUV    = mousePx / resolution;
+    // let st = uv * 2.0 - vec2<f32>(1.0);
+
+    let centerUV = vec2<f32>(mouseUV.x, 1.0 - mouseUV.y);
+    let st = (uv - centerUV) * 2.0;
+
     let angle  = atan2(st.y, st.x);
     let radius = length(st);
     let a = (angle + PI) / (2.0 * PI);
 
-    let speed : f32 = 0.2;                       
-    let v     : f32 = sin(transform.params[0][2] * speed);
 
     // noise periodica
     let cycles = 8.0;   
@@ -79,17 +88,18 @@ fn fs_main(
     let r3      = (0.31 + 0.0 / 40) + n * (0.05  + v / 25);
 
     //** smooth border
-    let thickness = 0.05;
+    let thickness = (v + 1.0) / 20;
     // let d = smoothstep(r, r - thickness, radius);
     // let outsideCol  = vec3<f32>(1.0, 1.0, 0.0); 
     // let insideCol = vec3<f32>(0.0, v, v); 
 
    // draw 10 rings with random colors
-    let ringCount : u32 = 150u;
+    let ringCount : u32 = 50u;
     var color : vec3<f32> = vec3<f32>(0.0);
     for (var i: u32 = 0u; i < ringCount; i = i + 1u) {
-        let offset = f32(i) * 0.01;
-        let d      = step(r + offset, radius);
+        let offset = f32(i) * 0.05;
+        // let d      = step(r + offset, radius);
+        let d = smoothstep(r + offset - thickness, r + offset, radius);
         // random color per ring
         let rc = vec3<f32>(
             random1(f32(i) * 12.9898 + 0.0),

@@ -203,9 +203,10 @@ export default class App {
         // }
         if (this.plane) {
           // Interpolate
-          this.easedMouse.x += (this.rawMouse.x - this.easedMouse.x) * 0.05;
-          this.easedMouse.y += (this.rawMouse.y - this.easedMouse.y) * 0.05;
+          this.easedMouse.x += (this.rawMouse.x - this.easedMouse.x) * 0.02;
+          this.easedMouse.y += (this.rawMouse.y - this.easedMouse.y) * 0.02;
 
+          console.log(this.easedMouse.x);
           this.plane.updateProps((p) => {
             p.params[0][0] = this.easedMouse.x;
             p.params[0][1] = this.easedMouse.y;
