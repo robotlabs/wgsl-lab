@@ -57,34 +57,6 @@ fn noise(st: vec2<f32>) -> f32 {
     return finalValue;
 }
 
-// 3‑component hash
-fn random3(p: vec3<f32>) -> f32 {
-    return fract(sin(dot(p, vec3<f32>(12.9898,78.233,37.719))) * 43758.5453123);
-}
-
-// 3D noise by trilinear interpolation
-fn noise3(p: vec3<f32>) -> f32 {
-    let i = floor(p);
-    let f = fract(p);
-    let u = f * f * (3.0 - 2.0 * f);
-
-    // eight corners of the cube
-    let a = random3(i + vec3<f32>(0,0,0));
-    let b = random3(i + vec3<f32>(1,0,0));
-    let c = random3(i + vec3<f32>(0,1,0));
-    let d = random3(i + vec3<f32>(1,1,0));
-    let e = random3(i + vec3<f32>(0,0,1));
-    let f1= random3(i + vec3<f32>(1,0,1));
-    let g = random3(i + vec3<f32>(0,1,1));
-    let h = random3(i + vec3<f32>(1,1,1));
-
-    // blend in X
-    let xy0 = mix(mix(a,b,u.x), mix(c,d,u.x), u.y);
-    let xy1 = mix(mix(e,f1,u.x), mix(g,h,u.x), u.y);
-    // blend in Z (time)
-    return mix(xy0, xy1, u.z);
-}
-
 @fragment
 fn fs_main(
   @location(0) fragColor: vec4<f32>,
