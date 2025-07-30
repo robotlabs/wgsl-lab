@@ -109,17 +109,21 @@ st = rot * (st - center) + center;
     color = c.x * (0.5 + 0.5 * sin(64.0 * c.x)) * vec3<f32>(1.0);
 
     //* gradients colors
-    color = normalize(vec3<f32>(c.y, c.z, sin(u_time))) * 0.5 + 0.;
+    // color = normalize(vec3<f32>(c.y, c.z, sin(u_time))) * 0.5 + 0.;
+    let d = length(c.yz);
+    let cellColor = mix(vec3<f32>(1.0, 0.0, 0.0), vec3<f32>(1.0, 0.0, 0.6), smoothstep(0.0, 0.8, d));
+    color = cellColor;
     
     
     // borders
-    color = mix(vec3<f32>(1.0), color, smoothstep(0.01, 0.02, c.x));
+    let borderColor = vec3<f32>(0.8, 0.0, 0.0); // black borders
+    color = mix(borderColor, color, smoothstep(0.01, 0.02, c.x));
     
     // feature points
     let dd = length(c.yz);
     //*show dot in the cell
     // color += vec3<f32>(0.4) * (1.0 - smoothstep(0.0, 0.04, dd));
 
-    color = vec3<f32>(1.0) - color;
+    // color = vec3<f32>(1.0) - color;
     return vec4<f32>(color, 1.0);
 }
