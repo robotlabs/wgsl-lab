@@ -208,17 +208,17 @@ fn fs_main(
             
             switch (i32(i_st.y * 10.0 + i_st.x)) { // Unique index for each cell
                 // Row 0
-                case  0: { point = circular_orbit(point, u_time); }    // (0,0)
-                case  1: { point = figure_eight(point, u_time); }       // (1,0)
-                case  2: { point = brownian_motion(point, u_time); }    // (2,0)
-                case  3: { point = spiral_motion(point, u_time); }    // (2,0)
-                case  4: { point = elastic_bounce(point, u_time); }    // (2,0)
-                case  5: { point = wave_propagation(point, u_time, i_st + neighbor); }    // (2,0)
-                case  6: { point = flocking_behavior(point, u_time, i_st + neighbor); }    // (2,0)
-                case  7: { point = pendulum_motion(point, u_time); }    // (2,0)
-                case  8: { point = magnetic_field(point, u_time, i_st + neighbor); }    // (2,0)
-                // case  9: { point = brownian_motion(point, u_time); }    // (2,0)
-                // case  10: { point = heartbeat_pulse(point, u_time, i_st + neighbor); }    // (2,0)
+                // case  0: { point = circular_orbit(point, u_time); }   
+                // case  1: { point = figure_eight(point, u_time); }     
+                // case  2: { point = brownian_motion(point, u_time); }  
+                // case  3: { point = spiral_motion(point, u_time); }    
+                // case  4: { point = elastic_bounce(point, u_time); }   
+                // case  5: { point = wave_propagation(point, u_time, i_st + neighbor); }    
+                // case  6: { point = flocking_behavior(point, u_time, i_st + neighbor); }   
+                // case  7: { point = pendulum_motion(point, u_time); }    
+                // case  8: { point = magnetic_field(point, u_time, i_st + neighbor); }    
+                // case  9: { point = brownian_motion(point, u_time); }   
+                // case  10: { point = heartbeat_pulse(point, u_time, i_st + neighbor); }    
                 // ... add more cases as needed
 
                 // // Row 1
@@ -256,7 +256,7 @@ fn fs_main(
     color += 1.0 - step(0.02, m_dist);
 
     // Draw grid
-    color.r += step(0.98, f_st.x) + step(0.98, f_st.y);
+    // color.r += step(0.98, f_st.x) + step(0.98, f_st.y);
 
     // Show isolines (commented)
     // color -= step(0.7, abs(sin(27.0 * m_dist))) * 0.5;
