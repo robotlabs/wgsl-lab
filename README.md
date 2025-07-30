@@ -273,6 +273,10 @@ EX - 65 [shader-ex-65 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 simplex noise.basic
 EX - 66 [shader-ex-66 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-66).
 
+//\* noise
+simplex noise.splatter animated (!)
+EX - 67 [shader-ex-67 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-67).
+
 ## License
 
 MIT © robotlabs
