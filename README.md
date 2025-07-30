@@ -305,6 +305,10 @@ EX - 73 [shader-ex-73 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 grid and cellular. all pendulum
 EX - 74 [shader-ex-74 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-74).
 
+//\* cellular noise
+grid and cellular. all wave propagation
+EX - 75 [shader-ex-75 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-75).
+
 ## License
 
 MIT © robotlabs
