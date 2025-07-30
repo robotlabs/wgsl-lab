@@ -281,6 +281,10 @@ EX - 67 [shader-ex-67 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 simplex noise.splatter animated by me (!)
 EX - 68 [shader-ex-68 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-68).
 
+//\* cellular noise
+simple 5 points cellular with mouse
+EX - 69 [shader-ex-69 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-69).
+
 ## License
 
 MIT © robotlabs

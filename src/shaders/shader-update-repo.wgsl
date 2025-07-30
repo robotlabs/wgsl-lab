@@ -33,6 +33,9 @@ fn vs_main(@location(0) position: vec3<f32>) -> VertexOutput {
   return o;
 }
 
+fn random2( p: vec2<f32> ) -> vec2<f32> {
+    return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453);
+}
 
 @fragment
 fn fs_main(
@@ -41,42 +44,32 @@ fn fs_main(
 ) -> @location(0) vec4<f32> {
     let u_resolution = transform.params[1].xy;
     let u_time = transform.params[0].z;
-    // let u_mouse = transform.params[1].yz;
-
-
     let mouse_px    = transform.params[0].xy;
     let resolution = transform.params[1].xy;
     let u_mouse    = mouse_px / resolution;
-    // let st = uv * 2.0 - vec2<f32>(1.0);
-
     let u_center_mouse = vec2<f32>(u_mouse.x, 1.0 - u_mouse.y);
-    // let st = (uv - centerUV) * 2.0;
     
     var st = uv;
 
-    // Base color
-    var color: vec3<f32> = vec3<f32>(0.0);
+    st *= 3.;
+  // Tile the space
+    let i_st = floor(st);
+    let f_st = fract(st);
 
-    // Cell positions
-    var points: array<vec2<f32>, 5>;
-    points[0] = vec2<f32>(0.83, 0.75);
-    points[1] = vec2<f32>(0.60, 0.07);
-    points[2] = vec2<f32>(0.28, 0.64);
-    points[3] = vec2<f32>(0.31, 0.26);
-    points[4] = u_center_mouse;
+    let point = random2(i_st);
+    let diff = point - f_st;
 
-    // Find minimum distance to any point
-    var m_dist: f32 = 1.0;
-    for (var i: u32 = 0u; i < 5u; i = i + 1u) {
-        let d: f32 = distance(st, points[i]);
-        m_dist = min(m_dist, d);
-    }
+    let dist = length(diff);
 
-    // Draw the distance field
-    color = color + vec3<f32>(m_dist);
+    var color = vec3(.0);
+    // Draw the min distance (distance field)
+    color += dist;
 
-    // Optional isolines (commented out)
-    // color = color - vec3<f32>(step(0.7, abs(sin(50.0 * m_dist)))) * 0.3;
+    // Draw cell center
+    color += 1.-step(.02, dist);
+
+    // Draw grid
+    color.r += step(.98, f_st.x) + step(.98, f_st.y);
 
     return vec4<f32>(color, 1.0);
 }
