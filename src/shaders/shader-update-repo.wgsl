@@ -58,7 +58,7 @@ fn fs_main(
 
     var color = vec3(0.);
     
-     var m_dist: f32 = 10.0;  // minimum distance
+     var m_dist: f32 = 2.0;  // minimum distance
     var m_point: vec2<f32>;  // minimum point
 
     // Search in 3x3 neighborhood
@@ -66,7 +66,7 @@ fn fs_main(
         for (var i: i32 = -1; i <= 1; i++) {
             let neighbor = vec2<f32>(f32(i), f32(j));
             var point = random2(i_st + neighbor);
-            point = 0.5 + 0.5 * sin(u_time + 2.0 * PI * point);
+            point = 0.2 + 0.5 * sin(u_time + 12.0 * PI * point);
             let diff = neighbor + point - f_st;
             let dist = length(diff);
 
@@ -78,10 +78,10 @@ fn fs_main(
     }
 
     // Assign color using closest point
-    color += dot(m_point, vec2<f32>(0.3, 0.6));
+    color += dot(m_point, vec2<f32>(0.1, 0.9));
 
     // Show isolines (commented out in original)
-    // color -= abs(sin(40.0 * m_dist)) * 0.07;
+    color -= abs(sin(60.0 * m_dist)) * 0.04;
 
     // Draw cell center
     // color += 1.0 - step(0.05, m_dist);
