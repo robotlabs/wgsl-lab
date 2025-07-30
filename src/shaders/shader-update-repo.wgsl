@@ -15,6 +15,7 @@ struct Transform {
   useTexture:  vec4<f32>,
   params:      array<vec4<f32>, 2>,  // [0].z = u_time, [1].xy = u_resolution
 };
+
 @group(0) @binding(0) var<uniform> transform: Transform;
 
 struct VertexOutput {
@@ -23,8 +24,7 @@ struct VertexOutput {
   @location(1)        uv       : vec2<f32>,
 };
 
-@vertex
-fn vs_main(@location(0) position: vec3<f32>) -> VertexOutput {
+@vertex fn vs_main(@location(0) position: vec3<f32>) -> VertexOutput {
   let world = transform.modelMatrix * vec4<f32>(position, 1.0);
   var o: VertexOutput;
   o.Position  = transform.projMatrix * transform.viewMatrix * world;
@@ -37,8 +37,7 @@ fn random2( p: vec2<f32> ) -> vec2<f32> {
     return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453);
 }
 
-@fragment
-fn fs_main(
+@fragment fn fs_main(
   @location(0) fragColor: vec4<f32>,
   @location(1) uv:        vec2<f32>,
 ) -> @location(0) vec4<f32> {
@@ -50,44 +49,46 @@ fn fs_main(
     let u_center_mouse = vec2<f32>(u_mouse.x, 1.0 - u_mouse.y);
     
     var st = uv;
-
-    st *= 10.;
-  // Tile the space
+    
+    st *= 10.;   // Reduced tiling for larger organic regions
     let i_st = floor(st);
     let f_st = fract(st);
-
+    
     var color = vec3(0.);
     
-     var m_dist: f32 = 2.0;  // minimum distance
+    var m_dist: f32 = 10.0;  // minimum distance
     var m_point: vec2<f32>;  // minimum point
-
+    
     // Search in 3x3 neighborhood
     for (var j: i32 = -1; j <= 1; j++) {
         for (var i: i32 = -1; i <= 1; i++) {
             let neighbor = vec2<f32>(f32(i), f32(j));
             var point = random2(i_st + neighbor);
-            point = 0.2 + 0.5 * sin(u_time + 12.0 * PI * point);
+            point = 0.5 + 0.5 * sin(u_time * 0.5 + 2.0 * PI * point);
             let diff = neighbor + point - f_st;
             let dist = length(diff);
-
+            
             if (dist < m_dist) {
                 m_dist = dist;
                 m_point = point;
             }
         }
     }
-
-    // Assign color using closest point
-    color += dot(m_point, vec2<f32>(0.1, 0.9));
-
-    // Show isolines (commented out in original)
-    color -= abs(sin(60.0 * m_dist)) * 0.04;
-
-    // Draw cell center
-    // color += 1.0 - step(0.05, m_dist);
-
-    // Draw grid
-    // color.r += step(0.98, f_st.x) + step(0.98, f_st.y);
-
+    
+    // Create organic coloring based on distance and point properties
+    let intensity = 1.0 - smoothstep(0.0, 1.0, m_dist);
+    
+    // Yellow-green color palette like in the screenshot
+    let baseColor = vec3<f32>(0.1, 0.15, 0.05);  // Dark background
+    let brightColor = vec3<f32>(0.8, 0.9, 0.3);  // Bright yellow-green
+    
+    // Use the Voronoi cell properties for coloring
+    let cellBrightness = dot(m_point, vec2<f32>(0.5, 0.5));
+    color = mix(baseColor, brightColor, intensity * cellBrightness);
+    
+    // Add some variation based on distance isolines (softened)
+    // let isolines = sin(15.0 * m_dist) * 0.1;
+    // color += vec3<f32>(isolines * 0.3, isolines * 0.4, isolines * 0.1);
+    
     return vec4<f32>(color, 1.0);
 }
