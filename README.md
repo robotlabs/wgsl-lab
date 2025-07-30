@@ -289,6 +289,10 @@ EX - 69 [shader-ex-69 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 create simple grid
 EX - 70 [shader-ex-70 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-70).
 
+//\* cellular noise
+grid and cellular
+EX - 70 [shader-ex-70 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-70).
+
 ## License
 
 MIT © robotlabs
