@@ -232,7 +232,9 @@ fn fs_main(
                 // case 99: { point = heartbeat_pulse(point, u_time, i_st + neighbor); }   // (9,9) bottom-right
 
                 default: { 
-                  point = pendulum_motion(point, u_time); 
+                  // point = pendulum_motion(point, u_time); 
+                  point = flocking_behavior(point, u_time, i_st + neighbor);
+                  point = wave_propagation(point, u_time, i_st + neighbor);
                 } // Fallback
             }
             
