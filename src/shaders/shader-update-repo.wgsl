@@ -120,31 +120,33 @@ fn fs_main(
 ) -> @location(0) vec4<f32> {
     let u_resolution = transform.params[1].xy;
     let u_time = transform.params[0].z;
+    let u_mouse = transform.params[1].yz;
     
     var st = uv;
 
-    //* this is pointless because we are using in a plane square
-    // st.x *= u_resolution.x / u_resolution.y;
-    
-    var color = vec3<f32>(0.0);
-    let pos = st * 3.0;
-    var DF = 0.0;
-    
-    // Add a random position
-    var a = 0.0;
-    var vel = vec2<f32>(0.0, -u_time * 0.1);//vec2<f32>(u_time * 0.1);
-    // var vel = vec2<f32>(u_time * 0.1);
+    // Base color
+    var color: vec3<f32> = vec3<f32>(0.0);
 
-    var t = abs(sin(u_time / 4) + 2.0);
-    DF += snoise(pos + vel) * t + 0.25;
-    // DF += snoise(pos);// + vel) * .25 + 0.25;
-    
-    // Add a random position
-    a = snoise(pos * vec2<f32>(cos(u_time * 0.15), sin(u_time * 0.1)) * 0.1) * 3.1415;
-    vel = vec2<f32>(cos(a), sin(a));
-    DF += snoise(pos + vel) * 0.25 + 0.25;
-    
-    color = vec3<f32>(smoothstep(0.44, 0.75, fract(DF)));
-    
-    return vec4<f32>(1.0 - color, 1.0);
+    // Cell positions
+    var points: array<vec2<f32>, 5>;
+    points[0] = vec2<f32>(0.83, 0.75);
+    points[1] = vec2<f32>(0.60, 0.07);
+    points[2] = vec2<f32>(0.28, 0.64);
+    points[3] = vec2<f32>(0.31, 0.26);
+    points[4] = u_mouse / u_resolution;
+
+    // Find minimum distance to any point
+    var m_dist: f32 = 1.0;
+    for (var i: u32 = 0u; i < 5u; i = i + 1u) {
+        let d: f32 = distance(st, points[i]);
+        m_dist = min(m_dist, d);
+    }
+
+    // Draw the distance field
+    color = color + vec3<f32>(m_dist);
+
+    // Optional isolines (commented out)
+    // color = color - vec3<f32>(step(0.7, abs(sin(50.0 * m_dist)))) * 0.3;
+
+    return vec4<f32>(color, 1.0);
 }
