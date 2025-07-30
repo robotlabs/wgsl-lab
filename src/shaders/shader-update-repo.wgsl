@@ -157,11 +157,11 @@ fn combined_animation(point: vec2<f32>, time: f32, grid_pos: vec2<f32>) -> vec2<
     return mix(mix(base, pulse, 0.3), noise, mix_factor * 0.2);
 }
 
-     // Hash function to get a pseudo-random value for each cell
-    fn hash(p: vec2<f32>) -> f32 {
-        return fract(sin(dot(p, vec2<f32>(12.9898, 78.233))) * 43758.5453);
-    }
-
+ 
+fn smooth_min(a: f32, b: f32, k: f32) -> f32 {
+    let h = max(k - abs(a - b), 0.0) / k;
+    return min(a, b) - h * h * k * 0.25;
+}
 @fragment
 fn fs_main(
   @location(0) fragColor: vec4<f32>,
@@ -244,10 +244,39 @@ fn fs_main(
             let diff = neighbor + point - f_st;
             
             // Distance to the point
-            let dist = length(diff);
+            var dist = length(diff);
             
-            // Keep the closer distance
+            // *****************
+            //comment to see the m_dist you like
+
+            //* standard
             m_dist = min(m_dist, dist);
+
+          
+
+           
+
+            //* Max Distance (Inverse Field)
+            m_dist = max(m_dist, 1.0 - dist); // Invert distance
+
+            //* Quadratic Weighting
+            m_dist = min(m_dist, dist * dist); // Or use pow(dist, 2.0)
+
+            //* Manhattan Distance
+            dist = abs(diff.x) + abs(diff.y); // L1 norm
+            m_dist = min(m_dist, dist);
+
+            //* Angle-Based Weighting
+           let angle = atan2(diff.y, diff.x);
+           let weighted_dist = dist * (1.0 + sin(angle * 5.0) * 0.2);
+           m_dist = min(m_dist, weighted_dist);
+
+            //* Additive/Summed Distance
+            m_dist += exp(-dist * 20.0); // Exponential falloff
+
+            //* Smooth Minimum (Exponential Blend)
+            m_dist = smooth_min(m_dist, dist, 0.2); // Adjust 'k' for blend strength
+
         }
     }
 
@@ -256,6 +285,7 @@ fn fs_main(
 
     // Draw cell center
     color += 1.0 - step(0.02, m_dist);
+    // color += vec3(1.0 - smoothstep(0.0, 0.3, m_dist));
 
     // Draw grid
     // color.r += step(0.98, f_st.x) + step(0.98, f_st.y);
