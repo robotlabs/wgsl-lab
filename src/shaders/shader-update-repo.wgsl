@@ -51,42 +51,48 @@ fn fs_main(
     
     var st = uv;
 
-    st *= 5.;
+    st *= 3.;
   // Tile the space
     let i_st = floor(st);
     let f_st = fract(st);
 
     var color = vec3(0.);
     // In your fragment shader:
-    var m_dist: f32 = 10.0;  // minimum distance
-    var m_point: vec2<f32>;  // minimum point
+    var m_dist = 1.0;  // minimum distance
 
-    // Search in 3x3 neighborhood
-    for (var j: i32 = -1; j <= 1; j++) {
-        for (var i: i32 = -1; i <= 1; i++) {
-            let neighbor = vec2<f32>(f32(i), f32(j));
+    for (var y: i32 = -1; y <= 1; y++) {
+        for (var x: i32 = -1; x <= 1; x++) {
+            // Neighbor place in the grid
+            let neighbor = vec2<f32>(f32(x), f32(y));
+            
+            // Random position from current + neighbor place in the grid
             var point = random2(i_st + neighbor);
-            point = 0.5 + 0.5 * sin(u_time + 2.0 * PI * point);
+            
+            // Animate the point
+            point = 0.5 + 0.5 * sin(u_time + 6.2831 * point);
+            
+            // Vector between the pixel and the point
             let diff = neighbor + point - f_st;
+            
+            // Distance to the point
             let dist = length(diff);
-
-            if (dist < m_dist) {
-                m_dist = dist;
-                m_point = point;
-            }
+            
+            // Keep the closer distance
+            m_dist = min(m_dist, dist);
         }
     }
-   // Assign color using closest point
-    color += dot(m_point, vec2<f32>(0.3, 0.6));
 
-    // Show isolines (commented out in original)
-    color -= abs(sin(40.0 * m_dist)) * 0.07;
+    // Draw the min distance (distance field)
+    color += m_dist;
 
     // Draw cell center
-    color += 1.0 - step(0.05, m_dist);
+    color += 1.0 - step(0.02, m_dist);
 
     // Draw grid
     color.r += step(0.98, f_st.x) + step(0.98, f_st.y);
+
+    // Show isolines (commented)
+    // color -= step(0.7, abs(sin(27.0 * m_dist))) * 0.5;
 
     return vec4<f32>(color, 1.0);
 }
