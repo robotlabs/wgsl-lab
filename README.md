@@ -321,6 +321,10 @@ EX - 77 [shader-ex-77 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 grid and cellular. playing with VORONOI. 1
 EX - 78 [shader-ex-78 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-78).
 
+//\* cellular noise
+grid and cellular. playing with VORONOI. 2
+EX - 79 [shader-ex-79 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-79).
+
 ## License
 
 MIT © robotlabs
