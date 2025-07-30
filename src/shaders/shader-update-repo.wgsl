@@ -89,10 +89,11 @@ fn voronoi(x: vec2<f32>, u_time: f32) -> vec3<f32> {
   @location(1) uv:        vec2<f32>,
 ) -> @location(0) vec4<f32> {
     let u_resolution = transform.params[1].xy;
-    let u_time = transform.params[0].z / 5;
+    let u_time = transform.params[0].z / 10;
     
     var st = uv;
-    var color = vec3<f32>(0.0);
+    var color = vec3<f32>(0.4);
+    
     
     // Scale
     st *= 3.0;
@@ -107,7 +108,8 @@ fn voronoi(x: vec2<f32>, u_time: f32) -> vec3<f32> {
     
     // feature points
     let dd = length(c.yz);
-    color += vec3<f32>(1.0) * (1.0 - smoothstep(0.0, 0.04, dd));
-    
+    color += vec3<f32>(0.4) * (1.0 - smoothstep(0.0, 0.04, dd));
+
+      // color = vec3<f32>(1.0) - color;
     return vec4<f32>(color, 1.0);
 }
