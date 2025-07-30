@@ -269,6 +269,10 @@ EX - 64 [shader-ex-64 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 2d noise. more splatter animation
 EX - 65 [shader-ex-65 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-65).
 
+//\* noise
+simplex noise.basic
+EX - 66 [shader-ex-66 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-66).
+
 ## License
 
 MIT © robotlabs
