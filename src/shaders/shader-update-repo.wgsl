@@ -110,24 +110,28 @@ fn fs_main(
     // Prepare base UV for stripe pattern
     var st = uv;//.yx * vec2<f32>(5.0, 3.0);
 
-    var color = vec3(0.2);
+    var color = vec3(0.);
 
     var t = 1.0;
     // Uncomment to animate
-    t = abs(3.0-sin(time*.1))*5.;
+    t = abs(2.0-sin(time*.1))*5.;
     // Comment and uncomment the following lines:
-    st += noise(st*5.)*t; // Animate the coordinate space
-    color = vec3(0.4) * smoothstep(.18,.2,noise(st)); // Big black drops
-    color += smoothstep(.15,.2,noise(st*10.)); // Black splatter
-    color -= smoothstep(.35,.4,noise(st*2.)); // Holes on splatter
+    st += noise(st*6.)*t; // Animate the coordinate space
+    color = vec3(1.) * smoothstep(.18,.2,noise(st)); // Big black drops
+    color += smoothstep(.15,.2,noise(st*24.)); 
+    //color += smoothstep(.15,.2,noise(st*10.)); // Black splatter
+    color -= smoothstep(.15,.1,noise(st*2.)); // Holes on splatter
+    //color -= smoothstep(.1,.2,noise(st*3.)); // Holes on splatter
+    //color += smoothstep(.6,.7,noise(st*1.2)); // Holes on splatter
+    //color += smoothstep(.7,.8,noise(st*4.2)); // Holes on splatter
 
 
     // define your two colors here:
-    let colorA = vec3<f32>(1.0, 0.0, 0.6); // warm red
+    let colorA = vec3<f32>(1.0, 1.0, 0.6); // warm red
     let colorB = vec3<f32>(1.0, 0.3, 1.0); // cool blue
     // mix based on pattern (0 = all A, 1 = all B)
     let col = mix(colorA, colorB, color);
 
-    return vec4<f32>(col, 1.0);
+    return vec4<f32>(color, 1.0);
 
 }
