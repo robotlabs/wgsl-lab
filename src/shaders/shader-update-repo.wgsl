@@ -51,7 +51,7 @@ fn fs_main(
     
     var st = uv;
 
-    st *= 3.;
+    st *= 10.;
   // Tile the space
     let i_st = floor(st);
     let f_st = fract(st);
@@ -81,13 +81,13 @@ fn fs_main(
     color += dot(m_point, vec2<f32>(0.3, 0.6));
 
     // Show isolines (commented out in original)
-    color -= abs(sin(40.0 * m_dist)) * 0.07;
+    // color -= abs(sin(40.0 * m_dist)) * 0.07;
 
     // Draw cell center
-    color += 1.0 - step(0.05, m_dist);
+    // color += 1.0 - step(0.05, m_dist);
 
     // Draw grid
-    color.r += step(0.98, f_st.x) + step(0.98, f_st.y);
+    // color.r += step(0.98, f_st.x) + step(0.98, f_st.y);
 
     return vec4<f32>(color, 1.0);
 }
