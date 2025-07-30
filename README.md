@@ -285,6 +285,10 @@ EX - 68 [shader-ex-68 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 simple 5 points cellular with mouse
 EX - 69 [shader-ex-69 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-69).
 
+//\* cellular noise
+create simple grid
+EX - 70 [shader-ex-70 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-70).
+
 ## License
 
 MIT © robotlabs
