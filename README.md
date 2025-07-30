@@ -297,6 +297,10 @@ EX - 71 [shader-ex-71 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 grid and cellular. multiple point animations
 EX - 72 [shader-ex-72 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-72).
 
+//\* cellular noise
+grid and cellular. add extra mouse point
+EX - 73 [shader-ex-73 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-73).
+
 ## License
 
 MIT © robotlabs
