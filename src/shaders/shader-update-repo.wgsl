@@ -187,6 +187,17 @@ fn fs_main(
     // In your fragment shader:
     var m_dist = 1.0;  // minimum distance
 
+
+        // --- 1. Add mouse-controlled point ---
+    let mouse_point = vec2<f32>(
+        u_mouse.x * 10.0, // Scale to grid space (0..10)
+        (1.0 - u_mouse.y) * 10.0 // Flip Y-axis to match WGSL's coordinate system
+    );
+
+    // --- 2. Compute distance to mouse point ---
+    let mouse_diff = mouse_point - st;
+    m_dist = min(m_dist, length(mouse_diff));
+    
     for (var y: i32 = -1; y <= 1; y++) {
         for (var x: i32 = -1; x <= 1; x++) {
             // Neighbor place in the grid
