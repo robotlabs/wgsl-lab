@@ -311,7 +311,7 @@ EX - 75 [shader-ex-75 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 
 //\* cellular noise
 grid and cellular. different usage of m_dist
-EX - 75 [shader-ex-75 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-75).
+EX - 76 [shader-ex-76 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-76).
 
 ## License
 
