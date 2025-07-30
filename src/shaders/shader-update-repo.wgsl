@@ -121,14 +121,26 @@ fn fs_main(
     let u_resolution = transform.params[1].xy;
     let u_time = transform.params[0].z;
     
-    // Adjust UV coordinates to maintain aspect ratio
     var st = uv;
-    st.x *= u_resolution.x / u_resolution.y;
+
+    //* this is pointless because we are using in a plane square
+    // st.x *= u_resolution.x / u_resolution.y;
     
-    // Scale the space in order to see the function
-    st *= 10.0;
+    var color = vec3<f32>(0.0);
+    let pos = st * 3.0;
+    var DF = 0.0;
     
-    let color = vec3<f32>(snoise(st) * 0.5 + 0.5);
+    // Add a random position
+    var a = 0.0;
+    var vel = vec2<f32>(u_time * 0.1);
+    DF += snoise(pos + vel) * .25 + 0.25;
     
-    return vec4<f32>(color, 1.0);
+    // Add a random position
+    a = snoise(pos * vec2<f32>(cos(u_time * 0.15), sin(u_time * 0.1)) * 0.1) * 3.1415;
+    vel = vec2<f32>(cos(a), sin(a));
+    DF += snoise(pos + vel) * 0.25 + 0.25;
+    
+    color = vec3<f32>(smoothstep(0.7, 0.75, fract(DF)));
+    
+    return vec4<f32>(1.0 - color, 1.0);
 }
