@@ -341,6 +341,10 @@ EX - 82 [shader-ex-82 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 playing with voronoi
 EX - 83 [shader-ex-83 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-83).
 
+//\* cellular noise
+playing with voronoi
+EX - 84 [shader-ex-84 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-84).
+
 ## License
 
 MIT © robotlabs
