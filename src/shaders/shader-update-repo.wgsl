@@ -1,5 +1,3 @@
-// Author: Stefan Gustavson (converted to WGSL)
-// Title: Classic 3D cellular noise
 
 // -----------------------------------------
 // Constants
@@ -94,22 +92,34 @@ fn voronoi(x: vec2<f32>, u_time: f32) -> vec3<f32> {
     var st = uv;
     var color = vec3<f32>(0.4);
     
-    
+    let center = vec2<f32>(0.5);
+let angle = u_time * 0.2;
+let rot = mat2x2<f32>(
+    cos(angle), -sin(angle),
+    sin(angle),  cos(angle)
+);
+st = rot * (st - center) + center;
+
     // Scale
-    st *= 3.0;
+    st *= 5.0;
     
     let c = voronoi(st, u_time);
     
     // isolines
     color = c.x * (0.5 + 0.5 * sin(64.0 * c.x)) * vec3<f32>(1.0);
+
+    //* gradients colors
+    color = normalize(vec3<f32>(c.y, c.z, sin(u_time))) * 0.5 + 0.;
+    
     
     // borders
     color = mix(vec3<f32>(1.0), color, smoothstep(0.01, 0.02, c.x));
     
     // feature points
     let dd = length(c.yz);
-    color += vec3<f32>(0.4) * (1.0 - smoothstep(0.0, 0.04, dd));
+    //*show dot in the cell
+    // color += vec3<f32>(0.4) * (1.0 - smoothstep(0.0, 0.04, dd));
 
-      // color = vec3<f32>(1.0) - color;
+    color = vec3<f32>(1.0) - color;
     return vec4<f32>(color, 1.0);
 }
