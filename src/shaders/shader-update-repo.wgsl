@@ -132,19 +132,15 @@ fn fs_main(
     
     // Add a random position
     var a = 0.0;
-    var vel = vec2<f32>(0.0, -u_time * 0.1);//vec2<f32>(u_time * 0.1);
-    // var vel = vec2<f32>(u_time * 0.1);
-
-    var t = abs(sin(u_time / 4) + 2.0);
-    DF += snoise(pos + vel) * t + 0.25;
-    // DF += snoise(pos);// + vel) * .25 + 0.25;
+    var vel = vec2<f32>(u_time * 0.1);
+    DF += snoise(pos + vel) * .25 + 0.25;
     
     // Add a random position
     a = snoise(pos * vec2<f32>(cos(u_time * 0.15), sin(u_time * 0.1)) * 0.1) * 3.1415;
     vel = vec2<f32>(cos(a), sin(a));
     DF += snoise(pos + vel) * 0.25 + 0.25;
     
-    color = vec3<f32>(smoothstep(0.44, 0.75, fract(DF)));
+    color = vec3<f32>(smoothstep(0.7, 0.75, fract(DF)));
     
     return vec4<f32>(1.0 - color, 1.0);
 }
