@@ -82,48 +82,80 @@ fn voronoi(x: vec2<f32>, u_time: f32) -> vec3<f32> {
     return vec3<f32>(md, mr);
 }
 
-@fragment fn fs_main(
-  @location(0) fragColor: vec4<f32>,
-  @location(1) uv:        vec2<f32>,
+// -----------------------------------------
+// Randomness Function
+// -----------------------------------------
+fn hash(n: f32) -> f32 {
+    return fract(sin(n) * 43758.5453123);
+}
+
+@fragment
+fn fs_main(
+    @location(0) fragColor: vec4<f32>,
+    @location(1) uv: vec2<f32>,
 ) -> @location(0) vec4<f32> {
     let u_resolution = transform.params[1].xy;
-    let u_time = transform.params[0].z / 10;
+    let u_time = transform.params[0].z / 10; // Using raw time for proper animation speed
     
-    var st = uv;
-    var color = vec3<f32>(0.4);
-    
+    // Center and rotate coordinates
     let center = vec2<f32>(0.5);
-let angle = u_time * 0.2;
-let rot = mat2x2<f32>(
-    cos(angle), -sin(angle),
-    sin(angle),  cos(angle)
-);
-st = rot * (st - center) + center;
-
-    // Scale
-    st *= 5.0;
+    let angle = u_time * 0.1;
+    let rot = mat2x2<f32>(
+        cos(angle), -sin(angle),
+        sin(angle),  cos(angle)
+    );
+    var st = rot * (uv - center) + center;
     
-    let c = voronoi(st, u_time);
+    // Create rotating light position
+    let light_pos = vec3<f32>(
+        sin(u_time * 0.5),
+        1.0,
+        cos(u_time * 0.3)
+    );
     
-    // isolines
-    color = c.x * (0.5 + 0.5 * sin(64.0 * c.x)) * vec3<f32>(1.0);
-
-    //* gradients colors
-    // color = normalize(vec3<f32>(c.y, c.z, sin(u_time))) * 0.5 + 0.;
-    let d = length(c.yz);
-    let cellColor = mix(vec3<f32>(1.0, 0.0, 0.0), vec3<f32>(1.0, 0.0, 0.6), smoothstep(0.0, 0.8, d));
-    color = cellColor;
+    // Initialize variables
+    var closest_point = vec3<f32>(0.0);
+    var min_dist: f32 = 4.0;
+    let cell_count: f32 = 100.0;
     
+    // Generate cellular pattern
+    for (var i: f32 = 0.0; i < cell_count; i += 1.0) {
+        // Create random cell position
+        let angle = sin(u_time * PI * 0.00001) - hash(i) * PI * 2.0;
+        let radius = sqrt(hash(angle)) * 0.5;
+        let point = vec2<f32>(
+            light_pos.x + cos(angle) * radius,
+            light_pos.z + sin(angle) * radius
+        );
+        
+        // Calculate distance to this cell
+        let dist = distance(st, point);
+        
+        // Track closest cell
+        if (dist < min_dist) {
+            min_dist = dist;
+            closest_point = vec3<f32>(
+                point.x,
+                point.y,
+                i / cell_count * st.x * st.y // Unique z-value per cell
+            );
+        }
+    }
     
-    // borders
-    let borderColor = vec3<f32>(0.8, 0.0, 0.0); // black borders
-    color = mix(borderColor, color, smoothstep(0.01, 0.02, c.x));
+    // Create lighting effect
+    let light_intensity = 1.0 - max(0.0, dot(closest_point, light_pos));
+    let shade = vec3<f32>(light_intensity);
     
-    // feature points
-    let dd = length(c.yz);
-    //*show dot in the cell
-    // color += vec3<f32>(0.4) * (1.0 - smoothstep(0.0, 0.04, dd));
-
-    // color = vec3<f32>(1.0) - color;
-    return vec4<f32>(color, 1.0);
+    // Create vibrant unicorn colors
+    let base_color = mix(
+        vec3<f32>(0.8, 0.2, 0.6), // Pink
+        vec3<f32>(0.3, 0.8, 0.9), // Cyan
+        closest_point.z
+    );
+    
+    // Add pulsing effect
+    let pulse = sin(u_time * 2.0) * 0.1 + 0.9;
+    let final_color = (base_color + shade) * pulse;
+    
+    return vec4<f32>(final_color, 1.0);
 }
