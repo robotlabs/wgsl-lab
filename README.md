@@ -329,6 +329,10 @@ EX - 79 [shader-ex-79 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 3d cellular noise
 EX - 80 [shader-ex-80 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-80).
 
+//\* cellular noise
+Voronoi borders
+EX - 81 [shader-ex-81 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-81).
+
 ## License
 
 MIT © robotlabs
