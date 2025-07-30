@@ -301,6 +301,10 @@ EX - 72 [shader-ex-72 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 grid and cellular. add extra mouse point
 EX - 73 [shader-ex-73 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-73).
 
+//\* cellular noise
+grid and cellular. all pendulum
+EX - 74 [shader-ex-74 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-74).
+
 ## License
 
 MIT © robotlabs
