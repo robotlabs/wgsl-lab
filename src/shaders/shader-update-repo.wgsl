@@ -43,7 +43,7 @@ fn fs_main(
   @location(1) uv:        vec2<f32>,
 ) -> @location(0) vec4<f32> {
     let u_resolution = transform.params[1].xy;
-    let u_time = transform.params[0].z;
+    let u_time = transform.params[0].z / 10;
     let mouse_px    = transform.params[0].xy;
     let resolution = transform.params[1].xy;
     let u_mouse    = mouse_px / resolution;
@@ -56,20 +56,43 @@ fn fs_main(
     let i_st = floor(st);
     let f_st = fract(st);
 
-    let point = random2(i_st);
-    let diff = point - f_st;
+    var color = vec3(0.);
+    // In your fragment shader:
+    var m_dist = 1.0;  // minimum distance
 
-    let dist = length(diff);
+    for (var y: i32 = -1; y <= 1; y++) {
+        for (var x: i32 = -1; x <= 1; x++) {
+            // Neighbor place in the grid
+            let neighbor = vec2<f32>(f32(x), f32(y));
+            
+            // Random position from current + neighbor place in the grid
+            var point = random2(i_st + neighbor);
+            
+            // Animate the point
+            point = 0.5 + 0.5 * sin(u_time + 6.2831 * point);
+            
+            // Vector between the pixel and the point
+            let diff = neighbor + point - f_st;
+            
+            // Distance to the point
+            let dist = length(diff);
+            
+            // Keep the closer distance
+            m_dist = min(m_dist, dist);
+        }
+    }
 
-    var color = vec3(.0);
     // Draw the min distance (distance field)
-    color += dist;
+    color += m_dist;
 
     // Draw cell center
-    color += 1.-step(.02, dist);
+    color += 1.0 - step(0.02, m_dist);
 
     // Draw grid
-    color.r += step(.98, f_st.x) + step(.98, f_st.y);
+    color.r += step(0.98, f_st.x) + step(0.98, f_st.y);
+
+    // Show isolines (commented)
+    // color -= step(0.7, abs(sin(27.0 * m_dist))) * 0.5;
 
     return vec4<f32>(color, 1.0);
 }
