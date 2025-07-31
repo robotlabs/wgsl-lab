@@ -389,6 +389,10 @@ EX - 92 [shader-ex-92 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 centered rotation + deformation (!)
 EX - 93 [shader-ex-93 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-93).
 
+//\* texture
+ripple effect ( from udemy )
+EX - 94 [shader-ex-94 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-94).
+
 ## License
 
 MIT © robotlabs
