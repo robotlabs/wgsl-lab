@@ -80,65 +80,66 @@ fn fs_main(
     let u_resolution = transform.params[1].xy;
     let u_time = transform.params[0].z;
     
-    // Adjust coordinates for aspect ratio
+    // Side-scrolling coordinates
     var st = uv;
     st.x *= u_resolution.x / u_resolution.y;
     
-    // Create landscape height using FBM
-    let height = fbm(st * 3.0 + vec2<f32>(u_time * 0.1, 0.0));
+    // Create scrolling terrain - X axis is horizontal distance, Y axis is height
+    let scroll_speed = u_time * 0.2;
+    let terrain_x = st.x + scroll_speed;
     
-    // Create different terrain zones based on height
+    // Generate terrain height profile using FBM
+    // Scale X more for rolling hills, less Y scale for smoother transitions
+    let terrain_height = fbm(vec2<f32>(terrain_x * 2.0, 0.0)) * 0.4 + 0.3;
+    
+    // Add some larger hill features
+    let hills = fbm(vec2<f32>(terrain_x * 0.5, 0.0)) * 0.3;
+    let final_terrain_height = terrain_height + hills;
+    
     var color = vec3<f32>(0.0);
     
-    // Water (low areas)
-    if (height < 0.3) {
+    // Sky gradient
+    if (st.y > final_terrain_height) {
+        // Sky with gradient from light blue to darker blue
+        let sky_gradient = smoothstep(0.0, 1.0, st.y);
         color = mix(
-            vec3<f32>(0.1, 0.3, 0.8), // Deep water
-            vec3<f32>(0.3, 0.6, 1.0), // Shallow water
-            height / 0.3
+            vec3<f32>(0.6, 0.8, 1.0), // Light blue at horizon
+            vec3<f32>(0.2, 0.4, 0.8), // Darker blue at top
+            sky_gradient
         );
+        
+        // Add some clouds
+        let cloud_noise = fbm(vec2<f32>(terrain_x * 0.3, st.y * 2.0 + u_time * 0.05));
+        if (cloud_noise > 0.6 && st.y > 0.6) {
+            color = mix(color, vec3<f32>(1.0, 1.0, 1.0), (cloud_noise - 0.6) * 2.0);
+        }
     }
-    // Beach/Sand (medium-low areas)
-    else if (height < 0.4) {
-        color = vec3<f32>(0.9, 0.8, 0.6); // Sand color
-    }
-    // Grass/Plains (medium areas)
-    else if (height < 0.6) {
-        color = mix(
-            vec3<f32>(0.4, 0.7, 0.3), // Light green
-            vec3<f32>(0.2, 0.5, 0.1), // Dark green
-            (height - 0.4) / 0.2
-        );
-    }
-    // Mountains (high areas)
-    else if (height < 0.8) {
-        color = mix(
-            vec3<f32>(0.5, 0.4, 0.3), // Brown
-            vec3<f32>(0.3, 0.3, 0.3), // Dark rock
-            (height - 0.6) / 0.2
-        );
-    }
-    // Snow peaks (highest areas)
+    // Ground/Terrain
     else {
-        color = mix(
-            vec3<f32>(0.3, 0.3, 0.3), // Rock
-            vec3<f32>(0.9, 0.9, 1.0), // Snow
-            (height - 0.8) / 0.2
-        );
+        let depth_below_surface = final_terrain_height - st.y;
+        
+        // Surface grass
+        if (depth_below_surface < 0.05) {
+            color = vec3<f32>(0.3, 0.7, 0.2); // Grass green
+        }
+        // Dirt layer
+        else if (depth_below_surface < 0.2) {
+            color = vec3<f32>(0.6, 0.4, 0.2); // Brown dirt
+        }
+        // Stone/Rock deep underground
+        else {
+            color = vec3<f32>(0.4, 0.4, 0.4); // Gray stone
+        }
+        
+        // Add some surface detail with noise
+        let surface_detail = noise(vec2<f32>(terrain_x * 8.0, st.y * 8.0));
+        color = mix(color, color * 0.8, surface_detail * 0.3);
+        
+        // Simple lighting - surfaces facing up are brighter
+        let slope = fbm(vec2<f32>(terrain_x * 2.0 + 0.01, 0.0)) - fbm(vec2<f32>(terrain_x * 2.0 - 0.01, 0.0));
+        let lighting = 0.7 + 0.3 * (1.0 - abs(slope * 10.0));
+        color *= lighting;
     }
-    
-    // Add some atmospheric perspective (distance fog)
-    let fog_factor = smoothstep(0.0, 1.0, st.y);
-    color = mix(color, vec3<f32>(0.7, 0.8, 0.9), fog_factor * 0.3);
-    
-    // Add subtle lighting based on height gradients
-    let light_dir = vec2<f32>(1.0, 1.0);
-    let gradient_x = fbm((st + vec2<f32>(0.01, 0.0)) * 3.0) - height;
-    let gradient_y = fbm((st + vec2<f32>(0.0, 0.01)) * 3.0) - height;
-    let normal = normalize(vec3<f32>(-gradient_x, -gradient_y, 0.1));
-    let lighting = dot(normal.xy, normalize(light_dir)) * 0.5 + 0.5;
-    
-    color *= 0.7 + 0.3 * lighting;
     
     return vec4<f32>(color, 1.0);
 }
