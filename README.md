@@ -385,6 +385,10 @@ EX - 91 [shader-ex-91 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 centered rotation
 EX - 92 [shader-ex-92 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-92).
 
+//\* texture
+centered rotation + deformation (!)
+EX - 93 [shader-ex-93 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-93).
+
 ## License
 
 MIT © robotlabs
