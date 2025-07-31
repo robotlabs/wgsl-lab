@@ -357,6 +357,10 @@ EX - 86 [shader-ex-86 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 fractal brownian motion. side view. improved version
 EX - 87 [shader-ex-87 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-87).
 
+//\* noise
+fractal brownian motion. landscape pigeons generator
+EX - 88 [shader-ex-88 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-88).
+
 ## License
 
 MIT © robotlabs
