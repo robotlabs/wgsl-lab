@@ -349,6 +349,10 @@ EX - 84 [shader-ex-84 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 fractal brownian motion. top view
 EX - 85 [shader-ex-85 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-85).
 
+//\* noise
+fractal brownian motion. side view
+EX - 86 [shader-ex-86 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-86).
+
 ## License
 
 MIT © robotlabs
