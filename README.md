@@ -369,6 +369,10 @@ EX - 88 [shader-ex-88 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 fractal brownian motion. cloud effect ( book )
 EX - 89 [shader-ex-89 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-89).
 
+//\* noise
+fractal brownian motion. ridge ( book )
+EX - 90 [shader-ex-90 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-90).
+
 ## License
 
 MIT © robotlabs
