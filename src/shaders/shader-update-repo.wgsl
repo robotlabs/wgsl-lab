@@ -41,11 +41,15 @@ fn vs_main(@location(0) position: vec3<f32>) -> VertexOutput {
 // -----------------------------------------
 // Helper Functions
 // -----------------------------------------
-fn rotate(pt: vec2<f32>, theta: f32) -> vec2<f32> {
+fn rotate(pt: vec2<f32>, theta: f32, aspect: f32) -> vec2<f32> {
   let c = cos(theta);
   let s = sin(theta);
   let mat = mat2x2<f32>(c, s, -s, c);
-  return mat * pt;
+  var ptt = pt;
+  ptt.y = pt.y / 1.0;
+  ptt = mat * ptt;
+  ptt.y *= aspect;
+  return ptt;
 }
 
 @fragment
@@ -62,10 +66,11 @@ fn fs_main(
   // Only sample texture if useTexture is enabled
   var alpha = 1.0;
   if (transform.useTexture.x > 0.5) {
-    var st = vec2(uv.x, 1.0 - uv.y);
+    var st = uv;
+    st = vec2(uv.x, 1.0 - uv.y);
 
-    let imageAspect = 2.5; 
-    let planeAspect = 1.0; 
+    let imageAspect = 2.0; 
+    let planeAspect = 1.5; 
      
     if (imageAspect > planeAspect) {
       let scale = planeAspect / imageAspect;
@@ -75,15 +80,17 @@ fn fs_main(
       st.x = (st.x - 0.5) * scale + 0.5;
     }
 
-    // Clamp to prevent sampling outside the image
-    // if (st.x < 0.0 || st.x > 1.0 || st.y < 0.0 || st.y > 1.0) {
-    //   return vec4<f32>(0.0, 0.0, 0.0, 0.0); // background
-    // }
+    st -= vec2(0.5);
+    st = rotate(st, 1.4 + u_time / 20, 2.0 / 1.5);
+    st += vec2(0.5);
 
-    
     let texColor = textureSample(tex, texSampler, st);
-    color = texColor.rgb;
-    alpha = texColor.a;
+    if (st.x<0.0||st.x>1.0||st.y<0.0||st.y>1.0){
+      color = vec3(0.0);
+    }else{
+        color = texColor.rgb;
+        alpha = texColor.a;
+    }
   }
 
 

@@ -209,7 +209,9 @@ export default class App {
     // Create shared texture and sampler
     const planeTexture = await createTextureFromImage(
       device,
-      "./images/marlene.png"
+      "./images/rino.jpg"
+      // "./images/marlene.png",
+      // "./images/woody.png"
       // "./images/test1.png"
       // "./images/test2.png"
     );
