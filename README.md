@@ -381,6 +381,10 @@ EX - 90 [shader-ex-90 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 basic texture with aspect ratio regulated in shader and scale function
 EX - 91 [shader-ex-91 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-91).
 
+//\* texture
+centered rotation
+EX - 92 [shader-ex-92 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-92).
+
 ## License
 
 MIT © robotlabs
