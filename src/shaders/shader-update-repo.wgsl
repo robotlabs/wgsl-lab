@@ -57,43 +57,26 @@ fn fs_main(
   @location(0) fragColor: vec4<f32>,
   @location(1) uv: vec2<f32>,
 ) -> @location(0) vec4<f32> {
-  let u_mouse = transform.params[0].xy;
   let u_time = transform.params[0].z;
+  let u_duration = transform.params[0].w;
+  let u_mouse = transform.params[0].xy;
   let u_resolution = transform.params[1].xy;
-  
-  var color = fragColor.rgb;
 
-  // Only sample texture if useTexture is enabled
-  var alpha = 1.0;
-  if (transform.useTexture.x > 0.5) {
-    var st = uv;
-    st = vec2(uv.x, 1.0 - uv.y);
+  // Reconstruct the position from uv (plane is from -1 to +1)
+  let v_position = vec3<f32>(uv * 2.0 - vec2(1.0), 0.0);
+  let len = length(v_position.xy);
 
-    let imageAspect = 2.0; 
-    let planeAspect = 1.5; 
-     
-    if (imageAspect > planeAspect) {
-      let scale = planeAspect / imageAspect;
-      st.y = (st.y - 0.5) * scale + 0.5;
-    } else {
-      let scale = imageAspect / planeAspect;
-      st.x = (st.x - 0.5) * scale + 0.5;
-    }
+  // Ripple effect
+  let ripple = uv + v_position.xy / len * 0.03 * cos(len * 12.0 - u_time * 4.0);
 
-    st -= vec2(0.5);
-    st = rotate(st, 1.4 + u_time / 20, 2.0 / 1.5);
-    st += vec2(0.5);
+  // Delta mix factor
+  let delta = (((sin(u_time) + 1.0) / 2.0) * u_duration) / u_duration;
 
-    let texColor = textureSample(tex, texSampler, st);
-    if (st.x<0.0||st.x>1.0||st.y<0.0||st.y>1.0){
-      color = vec3(0.0);
-    }else{
-        color = texColor.rgb;
-        alpha = texColor.a;
-    }
-  }
+  let finalUV = mix(ripple, uv, delta);
 
+  // Flip Y to match WebGPU convention
+  let st = vec2(finalUV.x, 1.0 - finalUV.y);
+  let texColor = textureSample(tex, texSampler, st);
 
-  
-  return vec4<f32>(color, alpha);
+  return vec4<f32>(texColor.rgb, 1.0);
 }
