@@ -1,4 +1,3 @@
-
 // -----------------------------------------
 // Constants
 // -----------------------------------------
@@ -33,60 +32,44 @@ struct VertexOutput {
   return o;
 }
 
-
-fn random2(p: vec2<f32>) -> vec2<f32> {
-    return fract(sin(vec2<f32>(
-        dot(p, vec2<f32>(127.1, 311.7)),
-        dot(p, vec2<f32>(269.5, 183.3))
-    )) * 43758.5453);
+// -----------------------------------------
+// Noise Functions
+// -----------------------------------------
+fn random(st: vec2<f32>) -> f32 {
+    return fract(sin(dot(st.xy, vec2<f32>(12.9898, 78.233))) * 43758.5453123);
 }
 
-fn voronoi(x: vec2<f32>, u_time: f32) -> vec3<f32> {
-    let n = floor(x);
-    let f = fract(x);
-    
-    // first pass: regular voronoi
-    var mg: vec2<f32>;
-    var mr: vec2<f32>;
-    var md: f32 = 8.0;
-    
-    for (var j: i32 = -1; j <= 1; j++) {
-        for (var i: i32 = -1; i <= 1; i++) {
-            let g = vec2<f32>(f32(i), f32(j));
-            var o = random2(n + g);
-            o = 0.5 + 0.5 * sin(u_time + 6.2831 * o);
-            let r = g + o - f;
-            let d = dot(r, r);
-            if (d < md) {
-                md = d;
-                mr = r;
-                mg = g;
-            }
-        }
-    }
-    
-    // second pass: distance to borders
-    md = 8.0;
-    for (var j: i32 = -2; j <= 2; j++) {
-        for (var i: i32 = -2; i <= 2; i++) {
-            let g = mg + vec2<f32>(f32(i), f32(j));
-            var o = random2(n + g);
-            o = 0.5 + 0.5 * sin(u_time + 6.2831 * o);
-            let r = g + o - f;
-            if (dot(mr - r, mr - r) > 0.00001) {
-                md = min(md, dot(0.5 * (mr + r), normalize(r - mr)));
-            }
-        }
-    }
-    
-    return vec3<f32>(md, mr);
+fn noise(st: vec2<f32>) -> f32 {
+    let i = floor(st);
+    let f = fract(st);
+
+    // Four corners in 2D of a tile
+    let a = random(i);
+    let b = random(i + vec2<f32>(1.0, 0.0));
+    let c = random(i + vec2<f32>(0.0, 1.0));
+    let d = random(i + vec2<f32>(1.0, 1.0));
+
+    let u = f * f * (3.0 - 2.0 * f);
+
+    return mix(a, b, u.x) +
+           (c - a) * u.y * (1.0 - u.x) +
+           (d - b) * u.x * u.y;
 }
 
-// -----------------------------------------
-// Randomness Function
-// -----------------------------------------
-fn hash(n: f32) -> f32 {
-    return fract(sin(n) * 43758.5453123);
+const OCTAVES: i32 = 8;
+fn fbm(st_input: vec2<f32>) -> f32 {
+    // Initial values
+    var value: f32 = 0.0;
+    var amplitude: f32 = 0.5;
+    var st = st_input;
+    
+    // Loop of octaves
+    for (var i: i32 = 0; i < OCTAVES; i++) {
+        value += amplitude * noise(st);
+        st *= 2.0;
+        amplitude *= 0.5;
+    }
+    return value;
 }
 
 @fragment
@@ -95,67 +78,67 @@ fn fs_main(
     @location(1) uv: vec2<f32>,
 ) -> @location(0) vec4<f32> {
     let u_resolution = transform.params[1].xy;
-    let u_time = transform.params[0].z / 10; // Using raw time for proper animation speed
+    let u_time = transform.params[0].z;
     
-    // Center and rotate coordinates
-    let center = vec2<f32>(0.5);
-    let angle = u_time * 0.1;
-    let rot = mat2x2<f32>(
-        cos(angle), -sin(angle),
-        sin(angle),  cos(angle)
-    );
-    var st = rot * (uv - center) + center;
+    // Adjust coordinates for aspect ratio
+    var st = uv;
+    st.x *= u_resolution.x / u_resolution.y;
     
-    // Create rotating light position
-    let light_pos = vec3<f32>(
-        sin(u_time * 0.5),
-        1.0,
-        cos(u_time * 0.3)
-    );
+    // Create landscape height using FBM
+    let height = fbm(st * 3.0 + vec2<f32>(u_time * 0.1, 0.0));
     
-    // Initialize variables
-    var closest_point = vec3<f32>(0.0);
-    var min_dist: f32 = 4.0;
-    let cell_count: f32 = 100.0;
+    // Create different terrain zones based on height
+    var color = vec3<f32>(0.0);
     
-    // Generate cellular pattern
-    for (var i: f32 = 0.0; i < cell_count; i += 1.0) {
-        // Create random cell position
-        let angle = sin(u_time * PI * 0.00001) - hash(i) * PI * 2.0;
-        let radius = sqrt(hash(angle)) * 0.5;
-        let point = vec2<f32>(
-            light_pos.x + cos(angle) * radius,
-            light_pos.z + sin(angle) * radius
+    // Water (low areas)
+    if (height < 0.3) {
+        color = mix(
+            vec3<f32>(0.1, 0.3, 0.8), // Deep water
+            vec3<f32>(0.3, 0.6, 1.0), // Shallow water
+            height / 0.3
         );
-        
-        // Calculate distance to this cell
-        let dist = distance(st, point);
-        
-        // Track closest cell
-        if (dist < min_dist) {
-            min_dist = dist;
-            closest_point = vec3<f32>(
-                point.x,
-                point.y,
-                i / cell_count * st.x * st.y // Unique z-value per cell
-            );
-        }
+    }
+    // Beach/Sand (medium-low areas)
+    else if (height < 0.4) {
+        color = vec3<f32>(0.9, 0.8, 0.6); // Sand color
+    }
+    // Grass/Plains (medium areas)
+    else if (height < 0.6) {
+        color = mix(
+            vec3<f32>(0.4, 0.7, 0.3), // Light green
+            vec3<f32>(0.2, 0.5, 0.1), // Dark green
+            (height - 0.4) / 0.2
+        );
+    }
+    // Mountains (high areas)
+    else if (height < 0.8) {
+        color = mix(
+            vec3<f32>(0.5, 0.4, 0.3), // Brown
+            vec3<f32>(0.3, 0.3, 0.3), // Dark rock
+            (height - 0.6) / 0.2
+        );
+    }
+    // Snow peaks (highest areas)
+    else {
+        color = mix(
+            vec3<f32>(0.3, 0.3, 0.3), // Rock
+            vec3<f32>(0.9, 0.9, 1.0), // Snow
+            (height - 0.8) / 0.2
+        );
     }
     
-    // Create lighting effect
-    let light_intensity = 1.0 - max(0.0, dot(closest_point, light_pos));
-    let shade = vec3<f32>(light_intensity);
+    // Add some atmospheric perspective (distance fog)
+    let fog_factor = smoothstep(0.0, 1.0, st.y);
+    color = mix(color, vec3<f32>(0.7, 0.8, 0.9), fog_factor * 0.3);
     
-    // Create vibrant unicorn colors
-    let base_color = mix(
-        vec3<f32>(0.8, 0.2, 0.6), // Pink
-        vec3<f32>(0.3, 0.8, 0.9), // Cyan
-        closest_point.z
-    );
+    // Add subtle lighting based on height gradients
+    let light_dir = vec2<f32>(1.0, 1.0);
+    let gradient_x = fbm((st + vec2<f32>(0.01, 0.0)) * 3.0) - height;
+    let gradient_y = fbm((st + vec2<f32>(0.0, 0.01)) * 3.0) - height;
+    let normal = normalize(vec3<f32>(-gradient_x, -gradient_y, 0.1));
+    let lighting = dot(normal.xy, normalize(light_dir)) * 0.5 + 0.5;
     
-    // Add pulsing effect
-    let pulse = sin(u_time * 2.0) * 0.1 + 0.9;
-    let final_color = (base_color + shade) * pulse;
+    color *= 0.7 + 0.3 * lighting;
     
-    return vec4<f32>(final_color, 1.0);
+    return vec4<f32>(color, 1.0);
 }
