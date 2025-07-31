@@ -346,7 +346,7 @@ playing with voronoi
 EX - 84 [shader-ex-84 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-84).
 
 //\* noise
-fractal brownian motion
+fractal brownian motion. top view
 EX - 85 [shader-ex-85 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-85).
 
 ## License
