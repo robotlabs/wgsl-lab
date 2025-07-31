@@ -161,26 +161,6 @@ export default class App {
     });
   }
 
-  // private easingMcAdvanced2(
-  //   mc: any,
-  //   end_value: number,
-  //   nameProp: string
-  // ): void {
-  //   const current = mc[nameProp];
-  //   const difference = end_value - current;
-
-  //   if (Math.abs(difference) < 0.0001) {
-  //     mc[nameProp] = end_value;
-  //     return;
-  //   }
-
-  //   if (end_value > current) {
-  //     mc[nameProp] += difference * 0.1;
-  //   } else {
-  //     mc[nameProp] += difference * 0.1 * this.breakSpeed;
-  //   }
-  // }
-
   private startRendering(): void {
     const camera = this.engine.getCamera();
     const canvas = this.engine.getCanvas();
@@ -218,48 +198,6 @@ export default class App {
     });
   }
 
-  private testCubes(device: GPUDevice, format: GPUTextureFormat): void {
-    const cubeShaderModule = device.createShaderModule({ code: cubeShader });
-
-    //** single cube */
-    const rnMultiplierPos = 10;
-    for (let i = 0; i < 1000; i++) {
-      const cube = new Cube(device, format, {
-        posX: Math.random() * rnMultiplierPos - 3,
-        posY: Math.random() * rnMultiplierPos - 3,
-        posZ: Math.random() * rnMultiplierPos - 0,
-        rotX: Math.random() * rnMultiplierPos,
-        rotY: Math.random() * rnMultiplierPos,
-        rotZ: Math.random() * rnMultiplierPos,
-        scaleX: Math.random() * 1,
-        scaleY: Math.random() * 1,
-        scaleZ: Math.random() * 1,
-        cubeColor: [Math.random(), Math.random(), Math.random(), 1],
-        shader: cubeShaderModule,
-      });
-      this.scene.add(cube);
-
-      const tween = gsap.to(cube.getProps(), {
-        posX: Math.random() * rnMultiplierPos - 3,
-        posY: Math.random() * rnMultiplierPos - 3,
-        posZ: Math.random() * rnMultiplierPos - 0,
-        rotX: Math.random() * rnMultiplierPos,
-        rotY: Math.random() * rnMultiplierPos,
-        rotZ: Math.random() * rnMultiplierPos,
-        scaleX: Math.random() * 1,
-        scaleY: Math.random() * 1,
-        scaleZ: Math.random() * 1,
-        duration: 4,
-        repeat: -1,
-        yoyo: true,
-        ease: "power4.inOut",
-        onUpdate: () => cube.updateCameraTransform(),
-      });
-
-      cube.addTween(tween);
-    }
-  }
-
   private async testPlanes(
     device: GPUDevice,
     format: GPUTextureFormat
@@ -272,6 +210,8 @@ export default class App {
     const planeTexture = await createTextureFromImage(
       device,
       "./images/marlene.png"
+      // "./images/test1.png"
+      // "./images/test2.png"
     );
     const planeSampler = device.createSampler({
       magFilter: "linear",
@@ -297,7 +237,7 @@ export default class App {
         scaleY: 1,
         scaleZ: 1,
         color: [1.0, 0, 0, 1.0],
-        useTexture: false,
+        useTexture: true,
         params: [
           [0.0, 0.0, 0.0, 0.0],
           [0.0, 0.0, 0.0, 0.0],
