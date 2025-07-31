@@ -46,7 +46,7 @@ fn rotate(pt: vec2<f32>, theta: f32, aspect: f32) -> vec2<f32> {
   let s = sin(theta);
   let mat = mat2x2<f32>(c, s, -s, c);
   var ptt = pt;
-  ptt.y = pt.y / 1.0;
+  ptt.y = pt.y / 10.0;
   ptt = mat * ptt;
   ptt.y *= aspect;
   return ptt;
