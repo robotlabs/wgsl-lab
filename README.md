@@ -361,6 +361,10 @@ EX - 87 [shader-ex-87 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 fractal brownian motion. landscape pigeons generator
 EX - 88 [shader-ex-88 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-88).
 
+//\* noise
+fractal brownian motion. cloud effect ( book )
+EX - 89 [shader-ex-89 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-89).
+
 ## License
 
 MIT © robotlabs
