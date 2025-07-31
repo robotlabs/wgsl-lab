@@ -347,7 +347,7 @@ EX - 84 [shader-ex-84 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 
 //\* noise
 fractal brownian motion. BASIC
-EX - 85-a [shader-ex-85-a branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-85-a).
+EX - 85-basic [shader-ex-85-basic branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-85-basic).
 
 //\* noise
 fractal brownian motion. top view
