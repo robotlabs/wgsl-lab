@@ -16,11 +16,26 @@ struct VertexOutput {
   @location(2) vColor: vec3<f32>,
 };
 
-@vertex
-fn vs_main(@location(0) pos: vec3<f32>, @location(1) normal: vec3<f32>) -> VertexOutput {
+@vertex fn vs_main(@location(0) pos: vec3<f32>, @location(1) normal: vec3<f32>) -> VertexOutput {
+  let u_time = transform.params[0].z;    // time
+  let u_radius = 1.0; // radius
+  
+  // Calculate delta for animation (same as your GLSL)
+  let delta: f32 = ((sin(u_time) + 1.0) / 2.0);
+  
+  // Create normalized position scaled by radius
+  let v: vec3<f32> = normalize(pos) * u_radius;
+  
+  // Mix between original position and scaled normalized position
+  let animatedPos: vec3<f32> = mix(pos, v, delta);
+  
+  // Calculate the animated normal by mixing between original normal and spherical normal
+  let sphericalNormal: vec3<f32> = normalize(pos); // For a sphere, normal = normalized position
+  let animatedNormal: vec3<f32> = normalize(mix(normal, sphericalNormal, delta));
+  
   var output: VertexOutput;
-  let world = transform.modelCube * vec4f(pos, 1.0);
-  let worldNormal = normalize((transform.modelCube * vec4f(normal, 0.0)).xyz);
+  let world = transform.modelCube * vec4f(animatedPos, 1.0); // Use animated position
+  let worldNormal = normalize((transform.modelCube * vec4f(animatedNormal, 0.0)).xyz); // Use animated normal
 
   output.Position = transform.projectionMatrix * transform.viewMatrix * world;
   output.vPosition = world.xyz;
