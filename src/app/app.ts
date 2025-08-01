@@ -432,15 +432,15 @@ export default class App {
     this.sphere = sphere; // Store reference
 
     const noiseSphere = new Sphere(device, format, {
-      posX: -3,
+      posX: 0,
       posY: 0,
       posZ: 0,
       rotX: 0,
       rotY: 0,
       rotZ: 0,
-      scaleX: 2,
-      scaleY: 2,
-      scaleZ: 2,
+      scaleX: 1,
+      scaleY: 1,
+      scaleZ: 1,
       sphereColor: [0.8, 0.4, 0.9, 1],
       shader: noiseSphereShaderModule, // Use the simple one first
       wireframe: false, // Try wireframe: true to see the geometry structure
