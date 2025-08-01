@@ -420,6 +420,10 @@ EX - 100 [shader-ex-100 branch of robotlabs/wgsl-lab](https://github.com/robotla
 nice sphere noise vertex animation. with lights
 EX - 101 [shader-ex-101 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-101).
 
+//\* vertex
+sphere noise vertex animation. with texture and colours
+EX - 101 [shader-ex-101 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-101).
+
 ## License
 
 MIT © robotlabs
