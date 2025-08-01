@@ -50,26 +50,21 @@ export class Sphere implements Object3D {
   }
 
   init(): void {
-    const geometryType = this.props.geometryType || "uv"; // Default to UV sphere
+    const geometryType = this.props.geometryType || "uv";
 
-    let geometryData: any;
-
-    if (geometryType === "icosahedron") {
-      // Import and use icosahedron geometry
-      geometryData = createIcosahedronGeometry(
-        this.device,
-        this.props.radius || 1,
-        this.props.subdivisions || 2
-      );
-    } else {
-      // Use UV sphere for regular rendering
-      geometryData = createSphereGeometry(
-        this.device,
-        this.props.radius || 1,
-        this.props.segments?.width || 32,
-        this.props.segments?.height || 16
-      );
-    }
+    const geometryData =
+      geometryType === "icosahedron"
+        ? createIcosahedronGeometry(
+            this.device,
+            this.props.radius || 1,
+            this.props.subdivisions || 2
+          )
+        : createSphereGeometry(
+            this.device,
+            this.props.radius || 1,
+            this.props.segments?.width || 32,
+            this.props.segments?.height || 16
+          );
 
     const {
       sphereVertexBuffer,
@@ -85,44 +80,95 @@ export class Sphere implements Object3D {
     this.totalIndices = indexCount;
     this.totalWireframeIndices = wireframeIndexCount;
 
-    // Create both solid and wireframe pipelines
+    // Fallbacks (white 1x1 texture & default sampler)
+    const fallbackSampler = this.device.createSampler({
+      magFilter: "linear",
+      minFilter: "linear",
+    });
+
+    const fallbackTexture = this.device.createTexture({
+      size: [1, 1, 1],
+      format: "rgba8unorm",
+      usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST,
+    });
+
+    this.device.queue.writeTexture(
+      { texture: fallbackTexture },
+      new Uint8Array([255, 255, 255, 255]),
+      { bytesPerRow: 4 },
+      { width: 1, height: 1, depthOrArrayLayers: 1 }
+    );
+
+    // Layout always expects 3 bindings
+    const bindGroupLayout = this.device.createBindGroupLayout({
+      label: "Single Sphere Bind Group Layout",
+      entries: [
+        {
+          binding: 0,
+          visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
+          buffer: { type: "uniform" },
+        },
+        {
+          binding: 1,
+          visibility: GPUShaderStage.FRAGMENT,
+          sampler: { type: "filtering" },
+        },
+        {
+          binding: 2,
+          visibility: GPUShaderStage.FRAGMENT,
+          texture: { sampleType: "float" },
+        },
+      ],
+    });
+
     this.pipeline = createSingleSpherePipeline(
       this.device,
       this.format,
       this.props.shader,
-      false // solid
+      bindGroupLayout,
+      false
     );
 
     this.wireframePipeline = createSingleSpherePipeline(
       this.device,
       this.format,
       this.props.shader,
-      true // wireframe
+      bindGroupLayout,
+      true
     );
 
-    // Calculate buffer layout (same as Cube class logic)
-    const MAT_SIZE = 16; // floats per mat4x4
-    const COLOR_SIZE = 4; // vec4
+    // Buffer layout: 4 mat4 + vec4 color + vec4 * n
+    const MAT_SIZE = 16;
+    const COLOR_SIZE = 4;
     const PARAM_SLOTS = this.props.params?.length || 0;
-    const PARAM_SIZE = 4; // floats per vec4
-    const FLOAT_COUNT =
-      MAT_SIZE * 4 + // modelSphere, modelGrid, view, proj (4 matrices)
-      COLOR_SIZE + // sphereColor
-      PARAM_SLOTS * PARAM_SIZE;
+    const PARAM_SIZE = 4;
+    const FLOAT_COUNT = MAT_SIZE * 4 + COLOR_SIZE + PARAM_SLOTS * PARAM_SIZE;
 
     this.transformBuffer = this.device.createBuffer({
-      size: FLOAT_COUNT * 4, // bytes
+      size: FLOAT_COUNT * 4,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
 
+    // Unified bind group with fallback resources
     this.bindGroup = this.device.createBindGroup({
       layout: this.pipeline.getBindGroupLayout(0),
-      entries: [{ binding: 0, resource: { buffer: this.transformBuffer } }],
+      entries: [
+        { binding: 0, resource: { buffer: this.transformBuffer } },
+        { binding: 1, resource: this.props.sampler ?? fallbackSampler },
+        {
+          binding: 2,
+          resource: (this.props.texture ?? fallbackTexture).createView(),
+        },
+      ],
     });
 
     this.wireframeBindGroup = this.device.createBindGroup({
       layout: this.wireframePipeline.getBindGroupLayout(0),
-      entries: [{ binding: 0, resource: { buffer: this.transformBuffer } }],
+      entries: [
+        { binding: 0, resource: { buffer: this.transformBuffer } },
+        { binding: 1, resource: fallbackSampler },
+        { binding: 2, resource: fallbackTexture.createView() },
+      ],
     });
 
     this.updateCameraTransform();

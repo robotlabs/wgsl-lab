@@ -135,13 +135,19 @@ export function createSingleSpherePipeline(
   device: GPUDevice,
   format: GPUTextureFormat,
   shaderModule: GPUShaderModule,
+  bindGroupLayout: GPUBindGroupLayout, // <-- Inject layout
   wireframe: boolean = false
 ): GPURenderPipeline {
+  const pipelineLayout = device.createPipelineLayout({
+    label: "Single Sphere Pipeline Layout",
+    bindGroupLayouts: [bindGroupLayout],
+  });
+
   return device.createRenderPipeline({
     label: wireframe
       ? "Single Sphere Wireframe Pipeline"
       : "Single Sphere Pipeline",
-    layout: "auto",
+    layout: pipelineLayout,
     vertex: {
       module: shaderModule,
       entryPoint: "vs_main",
@@ -149,8 +155,8 @@ export function createSingleSpherePipeline(
         {
           arrayStride: 6 * 4, // 3 floats position + 3 floats normal
           attributes: [
-            { shaderLocation: 0, offset: 0, format: "float32x3" }, // position
-            { shaderLocation: 1, offset: 12, format: "float32x3" }, // normal
+            { shaderLocation: 0, offset: 0, format: "float32x3" },
+            { shaderLocation: 1, offset: 12, format: "float32x3" },
           ],
         },
       ],

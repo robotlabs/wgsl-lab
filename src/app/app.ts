@@ -411,7 +411,10 @@ export default class App {
   }
 
   // Add sphere test method
-  private testSpheres(device: GPUDevice, format: GPUTextureFormat): void {
+  private async testSpheres(
+    device: GPUDevice,
+    format: GPUTextureFormat
+  ): Promise<void> {
     const sphereShaderModule = device.createShaderModule({
       code: sphereShader,
     });
@@ -443,6 +446,18 @@ export default class App {
     // this.scene.add(sphere);
     // this.sphere = sphere; // Store reference
 
+    // Load the fire texture
+    const fireTexture = await createTextureFromImage(
+      device,
+      "https://s3-us-west-2.amazonaws.com/s.cdpn.io/2666677/explosion.png"
+    );
+
+    const fireSampler = device.createSampler({
+      magFilter: "linear",
+      minFilter: "linear",
+      addressModeU: "clamp-to-edge", // Important for vertical gradient
+      addressModeV: "clamp-to-edge",
+    });
     const noiseSphere = new Sphere(device, format, {
       posX: 0,
       posY: 0,
@@ -453,11 +468,13 @@ export default class App {
       scaleX: 1,
       scaleY: 1,
       scaleZ: 1,
-      sphereColor: [0.8, 0.4, 0.9, 1],
+      sphereColor: [1.0, 1.0, 0.0, 1],
       shader: noiseSphereShaderModule, // Use the simple one first
       wireframe: false, // Try wireframe: true to see the geometry structure
       geometryType: "icosahedron",
       subdivisions: 4,
+      texture: fireTexture, // ADD THIS
+      sampler: fireSampler,
       params: [
         [0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0],

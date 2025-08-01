@@ -8,6 +8,8 @@ struct Transform {
 };
 
 @group(0) @binding(0) var<uniform> transform: Transform;
+@group(0) @binding(1) var fireSampler: sampler;
+@group(0) @binding(2) var fireTex: texture_2d<f32>;
 
 struct VertexOutput {
   @builtin(position) Position: vec4<f32>,
@@ -18,7 +20,7 @@ struct VertexOutput {
   @location(4) vNoise: f32,
 };
 
-// [Include all the noise functions from before - cnoise, pnoise, turbulence]
+// [Same noise functions as before]
 fn mod289_3(x: vec3<f32>) -> vec3<f32> {
   return x - floor(x * (1.0 / 289.0)) * 289.0;
 }
@@ -185,6 +187,12 @@ fn turbulence(p: vec3<f32>) -> f32 {
   return t;
 }
 
+// Random function (matching Three.js version)
+fn random(pt: vec3<f32>, seed: f32) -> f32 {
+  let scale = vec3<f32>(12.9898, 78.233, 151.7182);
+  return fract(sin(dot(pt + vec3<f32>(seed), scale)) * 43758.5453 + seed);
+}
+
 @vertex fn vs_main(@location(0) pos: vec3<f32>, @location(1) normal: vec3<f32>) -> VertexOutput {
   let u_time = transform.params[0].z;
   
@@ -195,15 +203,14 @@ fn turbulence(p: vec3<f32>) -> f32 {
     acos(pos.y / length(pos)) / 3.14159265359
   );
   
-  // ANIMATION: Add time to noise parameters (matching the Three.js example)
-  let time = u_time * 0.1;
+  // FIRE EFFECT VERTEX (matching Three.js fire example)
+  let time = u_time * .1; // Faster animation
   
   // Add time to the noise parameters so it's animated
   let vNoise = 10.0 * -0.10 * turbulence(0.5 * normal + vec3<f32>(time));
-  let b = 1.0 * pnoise(0.05 * pos + vec3<f32>(time), vec3<f32>(100.0));
+  let b = 1.0 * pnoise(0.05 * pos + vec3<f32>(2.0 * time), vec3<f32>(100.0)); // Double time speed
   
-  // Note: Three.js uses "- 10. * vNoise + b" but our version uses "b - 10.0 * vNoise"
-  // Let's match the original exactly:
+  // Original Three.js displacement
   let displacement = -2.0 * vNoise + b + 2;
   
   let newPosition = pos + normal * displacement;
@@ -221,13 +228,6 @@ fn turbulence(p: vec3<f32>) -> f32 {
   return output;
 }
 
-// HSV to RGB conversion
-fn hsv2rgb(c: vec3<f32>) -> vec3<f32> {
-  let K = vec4<f32>(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-  let p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-  return c.z * mix(K.xxx, clamp(p - K.xxx, vec3<f32>(0.0), vec3<f32>(1.0)), c.y);
-}
-
 @fragment fn fs_main(
   @location(0) vPosition: vec3<f32>,
   @location(1) vNormal: vec3<f32>,
@@ -235,49 +235,43 @@ fn hsv2rgb(c: vec3<f32>) -> vec3<f32> {
   @location(3) vUv: vec2<f32>,
   @location(4) vNoise: f32
 ) -> @location(0) vec4<f32> {
-  let u_time = transform.params[0].z;
-  let u_mouse = transform.params[0].xy;
-  let u_resolution = transform.params[1].xy;
+  // FIRE EFFECT FRAGMENT (matching Three.js fire example)
   
-  // CHOOSE ONE OF THESE COLOR METHODS:
-  
-  // 1. ORIGINAL (Three.js style)
-  let baseColorA = vec3<f32>(vUv * (1.0 - 2.0 * vNoise), 0.0);
-  
-  // 2. SOLID COLOR with noise variation
-//   let baseColor = vec3<f32>(0.8, 0.3, 0.6); // Pink/purple
-//   let intensity = 1.0 + vNoise * 0.8;
-//   let baseColorA = baseColor * intensity;
-  
-  // 3. NOISE-BASED RAINBOW
-  // let hue = fract(vNoise * 2.0 + u_time * 0.1);
-  // let saturation = 0.8;
-  // let value = 0.8 + vNoise * 0.4;
-  // let baseColorA = hsv2rgb(vec3<f32>(hue, saturation, value));
-  
-  // 4. UV-BASED RAINBOW
-  // let hue = fract(vUv.x + vUv.y + u_time * 0.1);
-  // let baseColorA = hsv2rgb(vec3<f32>(hue, 0.8, 0.9));
-  
-  // 5. ZONE-BASED COLORING (using vNoise instead of vDisplacement)
-//   let normalizedNoise = (vNoise + 0.5) * 2.0; // Normalize noise to 0-1
-//   var baseColorA: vec3<f32>;
-//   if (normalizedNoise < 0.33) {
-//     baseColorA = mix(vec3<f32>(0.1, 0.2, 0.8), vec3<f32>(0.2, 0.8, 0.8), normalizedNoise / 0.33); // Blue to cyan
-//   } else if (normalizedNoise < 0.66) {
-//     baseColorA = mix(vec3<f32>(0.2, 0.8, 0.8), vec3<f32>(0.8, 0.8, 0.2), (normalizedNoise - 0.33) / 0.33); // Cyan to yellow  
-//   } else {
-//     baseColorA = mix(vec3<f32>(0.8, 0.8, 0.2), vec3<f32>(0.8, 0.2, 0.2), (normalizedNoise - 0.66) / 0.34); // Yellow to red
-//   }
+  let r = 0.01 * random(vPosition, 0.0);
 
-  // Add lighting
-  let lightDir = normalize(vec3<f32>(1.0, 1.0, 0.3));
-  let normal = normalize(vNormal);
-  let diffuse = max(dot(normal, lightDir), 0.0);
-  let ambient = 0.4;
-  let lighting = ambient + diffuse * 0.6;
-  let color = baseColorA * lighting;
-  return vec4<f32>(color, 1.0);
+  // vertical flow over time
+  let scroll = fract(transform.params[0].z * 0.2);
+
+  // base vertical coordinate driven by noise + scroll + jitter
+  var fireUvY = 1.3 * vNoise + r + scroll;
+  fireUvY = fract(fireUvY); // wrap for continuous flow
+
+  // subtle horizontal flicker (adds color variation across texture)
+  let jitterX = 0.1 * sin(transform.params[0].z + vNoise * 3.0);
+  let fireUvX = clamp(0.5 + jitterX, 0.0, 1.0);
+
+  // primary and secondary samples for richness/glow
+  let primaryUv = vec2<f32>(fireUvX, fireUvY);
+  let glowUv = vec2<f32>(fireUvX, fract(fireUvY * 1.2 + 0.05));
+
+  let primary = textureSample(fireTex, fireSampler, primaryUv).rgb;
+  let glow = textureSample(fireTex, fireSampler, glowUv).rgb;
+
+  // mix for soft layering
+  var colorMix = mix(primary, glow, 0.5);
+
+  // boost contrast a bit
+  colorMix = pow(colorMix, vec3<f32>(1.1));
+
+  // subtle tint instead of hard multiply
+  let tint = transform.sphereColor.rgb;
+  let tinted = mix(colorMix, tint, 0.15);
+
+  // flickering brightness for organic variation
+  let brightness = 1.0 + 0.25 * sin(transform.params[0].z * 8.0 + vNoise * 2.0);
+  let finalColor = tinted * brightness;
+
+  return vec4<f32>(finalColor, 1.0);
 }
 
 @fragment fn fs_wireframe(

@@ -16,4 +16,6 @@ export interface SphereProps {
   radius?: number;
   segments?: { width: number; height: number }; // For UV sphere
   subdivisions?: number; // For icosahedron
+  texture?: GPUTexture; // ADD THIS
+  sampler?: GPUSampler; // ADD THIS
 }
