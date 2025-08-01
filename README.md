@@ -397,7 +397,12 @@ EX - 94 [shader-ex-94 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 EX - 95 [shader-ex-95 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-95).
 
 //\* vertex
+cube vertex animation
 EX - 96 [shader-ex-96 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-96).
+
+//\* vertex
+added Icosahedron sphere to add noise (not yet)
+EX - 97 [shader-ex-96 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-96).
 
 ## License
 
