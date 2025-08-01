@@ -393,6 +393,9 @@ EX - 93 [shader-ex-93 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 ripple effect ( from udemy )
 EX - 94 [shader-ex-94 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-94).
 
+//\* vertex
+EX - 95 [shader-ex-95 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-95).
+
 ## License
 
 MIT © robotlabs
