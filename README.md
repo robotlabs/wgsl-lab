@@ -402,7 +402,11 @@ EX - 96 [shader-ex-96 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 
 //\* vertex
 added Icosahedron sphere to add noise (not yet)
-EX - 97 [shader-ex-96 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-96).
+EX - 97 [shader-ex-97 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-96).
+
+//\* vertex
+Icosahedron with static noise
+EX - 98 [shader-ex-98 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-98).
 
 ## License
 
