@@ -36,6 +36,7 @@ export default class App {
   private engine!: Engine;
   private scene!: Scene;
   private plane: Plane;
+  private cube: Cube;
 
   private rawMouse = { x: 0, y: 0 };
   private easedMouse = { x: 0, y: 0 };
@@ -43,7 +44,7 @@ export default class App {
   constructor() {}
 
   async init(canvas: HTMLCanvasElement): Promise<void> {
-    var cameraInitPos: vec3 = [0, 0, 7];
+    var cameraInitPos: vec3 = [0, 0, 17];
 
     new GUIView(this, cameraInitPos);
     const datGUIRoot = document.querySelector(".tp-dfwv");
@@ -64,8 +65,8 @@ export default class App {
     const device = this.engine.getDevice();
     const format = this.engine.getFormat();
 
-    // this.testCubes(device, format);
-    this.testPlanes(device, format);
+    this.testCubes(device, format);
+    // this.testPlanes(device, format);
 
     this.setupListeners();
     this.startRendering();
@@ -122,6 +123,15 @@ export default class App {
         p.params[1][3] = 0;
       });
     }
+    // Add this block for the cube
+    if (this.cube) {
+      this.cube.updateProps((p) => {
+        p.params[1][0] = w;
+        p.params[1][1] = h;
+        p.params[1][2] = 0;
+        p.params[1][3] = 0;
+      });
+    }
   };
 
   private setupListeners(): void {
@@ -154,6 +164,12 @@ export default class App {
 
       if (this.plane) {
         this.plane.updateProps((p) => {
+          p.params[1][2] = x;
+          p.params[1][3] = y;
+        });
+      }
+      if (this.cube) {
+        this.cube.updateProps((p) => {
           p.params[1][2] = x;
           p.params[1][3] = y;
         });
@@ -192,10 +208,87 @@ export default class App {
             p.params[0][2] = time;
           });
         }
+        if (this.cube) {
+          // Interpolate (using the same eased mouse values)
+          this.easedMouse.x += (this.rawMouse.x - this.easedMouse.x) * 0.05;
+          this.easedMouse.y += (this.rawMouse.y - this.easedMouse.y) * 0.05;
+
+          this.cube.updateProps((p) => {
+            p.params[0][0] = this.easedMouse.x;
+            p.params[0][1] = this.easedMouse.y;
+            p.params[0][2] = time;
+            // You can add p.params[0][3] for duration if needed
+          });
+        }
       }
       this.engine.render();
       this.stats.end();
     });
+  }
+
+  private testCubes(device: GPUDevice, format: GPUTextureFormat): void {
+    const cubeShaderModule = device.createShaderModule({ code: cubeShader });
+
+    const cube = new Cube(device, format, {
+      posX: 0,
+      posY: 0,
+      posZ: 0,
+      rotX: 0.6,
+      rotY: 0.8,
+      rotZ: 0.5,
+      scaleX: 1,
+      scaleY: 1,
+      scaleZ: 1,
+      cubeColor: [0.3, 0.3, 0.5, 1],
+      shader: cubeShaderModule,
+      wireframe: false,
+      params: [
+        [0.0, 0.0, 0.0, 0.0], // u_mouse.xy, u_time, u_duration
+        [0.0, 0.0, 0.0, 0.0], // u_resolution.xy, etc.
+      ],
+    });
+    this.scene.add(cube);
+    this.cube = cube;
+    setTimeout(() => {
+      cube.updateCameraTransform();
+    }, 0);
+
+    // const rnMultiplierPos = 10;
+    // for (let i = 0; i < 1000; i++) {
+    //   const cube = new Cube(device, format, {
+    //     posX: Math.random() * rnMultiplierPos - 3,
+    //     posY: Math.random() * rnMultiplierPos - 3,
+    //     posZ: Math.random() * rnMultiplierPos - 0,
+    //     rotX: Math.random() * rnMultiplierPos,
+    //     rotY: Math.random() * rnMultiplierPos,
+    //     rotZ: Math.random() * rnMultiplierPos,
+    //     scaleX: Math.random() * 1,
+    //     scaleY: Math.random() * 1,
+    //     scaleZ: Math.random() * 1,
+    //     cubeColor: [Math.random(), Math.random(), Math.random(), 1],
+    //     shader: cubeShaderModule,
+    //   });
+    //   this.scene.add(cube);
+
+    //   const tween = gsap.to(cube.getProps(), {
+    //     posX: Math.random() * rnMultiplierPos - 3,
+    //     posY: Math.random() * rnMultiplierPos - 3,
+    //     posZ: Math.random() * rnMultiplierPos - 0,
+    //     rotX: Math.random() * rnMultiplierPos,
+    //     rotY: Math.random() * rnMultiplierPos,
+    //     rotZ: Math.random() * rnMultiplierPos,
+    //     scaleX: Math.random() * 1,
+    //     scaleY: Math.random() * 1,
+    //     scaleZ: Math.random() * 1,
+    //     duration: 4,
+    //     repeat: -1,
+    //     yoyo: true,
+    //     ease: "power4.inOut",
+    //     onUpdate: () => cube.updateCameraTransform(),
+    //   });
+
+    //   cube.addTween(tween);
+    // }
   }
 
   private async testPlanes(
