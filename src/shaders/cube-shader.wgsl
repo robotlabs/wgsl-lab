@@ -40,6 +40,9 @@ fn vs_main(@location(0) pos: vec3<f32>, @location(1) normal: vec3<f32>) -> Verte
   let u_mouse = transform.params[0].xy;
   let u_resolution = transform.params[1].xy;
   
+  let speed : f32 = .51;                       
+  let v     : f32 = sin(u_time * speed) / 1;
+  
   // Your existing lighting code...
   let lightDir = normalize(vec3<f32>(0.5, 1.0, 0.3));
   let viewDir = normalize(-vPosition);
@@ -52,7 +55,7 @@ fn vs_main(@location(0) pos: vec3<f32>, @location(1) normal: vec3<f32>) -> Verte
 
   let lighting = ambient + 0.7 * diffuse + 0.3 * specular;
 
-  return vec4<f32>(vColor * lighting, 1.0);
+  return vec4<f32>((vColor * v) * lighting, 1.0);
 }
 
 
