@@ -396,6 +396,9 @@ EX - 94 [shader-ex-94 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 //\* vertex
 EX - 95 [shader-ex-95 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-95).
 
+//\* vertex
+EX - 96 [shader-ex-96 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-96).
+
 ## License
 
 MIT © robotlabs
