@@ -11,7 +11,7 @@ export interface SphereProps {
   sphereColor: [number, number, number, number];
   shader: GPUShaderModule;
   wireframe?: boolean;
-  params?: [number, number, number, number][];
+  params: [number, number, number, number][];
   geometryType?: "uv" | "icosahedron"; // Add this option
   radius?: number;
   segments?: { width: number; height: number }; // For UV sphere

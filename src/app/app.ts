@@ -42,6 +42,7 @@ export default class App {
   private plane: Plane;
   private cube: Cube;
   private sphere: Sphere;
+  private noiseSphere: Sphere;
 
   private rawMouse = { x: 0, y: 0 };
   private easedMouse = { x: 0, y: 0 };
@@ -252,6 +253,17 @@ export default class App {
             p.params[0][2] = time;
           });
         }
+
+        if (this.noiseSphere) {
+          this.easedMouse.x += (this.rawMouse.x - this.easedMouse.x) * 0.05;
+          this.easedMouse.y += (this.rawMouse.y - this.easedMouse.y) * 0.05;
+
+          this.noiseSphere.updateProps((p) => {
+            p.params[0][0] = this.easedMouse.x;
+            p.params[0][1] = this.easedMouse.y;
+            p.params[0][2] = time;
+          });
+        }
       }
       this.engine.render();
       this.stats.end();
@@ -428,8 +440,8 @@ export default class App {
         [0.0, 0.0, 0.0, 0.0], // u_resolution.xy, etc.
       ],
     });
-    this.scene.add(sphere);
-    this.sphere = sphere; // Store reference
+    // this.scene.add(sphere);
+    // this.sphere = sphere; // Store reference
 
     const noiseSphere = new Sphere(device, format, {
       posX: 0,
@@ -452,6 +464,7 @@ export default class App {
       ],
     });
     this.scene.add(noiseSphere);
+    this.noiseSphere = noiseSphere;
 
     setTimeout(() => {
       noiseSphere.updateCameraTransform();
