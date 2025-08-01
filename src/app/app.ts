@@ -16,6 +16,10 @@ import shader9 from "@/shaders/shader-9.wgsl";
 import shader12 from "@/shaders/shader-12.wgsl";
 import shaderRepo from "@/shaders/shader-update-repo.wgsl";
 
+import { Sphere } from "@/gpulab/objects/spheres/sphere";
+import sphereShader from "@/shaders/sphere-shader.wgsl";
+import noiseSphereShader from "@/shaders/noise-sphere-shader.wgsl";
+
 //* gpu lab */
 import { Engine } from "@/gpulab/core/engine";
 import { Scene } from "@/gpulab/core/scene";
@@ -37,6 +41,7 @@ export default class App {
   private scene!: Scene;
   private plane: Plane;
   private cube: Cube;
+  private sphere: Sphere;
 
   private rawMouse = { x: 0, y: 0 };
   private easedMouse = { x: 0, y: 0 };
@@ -65,8 +70,9 @@ export default class App {
     const device = this.engine.getDevice();
     const format = this.engine.getFormat();
 
-    this.testCubes(device, format);
+    // this.testCubes(device, format);
     // this.testPlanes(device, format);
+    this.testSpheres(device, format);
 
     this.setupListeners();
     this.startRendering();
@@ -132,6 +138,14 @@ export default class App {
         p.params[1][3] = 0;
       });
     }
+    if (this.sphere) {
+      this.sphere.updateProps((p) => {
+        p.params[1][0] = w;
+        p.params[1][1] = h;
+        p.params[1][2] = 0;
+        p.params[1][3] = 0;
+      });
+    }
   };
 
   private setupListeners(): void {
@@ -170,6 +184,13 @@ export default class App {
       }
       if (this.cube) {
         this.cube.updateProps((p) => {
+          p.params[1][2] = x;
+          p.params[1][3] = y;
+        });
+      }
+
+      if (this.sphere) {
+        this.sphere.updateProps((p) => {
           p.params[1][2] = x;
           p.params[1][3] = y;
         });
@@ -218,6 +239,17 @@ export default class App {
             p.params[0][1] = this.easedMouse.y;
             p.params[0][2] = time;
             // You can add p.params[0][3] for duration if needed
+          });
+        }
+
+        if (this.sphere) {
+          this.easedMouse.x += (this.rawMouse.x - this.easedMouse.x) * 0.05;
+          this.easedMouse.y += (this.rawMouse.y - this.easedMouse.y) * 0.05;
+
+          this.sphere.updateProps((p) => {
+            p.params[0][0] = this.easedMouse.x;
+            p.params[0][1] = this.easedMouse.y;
+            p.params[0][2] = time;
           });
         }
       }
@@ -364,5 +396,65 @@ export default class App {
     //     plane.updateCameraTransform();
     //   },
     // });
+  }
+
+  // Add sphere test method
+  private testSpheres(device: GPUDevice, format: GPUTextureFormat): void {
+    const sphereShaderModule = device.createShaderModule({
+      code: sphereShader,
+    });
+
+    const noiseSphereShaderModule = device.createShaderModule({
+      code: noiseSphereShader,
+    });
+
+    const sphere = new Sphere(device, format, {
+      posX: 0,
+      posY: 0,
+      posZ: 0,
+      rotX: 0,
+      rotY: 0,
+      rotZ: 0,
+      scaleX: 1,
+      scaleY: 1,
+      scaleZ: 1,
+      sphereColor: [0.8, 0.4, 0.9, 1],
+      shader: sphereShaderModule,
+      wireframe: false,
+      geometryType: "uv",
+      segments: { width: 32, height: 16 },
+      params: [
+        [0.0, 0.0, 0.0, 0.0], // u_mouse.xy, u_time, u_duration
+        [0.0, 0.0, 0.0, 0.0], // u_resolution.xy, etc.
+      ],
+    });
+    this.scene.add(sphere);
+    this.sphere = sphere; // Store reference
+
+    const noiseSphere = new Sphere(device, format, {
+      posX: -3,
+      posY: 0,
+      posZ: 0,
+      rotX: 0,
+      rotY: 0,
+      rotZ: 0,
+      scaleX: 2,
+      scaleY: 2,
+      scaleZ: 2,
+      sphereColor: [0.8, 0.4, 0.9, 1],
+      shader: noiseSphereShaderModule, // Use the simple one first
+      wireframe: false, // Try wireframe: true to see the geometry structure
+      geometryType: "icosahedron",
+      subdivisions: 4,
+      params: [
+        [0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0],
+      ],
+    });
+    this.scene.add(noiseSphere);
+
+    setTimeout(() => {
+      noiseSphere.updateCameraTransform();
+    }, 0);
   }
 }
