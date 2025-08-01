@@ -408,6 +408,10 @@ EX - 97 [shader-ex-97 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 Icosahedron with static noise
 EX - 98 [shader-ex-98 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-98).
 
+//\* vertex
+Icosahedron with static noise. various coloring
+EX - 99 [shader-ex-99 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-99).
+
 ## License
 
 MIT © robotlabs
