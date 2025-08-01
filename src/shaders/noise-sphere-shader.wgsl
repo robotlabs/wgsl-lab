@@ -242,34 +242,41 @@ fn hsv2rgb(c: vec3<f32>) -> vec3<f32> {
   // CHOOSE ONE OF THESE COLOR METHODS:
   
   // 1. ORIGINAL (Three.js style)
-  // let color = vec3<f32>(vUv * (1.0 - 2.0 * vNoise), 0.0);
+  let baseColorA = vec3<f32>(vUv * (1.0 - 2.0 * vNoise), 0.0);
   
   // 2. SOLID COLOR with noise variation
 //   let baseColor = vec3<f32>(0.8, 0.3, 0.6); // Pink/purple
 //   let intensity = 1.0 + vNoise * 0.8;
-//   let color = baseColor * intensity;
+//   let baseColorA = baseColor * intensity;
   
   // 3. NOISE-BASED RAINBOW
   // let hue = fract(vNoise * 2.0 + u_time * 0.1);
   // let saturation = 0.8;
   // let value = 0.8 + vNoise * 0.4;
-  // let color = hsv2rgb(vec3<f32>(hue, saturation, value));
+  // let baseColorA = hsv2rgb(vec3<f32>(hue, saturation, value));
   
   // 4. UV-BASED RAINBOW
   // let hue = fract(vUv.x + vUv.y + u_time * 0.1);
-  // let color = hsv2rgb(vec3<f32>(hue, 0.8, 0.9));
+  // let baseColorA = hsv2rgb(vec3<f32>(hue, 0.8, 0.9));
   
   // 5. ZONE-BASED COLORING (using vNoise instead of vDisplacement)
-  let normalizedNoise = (vNoise + 0.5) * 2.0; // Normalize noise to 0-1
-  var color: vec3<f32>;
-  if (normalizedNoise < 0.33) {
-    color = mix(vec3<f32>(0.1, 0.2, 0.8), vec3<f32>(0.2, 0.8, 0.8), normalizedNoise / 0.33); // Blue to cyan
-  } else if (normalizedNoise < 0.66) {
-    color = mix(vec3<f32>(0.2, 0.8, 0.8), vec3<f32>(0.8, 0.8, 0.2), (normalizedNoise - 0.33) / 0.33); // Cyan to yellow  
-  } else {
-    color = mix(vec3<f32>(0.8, 0.8, 0.2), vec3<f32>(0.8, 0.2, 0.2), (normalizedNoise - 0.66) / 0.34); // Yellow to red
-  }
-  
+//   let normalizedNoise = (vNoise + 0.5) * 2.0; // Normalize noise to 0-1
+//   var baseColorA: vec3<f32>;
+//   if (normalizedNoise < 0.33) {
+//     baseColorA = mix(vec3<f32>(0.1, 0.2, 0.8), vec3<f32>(0.2, 0.8, 0.8), normalizedNoise / 0.33); // Blue to cyan
+//   } else if (normalizedNoise < 0.66) {
+//     baseColorA = mix(vec3<f32>(0.2, 0.8, 0.8), vec3<f32>(0.8, 0.8, 0.2), (normalizedNoise - 0.33) / 0.33); // Cyan to yellow  
+//   } else {
+//     baseColorA = mix(vec3<f32>(0.8, 0.8, 0.2), vec3<f32>(0.8, 0.2, 0.2), (normalizedNoise - 0.66) / 0.34); // Yellow to red
+//   }
+
+  // Add lighting
+  let lightDir = normalize(vec3<f32>(1.0, 1.0, 0.3));
+  let normal = normalize(vNormal);
+  let diffuse = max(dot(normal, lightDir), 0.0);
+  let ambient = 0.4;
+  let lighting = ambient + diffuse * 0.6;
+  let color = baseColorA * lighting;
   return vec4<f32>(color, 1.0);
 }
 
