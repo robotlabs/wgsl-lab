@@ -424,6 +424,10 @@ EX - 101 [shader-ex-101 branch of robotlabs/wgsl-lab](https://github.com/robotla
 sphere noise vertex animation. with texture and colours
 EX - 102 [shader-ex-102 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-102).
 
+//\* vertex
+sphere noise vertex animation. lava effect
+EX - 103 [shader-ex-103 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-103).
+
 ## License
 
 MIT © robotlabs
