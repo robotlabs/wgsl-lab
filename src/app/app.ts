@@ -19,6 +19,7 @@ import shaderRepo from "@/shaders/shader-update-repo.wgsl";
 import { Sphere } from "@/gpulab/objects/spheres/sphere";
 import sphereShader from "@/shaders/sphere-shader.wgsl";
 import noiseSphereShader from "@/shaders/noise-sphere-shader.wgsl";
+import torusShader from "@/shaders/torus-shader.wgsl";
 
 //* gpu lab */
 import { Engine } from "@/gpulab/core/engine";
@@ -34,6 +35,7 @@ import { Plane } from "@/gpulab/objects/planes/plane";
 import { createTextureFromImage } from "@/gpulab/objects/planes/plane-utils";
 import { vec3 } from "gl-matrix";
 import { GLBModel } from "@/gpulab/objects/glb/glb-model";
+import { Torus } from "@/gpulab/objects/torus/torus";
 
 export default class App {
   private stats!: ReturnType<typeof Stats>;
@@ -43,6 +45,7 @@ export default class App {
   private cube: Cube;
   private sphere: Sphere;
   private noiseSphere: Sphere;
+  private torus: Torus;
 
   private rawMouse = { x: 0, y: 0 };
   private easedMouse = { x: 0, y: 0 };
@@ -73,7 +76,8 @@ export default class App {
 
     // this.testCubes(device, format);
     // this.testPlanes(device, format);
-    this.testSpheres(device, format);
+    // this.testSpheres(device, format);
+    this.testTorus(device, format);
 
     this.setupListeners();
     this.startRendering();
@@ -141,6 +145,14 @@ export default class App {
     }
     if (this.sphere) {
       this.sphere.updateProps((p) => {
+        p.params[1][0] = w;
+        p.params[1][1] = h;
+        p.params[1][2] = 0;
+        p.params[1][3] = 0;
+      });
+    }
+    if (this.torus) {
+      this.torus.updateProps((p) => {
         p.params[1][0] = w;
         p.params[1][1] = h;
         p.params[1][2] = 0;
@@ -259,6 +271,17 @@ export default class App {
           this.easedMouse.y += (this.rawMouse.y - this.easedMouse.y) * 0.05;
 
           this.noiseSphere.updateProps((p) => {
+            p.params[0][0] = this.easedMouse.x;
+            p.params[0][1] = this.easedMouse.y;
+            p.params[0][2] = time;
+          });
+        }
+
+        if (this.torus) {
+          this.easedMouse.x += (this.rawMouse.x - this.easedMouse.x) * 0.05;
+          this.easedMouse.y += (this.rawMouse.y - this.easedMouse.y) * 0.05;
+
+          this.torus.updateProps((p) => {
             p.params[0][0] = this.easedMouse.x;
             p.params[0][1] = this.easedMouse.y;
             p.params[0][2] = time;
@@ -486,5 +509,47 @@ export default class App {
     setTimeout(() => {
       noiseSphere.updateCameraTransform();
     }, 0);
+  }
+  // Add this method to your App class
+  private testTorus(device: GPUDevice, format: GPUTextureFormat): void {
+    const torusShaderModule = device.createShaderModule({ code: torusShader });
+
+    const torus = new Torus(device, format, {
+      posX: 0,
+      posY: 0,
+      posZ: 0,
+      rotX: 1.0,
+      rotY: Math.PI * 2,
+      rotZ: 0.0,
+      scaleX: 1,
+      scaleY: 1,
+      scaleZ: 1,
+      torusColor: [0.65, 0.89, 0.98, 1], // Light blue like your Three.js example
+      shader: torusShaderModule,
+      wireframe: true,
+      majorRadius: 1.0,
+      minorRadius: 0.5,
+      majorSegments: 64,
+      minorSegments: 32,
+      params: [
+        [0.0, 0.0, 0.0, 0.0], // u_mouse.xy, u_time, u_duration
+        [0.0, 0.0, 0.0, 0.0], // u_resolution.xy, etc.
+      ],
+    });
+
+    this.scene.add(torus);
+    this.torus = torus; // Store reference
+
+    setTimeout(() => {
+      torus.updateCameraTransform();
+    }, 0);
+
+    // gsap.to(torus.getProps(), {
+    //   rotY: Math.PI * 2,
+    //   duration: 10,
+    //   repeat: -1,
+    //   ease: "none",
+    //   onUpdate: () => torus.updateCameraTransform(),
+    // });
   }
 }
