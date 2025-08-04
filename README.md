@@ -436,6 +436,10 @@ EX - 104 [shader-ex-104 branch of robotlabs/wgsl-lab](https://github.com/robotla
 torus. improved shader (plastic effect ) and animated vertex
 EX - 105 [shader-ex-105 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-105).
 
+//\* vertex
+torus. improved shader (plastic effect ) and animated vertex.
+EX - 106 [shader-ex-106 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-106).
+
 ## License
 
 MIT © robotlabs
