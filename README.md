@@ -420,6 +420,30 @@ EX - 100 [shader-ex-100 branch of robotlabs/wgsl-lab](https://github.com/robotla
 nice sphere noise vertex animation. with lights
 EX - 101 [shader-ex-101 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-101).
 
+//\* vertex
+sphere noise vertex animation. with texture and colours
+EX - 102 [shader-ex-102 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-102).
+
+//\* vertex
+sphere noise vertex animation. lava effect
+EX - 103 [shader-ex-103 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-103).
+
+//\* vertex
+static torus
+EX - 104 [shader-ex-104 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-104).
+
+//\* vertex
+torus. improved shader (plastic effect ) and animated vertex
+EX - 105 [shader-ex-105 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-105).
+
+//\* vertex
+torus. improved shader (plastic effect ) and animated vertex.
+EX - 106 [shader-ex-106 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-106).
+
+//\* vertex
+cube. bump mapping
+EX - 107 [shader-ex-107 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-107).
+
 ## License
 
 MIT © robotlabs
