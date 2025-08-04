@@ -1,4 +1,4 @@
-// torus.ts
+// torus.ts - Updated with environment mapping
 import { Object3D } from "../../core/types";
 import gsap from "gsap";
 import {
@@ -24,6 +24,10 @@ export class Torus implements Object3D {
   private wireframePipeline!: GPURenderPipeline;
   private bindGroup!: GPUBindGroup;
   private wireframeBindGroup!: GPUBindGroup;
+
+  // Environment mapping additions
+  private envTexture!: GPUTexture;
+  private envSampler!: GPUSampler;
 
   private camera!: Camera;
 
@@ -52,7 +56,56 @@ export class Torus implements Object3D {
     this.camera = camera;
   }
 
-  init(): void {
+  // Load the exact same environment texture from ShaderFrog example
+  private async loadEnvironmentTexture(): Promise<void> {
+    const faceUrls = [
+      "https://s3-us-west-2.amazonaws.com/s.cdpn.io/2666677/skybox2_px.jpg",
+      "https://s3-us-west-2.amazonaws.com/s.cdpn.io/2666677/skybox2_nx.jpg",
+      "https://s3-us-west-2.amazonaws.com/s.cdpn.io/2666677/skybox2_py.jpg",
+      "https://s3-us-west-2.amazonaws.com/s.cdpn.io/2666677/skybox2_ny.jpg",
+      "https://s3-us-west-2.amazonaws.com/s.cdpn.io/2666677/skybox2_pz.jpg",
+      "https://s3-us-west-2.amazonaws.com/s.cdpn.io/2666677/skybox2_nz.jpg",
+    ];
+
+    // Create cubemap texture
+    this.envTexture = this.device.createTexture({
+      size: [512, 512, 6],
+      format: "rgba8unorm",
+      usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST,
+      dimension: "2d",
+      mipLevelCount: 1,
+    });
+
+    // Load and upload each face
+    for (let i = 0; i < 6; i++) {
+      const response = await fetch(faceUrls[i]);
+      const imageBitmap = await createImageBitmap(await response.blob());
+
+      this.device.queue.copyExternalImageToTexture(
+        { source: imageBitmap },
+        {
+          texture: this.envTexture,
+          origin: [0, 0, i],
+        },
+        [imageBitmap.width, imageBitmap.height]
+      );
+    }
+
+    // Create sampler
+    this.envSampler = this.device.createSampler({
+      magFilter: "linear",
+      minFilter: "linear",
+      mipmapFilter: "linear",
+      addressModeU: "clamp-to-edge",
+      addressModeV: "clamp-to-edge",
+      addressModeW: "clamp-to-edge",
+    });
+  }
+
+  async init(): Promise<void> {
+    // Load environment texture first
+    await this.loadEnvironmentTexture();
+
     const { torusVertexBuffer, torusIndexBuffer, torusWireframeIndexBuffer } =
       createTorusGeometry(
         this.device,
@@ -70,7 +123,7 @@ export class Torus implements Object3D {
     this.totalIndices = this.majorSegments * this.minorSegments * 6;
     this.totalWireframeIndices = this.majorSegments * this.minorSegments * 12;
 
-    // Create both solid and wireframe pipelines
+    // Create both solid and wireframe pipelines WITH environment mapping
     this.pipeline = createSingleTorusPipeline(
       this.device,
       this.format,
@@ -86,24 +139,42 @@ export class Torus implements Object3D {
     );
 
     this.transformBuffer = this.device.createBuffer({
-      size: (4 * 16 + 4 + 4 + 4) * 4,
+      size: 320, // corrected to match updated WGSL struct
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
 
+    // Updated bind groups to include environment texture and sampler
     this.bindGroup = this.device.createBindGroup({
       layout: this.pipeline.getBindGroupLayout(0),
-      entries: [{ binding: 0, resource: { buffer: this.transformBuffer } }],
+      entries: [
+        { binding: 0, resource: { buffer: this.transformBuffer } },
+        {
+          binding: 1,
+          resource: this.envTexture.createView({ dimension: "cube" }),
+        },
+        { binding: 2, resource: this.envSampler },
+      ],
     });
 
     this.wireframeBindGroup = this.device.createBindGroup({
       layout: this.wireframePipeline.getBindGroupLayout(0),
-      entries: [{ binding: 0, resource: { buffer: this.transformBuffer } }],
+      entries: [
+        { binding: 0, resource: { buffer: this.transformBuffer } },
+        {
+          binding: 1,
+          resource: this.envTexture.createView({ dimension: "cube" }),
+        },
+        { binding: 2, resource: this.envSampler },
+      ],
     });
 
-    this.updateCameraTransform();
+    // Don't call updateCameraTransform here - camera isn't set yet
+    // this.updateCameraTransform();
   }
 
   updateCameraTransform(): void {
+    if (!this.transformBuffer) return;
+
     const {
       posX,
       posY,
@@ -118,6 +189,10 @@ export class Torus implements Object3D {
       params = [],
     } = this.props;
 
+    // Ensure we have exactly two vec4 params (fallback to zero)
+    const param0: number[] = params[0] ?? [0, 0, 0, 0];
+    const param1: number[] = params[1] ?? [0, 0, 0, 0];
+
     const scale = makeScaleMatrix(scaleX, scaleY, scaleZ);
     const rotation = makeRotationMatrix(rotX, rotY, rotZ);
     const translation = makeTranslationMatrix(posX, posY, posZ);
@@ -129,35 +204,32 @@ export class Torus implements Object3D {
     const view = this.camera.getViewMatrix();
     const proj = this.camera.getProjectionMatrix();
 
-    // Calculate buffer layout (same as your existing system)
-    const MAT_SIZE = 16; // floats per mat4x4
-    const COLOR_SIZE = 4; // vec4
-    const PARAM_SLOTS = params.length; // number of vec4 slots
-    const PARAM_SIZE = 4; // floats per vec4
-    const FLOAT_COUNT =
-      MAT_SIZE * 4 + // modelTorus, modelGrid, view, proj (4 matrices)
-      COLOR_SIZE + // torusColor
-      PARAM_SLOTS * PARAM_SIZE;
-
-    // Offsets (in floats)
+    // Offsets in floats according to shader struct:
+    // modelTorus (16), modelGrid (16), view (16), proj (16),
+    // torusColor (4), params[0] (4), params[1] (4), cameraPos (4) = 80 floats
     const OFF_MODEL_TORUS = 0;
-    const OFF_MODEL_GRID = OFF_MODEL_TORUS + MAT_SIZE;
-    const OFF_VIEW = OFF_MODEL_GRID + MAT_SIZE;
-    const OFF_PROJ = OFF_VIEW + MAT_SIZE;
-    const OFF_COLOR = OFF_PROJ + MAT_SIZE;
-    const OFF_PARAMS = OFF_COLOR + COLOR_SIZE;
+    const OFF_MODEL_GRID = OFF_MODEL_TORUS + 16; // 16
+    const OFF_VIEW = OFF_MODEL_GRID + 16; // 32
+    const OFF_PROJ = OFF_VIEW + 16; // 48
+    const OFF_COLOR = OFF_PROJ + 16; // 64
+    const OFF_PARAM0 = OFF_COLOR + 4; // 68
+    const OFF_PARAM1 = OFF_PARAM0 + 4; // 72
+    const OFF_CAMERA = OFF_PARAM1 + 4; // 76
+
+    const FLOAT_COUNT = OFF_CAMERA + 4; // 80
 
     const data = new Float32Array(FLOAT_COUNT);
     data.set(model, OFF_MODEL_TORUS);
-    data.set(model, OFF_MODEL_GRID); // Using same model matrix for both
+    data.set(model, OFF_MODEL_GRID);
     data.set(view, OFF_VIEW);
     data.set(proj, OFF_PROJ);
     data.set(torusColor, OFF_COLOR);
 
-    // Write each params[i] at the correct offset
-    for (let i = 0; i < PARAM_SLOTS; i++) {
-      data.set(params[i], OFF_PARAMS + i * PARAM_SIZE);
-    }
+    data.set(param0, OFF_PARAM0);
+    data.set(param1, OFF_PARAM1);
+
+    const cameraPos = this.camera.getPosition(); // should be [x,y,z]
+    data.set([cameraPos[0], cameraPos[1], cameraPos[2], 1.0], OFF_CAMERA);
 
     this.device.queue.writeBuffer(this.transformBuffer, 0, data);
   }
@@ -189,6 +261,7 @@ export class Torus implements Object3D {
     this.indexBuffer?.destroy();
     this.wireframeIndexBuffer?.destroy();
     this.transformBuffer?.destroy();
+    this.envTexture?.destroy(); // Clean up environment texture
 
     // Help GC
     this.bindGroup = null as any;

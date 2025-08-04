@@ -1,4 +1,4 @@
-// torus-utils.ts
+// torus-utils.ts - Updated with environment mapping support
 import { sampleCount } from "../../core/config";
 
 interface TorusBuffers {
@@ -110,18 +110,46 @@ export function createTorusGeometry(
   return { torusVertexBuffer, torusIndexBuffer, torusWireframeIndexBuffer };
 }
 
-// Creates render pipeline for single torus instances
+// Creates render pipeline for single torus instances with environment mapping
 export function createSingleTorusPipeline(
   device: GPUDevice,
   format: GPUTextureFormat,
   shaderModule: GPUShaderModule,
   wireframe: boolean = false
 ): GPURenderPipeline {
+  // Create explicit bind group layout that matches the shader
+  const bindGroupLayout = device.createBindGroupLayout({
+    entries: [
+      {
+        binding: 0,
+        visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
+        buffer: { type: "uniform" },
+      },
+      {
+        binding: 1, // Environment texture
+        visibility: GPUShaderStage.FRAGMENT,
+        texture: {
+          sampleType: "float",
+          viewDimension: "cube",
+        },
+      },
+      {
+        binding: 2, // Environment sampler
+        visibility: GPUShaderStage.FRAGMENT,
+        sampler: {},
+      },
+    ],
+  });
+
+  const pipelineLayout = device.createPipelineLayout({
+    bindGroupLayouts: [bindGroupLayout],
+  });
+
   return device.createRenderPipeline({
     label: wireframe
       ? "Single Torus Wireframe Pipeline"
       : "Single Torus Pipeline",
-    layout: "auto",
+    layout: pipelineLayout, // Use explicit layout instead of "auto"
     vertex: {
       module: shaderModule,
       entryPoint: "vs_main",

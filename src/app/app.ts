@@ -51,7 +51,7 @@ export default class App {
   private easedMouse = { x: 0, y: 0 };
 
   constructor() {}
-
+  // And update your init method to await testTorus:
   async init(canvas: HTMLCanvasElement): Promise<void> {
     var cameraInitPos: vec3 = [0, 0, 17];
 
@@ -77,12 +77,11 @@ export default class App {
     // this.testCubes(device, format);
     // this.testPlanes(device, format);
     // this.testSpheres(device, format);
-    this.testTorus(device, format);
+    await this.testTorus(device, format); // ADD AWAIT HERE
 
     this.setupListeners();
     this.startRendering();
   }
-
   private initStats(): void {
     this.stats = new Stats();
     this.stats.showPanel(0);
@@ -511,7 +510,10 @@ export default class App {
     }, 0);
   }
   // Add this method to your App class
-  private testTorus(device: GPUDevice, format: GPUTextureFormat): void {
+  private async testTorus(
+    device: GPUDevice,
+    format: GPUTextureFormat
+  ): Promise<void> {
     const torusShaderModule = device.createShaderModule({ code: torusShader });
 
     const torus = new Torus(device, format, {
@@ -537,19 +539,31 @@ export default class App {
       ],
     });
 
+    // AWAIT the init() - this is the fix
+    await torus.init();
+
+    // Set camera AFTER init
+    torus.setCamera(this.engine.getCamera());
+
     this.scene.add(torus);
     this.torus = torus; // Store reference
 
     setTimeout(() => {
       torus.updateCameraTransform();
-    }, 0);
+    }, 1);
 
-    // gsap.to(torus.getProps(), {
-    //   rotY: Math.PI * 2,
-    //   duration: 10,
-    //   repeat: -1,
-    //   ease: "none",
-    //   onUpdate: () => torus.updateCameraTransform(),
-    // });
+    gsap.to(torus.getProps(), {
+      duration: 2,
+      ease: "sine.inOut",
+      rotY: 0,
+      repeat: -1,
+      yoyo: true,
+
+      // 0: 0.0,
+
+      onUpdate: () => {
+        torus.updateCameraTransform();
+      },
+    });
   }
 }
