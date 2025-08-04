@@ -150,7 +150,7 @@ export function createSingleTorusPipeline(
     },
     primitive: {
       topology: wireframe ? "line-list" : "triangle-list",
-      cullMode: wireframe ? "none" : "back",
+      cullMode: "none",
     },
     depthStencil: {
       format: "depth24plus",
