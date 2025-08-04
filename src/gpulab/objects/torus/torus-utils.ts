@@ -34,20 +34,12 @@ function generateTorus(
       const y = minorRadius * sinV;
       const z = (majorRadius + minorRadius * cosV) * sinU;
 
-      // Normal
-      const centerX = majorRadius * cosU;
-      const centerZ = majorRadius * sinU;
-      const normalX = x - centerX;
-      const normalY = y;
-      const normalZ = z - centerZ;
-
-      // Normalize
-      const length = Math.sqrt(
-        normalX * normalX + normalY * normalY + normalZ * normalZ
-      );
-      const nx = normalX / length;
-      const ny = normalY / length;
-      const nz = normalZ / length;
+      // Correct normal calculation for torus
+      // The normal at any point on a torus surface points outward
+      // from the minor circle's center in the direction of that point
+      const nx = cosV * cosU;
+      const ny = sinV;
+      const nz = cosV * sinU;
 
       vertices.push(x, y, z, nx, ny, nz);
     }
@@ -150,7 +142,7 @@ export function createSingleTorusPipeline(
     },
     primitive: {
       topology: wireframe ? "line-list" : "triangle-list",
-      cullMode: wireframe ? "none" : "back",
+      cullMode: "none",
     },
     depthStencil: {
       format: "depth24plus",

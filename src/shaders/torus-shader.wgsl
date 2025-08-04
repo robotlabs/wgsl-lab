@@ -63,7 +63,7 @@ struct VertexOutput {
   
   let viewDir = normalize(-vPosition);
   let normal = normalize(vNormal);
-  let rimFactor = 0.5 - max(dot(normal, viewDir), 0.0);
+  let rimFactor = 0.4 - max(dot(normal, viewDir), 0.0);
   let rimLight = pow(rimFactor, 3.0) * vec3<f32>(1.0, 1.0, 1.0) * 1.6;
   
   // Basic lighting

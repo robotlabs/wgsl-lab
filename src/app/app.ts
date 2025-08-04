@@ -528,9 +528,9 @@ export default class App {
       shader: torusShaderModule,
       wireframe: false,
       majorRadius: 1.0,
-      minorRadius: 0.5,
-      majorSegments: 64,
-      minorSegments: 32,
+      minorRadius: 0.6,
+      majorSegments: 32,
+      minorSegments: 16,
       params: [
         [0.0, 0.0, 0.0, 0.0], // u_mouse.xy, u_time, u_duration
         [0.0, 0.0, 0.0, 0.0], // u_resolution.xy, etc.
