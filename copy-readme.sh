@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
+DRY=${DRY:-0}  # set DRY=1 to do a dry run
+
 # === CONFIG ===
 SOURCE="shader-ex-107"
 FILE="README.md"
@@ -48,8 +50,12 @@ for br in $branches; do
     continue
   fi
 
-  git commit -m "Sync README from $SOURCE"
-  git push "$REMOTE" "$br"
+  if [ "$DRY" -eq 1 ]; then
+    echo "    [dry run] would commit and push to $br"
+   else
+    git commit -m "Sync README from $SOURCE"
+    git push "$REMOTE" "$br"
+  fi
 done
 
 # cleanup
