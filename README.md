@@ -341,6 +341,109 @@ EX - 82 [shader-ex-82 branch of robotlabs/wgsl-lab](https://github.com/robotlabs
 playing with voronoi
 EX - 83 [shader-ex-83 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-83).
 
+//\* cellular noise
+playing with voronoi
+EX - 84 [shader-ex-84 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-84).
+
+//\* noise
+fractal brownian motion. BASIC
+EX - 85-basic [shader-ex-85-basic branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-85-basic).
+
+//\* noise
+fractal brownian motion. top view
+EX - 85 [shader-ex-85 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-85).
+
+//\* noise
+fractal brownian motion. side view
+EX - 86 [shader-ex-86 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-86).
+
+//\* noise
+fractal brownian motion. side view. improved version
+EX - 87 [shader-ex-87 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-87).
+
+//\* noise
+fractal brownian motion. landscape pigeons generator
+EX - 88 [shader-ex-88 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-88).
+
+//\* noise
+fractal brownian motion. cloud effect ( book )
+EX - 89 [shader-ex-89 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-89).
+
+//\* noise
+fractal brownian motion. ridge ( book )
+EX - 90 [shader-ex-90 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-90).
+
+---
+
+## TEXTURE
+
+//\* texture
+basic texture with aspect ratio regulated in shader and scale function
+EX - 91 [shader-ex-91 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-91).
+
+//\* texture
+centered rotation
+EX - 92 [shader-ex-92 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-92).
+
+//\* texture
+centered rotation + deformation (!)
+EX - 93 [shader-ex-93 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-93).
+
+//\* texture
+ripple effect ( from udemy )
+EX - 94 [shader-ex-94 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-94).
+
+//\* vertex
+EX - 95 [shader-ex-95 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-95).
+
+//\* vertex
+cube vertex animation
+EX - 96 [shader-ex-96 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-96).
+
+//\* vertex
+added Icosahedron sphere to add noise (not yet)
+EX - 97 [shader-ex-97 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-96).
+
+//\* vertex
+Icosahedron with static noise
+EX - 98 [shader-ex-98 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-98).
+
+//\* vertex
+Icosahedron with static noise. various coloring
+EX - 99 [shader-ex-99 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-99).
+
+//\* vertex
+nice sphere noise vertex animation
+EX - 100 [shader-ex-100 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-100).
+
+//\* vertex
+nice sphere noise vertex animation. with lights
+EX - 101 [shader-ex-101 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-101).
+
+//\* vertex
+sphere noise vertex animation. with texture and colours
+EX - 102 [shader-ex-102 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-102).
+
+//\* vertex
+sphere noise vertex animation. lava effect
+EX - 103 [shader-ex-103 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-103).
+
+//\* vertex
+static torus
+EX - 104 [shader-ex-104 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-104).
+
+//\* vertex
+torus. improved shader (plastic effect ) and animated vertex
+EX - 105 [shader-ex-105 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-105).
+
+//\* vertex
+torus. improved shader (plastic effect ) and animated vertex.
+EX - 106 [shader-ex-106 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-106).
+
+//\* vertex
+cube. bump mapping
+EX - 107 [shader-ex-107 branch of robotlabs/wgsl-lab](https://github.com/robotlabs/wgsl-lab/tree/shader-ex-107).
+
 ## License
 
 MIT © robotlabs
