@@ -20,6 +20,7 @@ import { Sphere } from "@/gpulab/objects/spheres/sphere";
 import sphereShader from "@/shaders/sphere-shader.wgsl";
 import noiseSphereShader from "@/shaders/noise-sphere-shader.wgsl";
 import torusShader from "@/shaders/torus-shader.wgsl";
+import normalCubeShader from "@/shaders/normal-cube-shader.wgsl";
 
 //* gpu lab */
 import { Engine } from "@/gpulab/core/engine";
@@ -77,7 +78,8 @@ export default class App {
     // this.testCubes(device, format);
     // this.testPlanes(device, format);
     // this.testSpheres(device, format);
-    await this.testTorus(device, format); // ADD AWAIT HERE
+    // await this.testTorus(device, format); // ADD AWAIT HERE
+    this.testNormalMappedCube(device, format);
 
     this.setupListeners();
     this.startRendering();
@@ -565,5 +567,75 @@ export default class App {
         torus.updateCameraTransform();
       },
     });
+  }
+  // In your App class, add this method:
+
+  private async testNormalMappedCube(
+    device: GPUDevice,
+    format: GPUTextureFormat
+  ): Promise<void> {
+    // Create shader module with the new normal mapping shader
+    const cubeShaderModule = device.createShaderModule({
+      code: normalCubeShader, // Your new shader code
+    });
+
+    // Load textures (using the same URLs as your Three.js example)
+    const [diffuseTexture, normalTexture] = await Promise.all([
+      createTextureFromImage(
+        device,
+        "https://s3-us-west-2.amazonaws.com/s.cdpn.io/2666677/bricks-diffuse3.png"
+      ),
+      createTextureFromImage(
+        device,
+        "https://s3-us-west-2.amazonaws.com/s.cdpn.io/2666677/bricks-normal3.png"
+      ),
+    ]);
+
+    // Create samplers
+    const diffuseSampler = device.createSampler({
+      magFilter: "linear",
+      minFilter: "linear",
+      addressModeU: "repeat",
+      addressModeV: "repeat",
+    });
+
+    const normalSampler = device.createSampler({
+      magFilter: "linear",
+      minFilter: "linear",
+      addressModeU: "repeat",
+      addressModeV: "repeat",
+    });
+
+    // Create the cube with textures
+    const cube = new Cube(device, format, {
+      posX: 0,
+      posY: 0,
+      posZ: 0,
+      rotX: 0.6,
+      rotY: 0.8,
+      rotZ: 0.5,
+      scaleX: 1,
+      scaleY: 1,
+      scaleZ: 1,
+      cubeColor: [0.65, 0.4, 0.1, 1], // Brown color similar to Three.js example
+      shader: cubeShaderModule,
+      wireframe: false,
+      diffuseTexture,
+      normalTexture,
+      diffuseSampler,
+      normalSampler,
+      params: [
+        [0.0, 0.0, 0.0, 0.0], // u_mouse.xy, u_time, u_duration
+        [0.0, 0.0, 0.0, 0.0], // u_resolution.xy, etc.
+      ],
+    });
+
+    this.scene.add(cube);
+    this.cube = cube;
+
+    // Update camera transform after a frame
+    setTimeout(() => {
+      cube.updateCameraTransform();
+    }, 0);
   }
 }

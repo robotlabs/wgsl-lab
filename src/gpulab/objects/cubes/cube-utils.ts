@@ -119,7 +119,84 @@ export function createCubeGeometry(
   return { cubeVertexBuffer, cubeIndexBuffer, cubeWireframeIndexBuffer };
 }
 
-//* Creates render pipeline for single cube instances
+//* Creates render pipeline for textured cubes
+export function createTexturedCubePipeline(
+  device: GPUDevice,
+  format: GPUTextureFormat,
+  shaderModule: GPUShaderModule,
+  wireframe: boolean = false
+): GPURenderPipeline {
+  // Create explicit bind group layout for texture support
+  const bindGroupLayout = device.createBindGroupLayout({
+    label: "Textured Cube Bind Group Layout",
+    entries: [
+      {
+        binding: 0,
+        visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
+        buffer: { type: "uniform" },
+      },
+      {
+        binding: 1,
+        visibility: GPUShaderStage.FRAGMENT,
+        sampler: {},
+      },
+      {
+        binding: 2,
+        visibility: GPUShaderStage.FRAGMENT,
+        texture: { sampleType: "float" },
+      },
+      {
+        binding: 3,
+        visibility: GPUShaderStage.FRAGMENT,
+        sampler: {},
+      },
+      {
+        binding: 4,
+        visibility: GPUShaderStage.FRAGMENT,
+        texture: { sampleType: "float" },
+      },
+    ],
+  });
+
+  return device.createRenderPipeline({
+    label: wireframe
+      ? "Textured Cube Wireframe Pipeline"
+      : "Textured Cube Pipeline",
+    layout: device.createPipelineLayout({
+      bindGroupLayouts: [bindGroupLayout],
+    }),
+    vertex: {
+      module: shaderModule,
+      entryPoint: "vs_main",
+      buffers: [
+        {
+          arrayStride: 6 * 4, // 3 floats position + 3 floats normal
+          attributes: [
+            { shaderLocation: 0, offset: 0, format: "float32x3" }, // position
+            { shaderLocation: 1, offset: 12, format: "float32x3" }, // normal
+          ],
+        },
+      ],
+    },
+    fragment: {
+      module: shaderModule,
+      entryPoint: wireframe ? "fs_wireframe" : "fs_main",
+      targets: [{ format }],
+    },
+    primitive: {
+      topology: wireframe ? "line-list" : "triangle-list",
+      cullMode: wireframe ? "none" : "back",
+    },
+    depthStencil: {
+      format: "depth24plus",
+      depthWriteEnabled: true,
+      depthCompare: "less",
+    },
+    multisample: { count: sampleCount },
+  });
+}
+
+//* Creates render pipeline for single cube instances (original function)
 export function createSingleCubePipeline(
   device: GPUDevice,
   format: GPUTextureFormat,
@@ -218,5 +295,44 @@ export function createCubeGroupPipeline(
       depthCompare: "less",
     },
     multisample: { count: sampleCount },
+  });
+}
+
+//* Helper function to create texture from image URL
+export async function createTextureFromImage(
+  device: GPUDevice,
+  imageSrc: string
+): Promise<GPUTexture> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d")!;
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      const imageData = ctx.getImageData(0, 0, img.width, img.height);
+
+      const texture = device.createTexture({
+        size: [img.width, img.height, 1],
+        format: "rgba8unorm",
+        usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST,
+      });
+
+      device.queue.writeTexture(
+        { texture },
+        imageData.data,
+        { bytesPerRow: img.width * 4 },
+        { width: img.width, height: img.height }
+      );
+
+      resolve(texture);
+    };
+
+    img.onerror = reject;
+    img.src = imageSrc;
   });
 }

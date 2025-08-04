@@ -8,12 +8,19 @@ import {
 } from "../../core/matrix";
 import { Camera } from "../../core/camera";
 import { CubeProps } from "./cube-types";
-import { createCubeGeometry, createSingleCubePipeline } from "./cube-utils";
+import { createCubeGeometry, createTexturedCubePipeline } from "./cube-utils";
+
+export interface TexturedCubeProps extends CubeProps {
+  diffuseTexture?: GPUTexture;
+  normalTexture?: GPUTexture;
+  diffuseSampler?: GPUSampler;
+  normalSampler?: GPUSampler;
+}
 
 export class Cube implements Object3D {
   private device: GPUDevice;
-  private format: GPUTextureFormat;
-  private props: CubeProps;
+  private format: GPUTextureformat;
+  private props: TexturedCubeProps;
   private shader: GPUShaderModule;
 
   private vertexBuffer!: GPUBuffer;
@@ -33,7 +40,11 @@ export class Cube implements Object3D {
 
   private tweens: gsap.core.Tween[] = [];
 
-  constructor(device: GPUDevice, format: GPUTextureFormat, props: CubeProps) {
+  constructor(
+    device: GPUDevice,
+    format: GPUTextureFormat,
+    props: TexturedCubeProps
+  ) {
     this.device = device;
     this.format = format;
     this.props = props;
@@ -52,18 +63,18 @@ export class Cube implements Object3D {
     this.wireframeIndexBuffer = cubeWireframeIndexBuffer;
 
     // Calculate total indices
-    this.totalIndices = this.subdivisions * this.subdivisions * 6 * 6; // 6 faces, subdivisions^2 quads per face, 6 indices per quad
-    this.totalWireframeIndices = this.subdivisions * this.subdivisions * 6 * 12; // 12 wireframe indices per quad
+    this.totalIndices = this.subdivisions * this.subdivisions * 6 * 6;
+    this.totalWireframeIndices = this.subdivisions * this.subdivisions * 6 * 12;
 
-    // Create both solid and wireframe pipelines
-    this.pipeline = createSingleCubePipeline(
+    // Create pipelines with texture support
+    this.pipeline = createTexturedCubePipeline(
       this.device,
       this.format,
       this.props.shader,
       false // solid
     );
 
-    this.wireframePipeline = createSingleCubePipeline(
+    this.wireframePipeline = createTexturedCubePipeline(
       this.device,
       this.format,
       this.props.shader,
@@ -75,14 +86,34 @@ export class Cube implements Object3D {
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
 
+    // Create bind groups with textures
+    const bindGroupEntries: GPUBindGroupEntry[] = [
+      { binding: 0, resource: { buffer: this.transformBuffer } },
+    ];
+
+    // Add texture bindings if provided
+    if (this.props.diffuseSampler && this.props.diffuseTexture) {
+      bindGroupEntries.push(
+        { binding: 1, resource: this.props.diffuseSampler },
+        { binding: 2, resource: this.props.diffuseTexture.createView() }
+      );
+    }
+
+    if (this.props.normalSampler && this.props.normalTexture) {
+      bindGroupEntries.push(
+        { binding: 3, resource: this.props.normalSampler },
+        { binding: 4, resource: this.props.normalTexture.createView() }
+      );
+    }
+
     this.bindGroup = this.device.createBindGroup({
       layout: this.pipeline.getBindGroupLayout(0),
-      entries: [{ binding: 0, resource: { buffer: this.transformBuffer } }],
+      entries: bindGroupEntries,
     });
 
     this.wireframeBindGroup = this.device.createBindGroup({
       layout: this.wireframePipeline.getBindGroupLayout(0),
-      entries: [{ binding: 0, resource: { buffer: this.transformBuffer } }],
+      entries: bindGroupEntries,
     });
 
     this.updateCameraTransform();
@@ -114,13 +145,13 @@ export class Cube implements Object3D {
     const view = this.camera.getViewMatrix();
     const proj = this.camera.getProjectionMatrix();
 
-    // Calculate buffer layout (same as Plane class logic)
-    const MAT_SIZE = 16; // floats per mat4x4
-    const COLOR_SIZE = 4; // vec4
-    const PARAM_SLOTS = params.length; // number of vec4 slots
-    const PARAM_SIZE = 4; // floats per vec4
+    // Calculate buffer layout
+    const MAT_SIZE = 16;
+    const COLOR_SIZE = 4;
+    const PARAM_SLOTS = params.length;
+    const PARAM_SIZE = 4;
     const FLOAT_COUNT =
-      MAT_SIZE * 4 + // modelCube, modelGrid, view, proj (4 matrices)
+      MAT_SIZE * 4 + // modelCube, modelGrid, view, proj
       COLOR_SIZE + // cubeColor
       PARAM_SLOTS * PARAM_SIZE;
 
@@ -134,12 +165,12 @@ export class Cube implements Object3D {
 
     const data = new Float32Array(FLOAT_COUNT);
     data.set(model, OFF_MODEL_CUBE);
-    data.set(model, OFF_MODEL_GRID); // Using same model matrix for both
+    data.set(model, OFF_MODEL_GRID);
     data.set(view, OFF_VIEW);
     data.set(proj, OFF_PROJ);
     data.set(cubeColor, OFF_COLOR);
 
-    // Write each params[i] at the correct offset
+    // Write params
     for (let i = 0; i < PARAM_SLOTS; i++) {
       data.set(params[i], OFF_PARAMS + i * PARAM_SIZE);
     }
@@ -190,12 +221,12 @@ export class Cube implements Object3D {
 
   run(time: number): void {}
 
-  updateProps(callback: (props: CubeProps) => void): void {
+  updateProps(callback: (props: TexturedCubeProps) => void): void {
     callback(this.props);
     this.updateCameraTransform();
   }
 
-  getProps(): CubeProps {
+  getProps(): TexturedCubeProps {
     return this.props;
   }
 }
