@@ -526,7 +526,7 @@ export default class App {
       scaleZ: 1,
       torusColor: [0.65, 0.89, 0.98, 1], // Light blue like your Three.js example
       shader: torusShaderModule,
-      wireframe: true,
+      wireframe: false,
       majorRadius: 1.0,
       minorRadius: 0.5,
       majorSegments: 64,

@@ -40,9 +40,9 @@ struct VertexOutput {
   
   var output: VertexOutput;
   //uncomment this if you want to animate the vertex of torus
-//   let world = transform.modelTorus * vec4f(animatedPos, 1.0);
+  let world = transform.modelTorus * vec4f(animatedPos, 1.0);
 //static torus
-  let world = transform.modelTorus * vec4f(posStatic, 1.0);
+//   let world = transform.modelTorus * vec4f(posStatic, 1.0);
   let worldNormal = normalize((transform.modelTorus * vec4f(normal, 0.0)).xyz);
   
   output.Position = transform.projectionMatrix * transform.viewMatrix * world;
@@ -61,10 +61,9 @@ struct VertexOutput {
   let u_mouse = transform.params[0].xy;
   let u_resolution = transform.params[1].xy;
   
-  // Rim lighting effect (like in your Three.js example)
   let viewDir = normalize(-vPosition);
   let normal = normalize(vNormal);
-  let rimFactor = 1.0 - max(dot(normal, viewDir), 0.0);
+  let rimFactor = 0.5 - max(dot(normal, viewDir), 0.0);
   let rimLight = pow(rimFactor, 3.0) * vec3<f32>(1.0, 1.0, 1.0) * 1.6;
   
   // Basic lighting
