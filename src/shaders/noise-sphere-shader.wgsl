@@ -204,7 +204,7 @@ fn random(pt: vec3<f32>, seed: f32) -> f32 {
   );
   
   // FIRE EFFECT VERTEX (matching Three.js fire example)
-  let time = u_time * .1; // Faster animation
+  let time = u_time * .2; // Faster animation
   
   // Add time to the noise parameters so it's animated
   let vNoise = 10.0 * -0.10 * turbulence(0.5 * normal + vec3<f32>(time));
@@ -235,43 +235,53 @@ fn random(pt: vec3<f32>, seed: f32) -> f32 {
   @location(3) vUv: vec2<f32>,
   @location(4) vNoise: f32
 ) -> @location(0) vec4<f32> {
-  // FIRE EFFECT FRAGMENT (matching Three.js fire example)
+  // LAVA EFFECT FRAGMENT - DEBUG VERSION
   
+  // Get a random offset
   let r = 0.01 * random(vPosition, 0.0);
+  
+  // Map noise properly - keep it in a good range
+  let normalizedNoise = (vNoise + 1.0) * 0.5;
+  let noiseValue = clamp(normalizedNoise + r, 0.0, 1.0);
+  
+  // Sample texture for additional variation
+  let lavaUv = vec2<f32>(vUv.x, noiseValue);
+  let texColor = textureSample(fireTex, fireSampler, lavaUv).rgb;
+  
+  // Use the noise value directly but boost contrast
+  let intensity = noiseValue;
+  
+  // DEBUG: Let's see what intensity values we're actually getting
+  // Uncomment this line to see intensity as grayscale:
+  // return vec4<f32>(intensity, intensity, intensity, 1.0);
+  
+  // MUCH LOWER thresholds so we actually reach the bright areas
+  var lavaColor: vec3<f32>;
+  
 
-  // vertical flow over time
-  let scroll = fract(transform.params[0].z * 0.2);
-
-  // base vertical coordinate driven by noise + scroll + jitter
-  var fireUvY = 1.3 * vNoise + r + scroll;
-  fireUvY = fract(fireUvY); // wrap for continuous flow
-
-  // subtle horizontal flicker (adds color variation across texture)
-  let jitterX = 0.1 * sin(transform.params[0].z + vNoise * 3.0);
-  let fireUvX = clamp(0.5 + jitterX, 0.0, 1.0);
-
-  // primary and secondary samples for richness/glow
-  let primaryUv = vec2<f32>(fireUvX, fireUvY);
-  let glowUv = vec2<f32>(fireUvX, fract(fireUvY * 1.2 + 0.05));
-
-  let primary = textureSample(fireTex, fireSampler, primaryUv).rgb;
-  let glow = textureSample(fireTex, fireSampler, glowUv).rgb;
-
-  // mix for soft layering
-  var colorMix = mix(primary, glow, 0.5);
-
-  // boost contrast a bit
-  colorMix = pow(colorMix, vec3<f32>(1.1));
-
-  // subtle tint instead of hard multiply
-  let tint = transform.sphereColor.rgb;
-  let tinted = mix(colorMix, tint, 0.15);
-
-  // flickering brightness for organic variation
-  let brightness = 1.0 + 0.25 * sin(transform.params[0].z * 8.0 + vNoise * 2.0);
-  let finalColor = tinted * brightness;
-
-  return vec4<f32>(finalColor, 1.0);
+  if (intensity < 0.1) {
+    // Very dark areas - pure black
+    lavaColor = vec3<f32>(0.2, 0.0, 0.0);
+  } else if (intensity < 0.25) {
+    // Dark red areas
+    let t = (intensity - 0.1) / 0.15;
+    lavaColor = mix(vec3<f32>(0.2, 0.0, 0.0), vec3<f32>(0.5, 0.1, 0.0), t);
+  } else if (intensity < 0.4) {
+    // Orange areas
+    let t = (intensity - 0.25) / 0.15;
+    lavaColor = mix(vec3<f32>(0.5, 0.1, 0.0), vec3<f32>(1.0, 0.5, 0.0), t);
+  } else {
+    // HOT BRIGHT VEINS - NOW this should trigger!
+    let t = (intensity - 0.4) / 0.6; // Much wider range
+    lavaColor = mix(vec3<f32>(1.0, 0.5, 0.0), vec3<f32>(2.0, 2.0, 1.0), t);
+    // BOOST these bright areas significantly
+    lavaColor *= 5.0;
+  }
+  
+  // Use texture to add variation
+  lavaColor *= (0.8 + 0.4 * texColor.r);
+  
+  return vec4<f32>(lavaColor, 1.0);
 }
 
 @fragment fn fs_wireframe(
