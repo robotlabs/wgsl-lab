@@ -92,18 +92,22 @@ fn fbm(p: vec2<f32>) -> f32 {
   let leaf3 = smoothstep(0.2, 0.3, d3) * smoothstep(0.5, 0.4, d3);
 
     let rotatedSt3 = rotate2D(st, time * 0.7);
-  let d4 = createLeafPattern(rotatedSt2 * 0.6, 5.0, time * 2.8, normalizedTime, 0.67);
+  let d4 = createLeafPattern(rotatedSt3 * 0.6, 5.0, time * 2.8, normalizedTime, 0.67);
   let leaf4 = smoothstep(0.2, 0.3, d4) * smoothstep(0.5, 0.4, d4);
 
      let rotatedSt4 = rotate2D(st, -time * 0.3);
-    let d5 = createLeafPattern(rotatedSt2 * 0.5, 3.0, time * 1.0, normalizedTime, 0.5);
+    let d5 = createLeafPattern(rotatedSt4 * 0.5, 3.0, time * 1.0, normalizedTime, 0.5);
     // let leaf5 = smoothstep(0.2, 0.3, d5) * smoothstep(0.5, 0.4, d5);
     let leaf5 = step(0.2,  d5) * smoothstep(0.5, 0.4, d5);
 
-
-     let rotatedSt5 = rotate2D(st, time * 0.3);
-    let d6 = createLeafPattern(rotatedSt2 * 0.3, 4.0, time * 1.5, normalizedTime, 0.7);
+    let rotatedSt5 = rotate2D(st, time * 0.3);
+    let d6 = createLeafPattern(rotatedSt5 * 0.3, 4.0, time * 1.5, normalizedTime, 0.7);
     let leaf6 = step(0.1, d6) * step(0.5, d6);//smoothstep(0.1, 0.4, d6) * smoothstep(0.5, 0.4, d6);
+
+        let rotatedSt6 = rotate2D(st, -time * 0.3);
+    let d7 = createLeafPattern(rotatedSt6 * 0.3, 4.0, time * 1.2, normalizedTime, 0.9);
+    let leaf7 = step(0.1, d7) * step(0.5, d7);//smoothstep(0.1, 0.4, d6) * smoothstep(0.5, 0.4, d6);
+    
 
   let goldenYellow = vec3(1.000, 0.867, 0.000);
   // Cadmium Yellow (#FFF600)
@@ -124,6 +128,7 @@ fn fbm(p: vec2<f32>) -> f32 {
   finalColor += leaf4 * interdimensionalBlue;  // Red center
   finalColor += leaf5 * lemonYellow;  // Red center
   finalColor += leaf6 * goldenYellow;  // Red center
+  finalColor += leaf7 * interdimensionalBlue;  // Red center
   
   return vec4<f32>(finalColor, 1.0);
 }
