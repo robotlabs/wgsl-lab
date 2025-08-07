@@ -64,6 +64,17 @@ export default class App {
 
     this.setupListeners();
     this.startRendering();
+
+    setTimeout(() => {
+      this.plane.updateProps((p) => {
+        p.params[0][0] = 2;
+        p.params[0][1] = 12;
+        p.params[1][0] = 1;
+        // p.params[1][1] = h;
+        // p.params[1][2] = 0;
+        // p.params[1][3] = 0;
+      });
+    }, 20);
   }
 
   private initStats(): void {
@@ -95,6 +106,31 @@ export default class App {
     //@ts-ignore
     window.camera = camera;
   }
+  public updateNrIterations(nrIterations: number): void {
+    this.plane.updateProps((p) => {
+      p.params[0][0] = nrIterations;
+      // p.params[1][1] = h;
+      // p.params[1][2] = 0;
+      // p.params[1][3] = 0;
+    });
+  }
+
+  public updateSpeedAnim(speedAnim: number): void {
+    this.plane.updateProps((p) => {
+      p.params[0][1] = speedAnim;
+      // p.params[1][1] = h;
+      // p.params[1][2] = 0;
+      // p.params[1][3] = 0;
+    });
+  }
+  public updateRadiusSize(radiusSize: number): void {
+    this.plane.updateProps((p) => {
+      p.params[1][0] = radiusSize;
+      // p.params[1][1] = h;
+      // p.params[1][2] = 0;
+      // p.params[1][3] = 0;
+    });
+  }
 
   public runPlanes() {
     this.scene.clear();
@@ -110,12 +146,12 @@ export default class App {
     const w = rect.width;
     const h = rect.height;
     if (this.plane) {
-      this.plane.updateProps((p) => {
-        p.params[1][0] = w;
-        p.params[1][1] = h;
-        p.params[1][2] = 0;
-        p.params[1][3] = 0;
-      });
+      // this.plane.updateProps((p) => {
+      //   p.params[1][0] = w;
+      //   p.params[1][1] = h;
+      //   p.params[1][2] = 0;
+      //   p.params[1][3] = 0;
+      // });
     }
   };
 
@@ -145,12 +181,12 @@ export default class App {
       // debug
 
       if (this.plane) {
-        this.plane.updateProps((p) => {
-          p.params[0][0] = x;
-          p.params[0][1] = y;
-          p.params[0][2] = 0;
-          p.params[0][3] = 0;
-        });
+        // this.plane.updateProps((p) => {
+        //   p.params[0][0] = x;
+        //   p.params[0][1] = y;
+        //   p.params[0][2] = 0;
+        //   p.params[0][3] = 0;
+        // });
       }
     });
   }
