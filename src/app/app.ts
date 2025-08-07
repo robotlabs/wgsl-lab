@@ -35,6 +35,13 @@ export default class App {
   private scene!: Scene;
   private plane: Plane;
 
+  private activePlanes: Plane[] = [];
+
+  private tempRnArray: any = [];
+
+  private rawMouse = { x: 0, y: 0 };
+  private easedMouse = { x: 0, y: 0 };
+
   constructor() {}
 
   async init(canvas: HTMLCanvasElement): Promise<void> {
@@ -64,17 +71,6 @@ export default class App {
 
     this.setupListeners();
     this.startRendering();
-
-    setTimeout(() => {
-      this.plane.updateProps((p) => {
-        p.params[0][0] = 2;
-        p.params[0][1] = 12;
-        p.params[1][0] = 1;
-        // p.params[1][1] = h;
-        // p.params[1][2] = 0;
-        // p.params[1][3] = 0;
-      });
-    }, 20);
   }
 
   private initStats(): void {
@@ -107,29 +103,35 @@ export default class App {
     window.camera = camera;
   }
   public updateNrIterations(nrIterations: number): void {
-    this.plane.updateProps((p) => {
-      p.params[0][0] = nrIterations;
-      // p.params[1][1] = h;
-      // p.params[1][2] = 0;
-      // p.params[1][3] = 0;
-    });
+    for (let i = 0; i < this.activePlanes.length; i++) {
+      const plane = this.activePlanes[i];
+      plane.updateProps((p) => {
+        p.params[0][0] = nrIterations;
+      });
+    }
   }
 
   public updateSpeedAnim(speedAnim: number): void {
-    this.plane.updateProps((p) => {
-      p.params[0][1] = speedAnim;
-      // p.params[1][1] = h;
-      // p.params[1][2] = 0;
-      // p.params[1][3] = 0;
-    });
+    for (let i = 0; i < this.activePlanes.length; i++) {
+      const plane = this.activePlanes[i];
+      plane.updateProps((p) => {
+        p.params[0][1] = speedAnim;
+        // p.params[1][1] = h;
+        // p.params[1][2] = 0;
+        // p.params[1][3] = 0;
+      });
+    }
   }
   public updateRadiusSize(radiusSize: number): void {
-    this.plane.updateProps((p) => {
-      p.params[1][0] = radiusSize;
-      // p.params[1][1] = h;
-      // p.params[1][2] = 0;
-      // p.params[1][3] = 0;
-    });
+    for (let i = 0; i < this.activePlanes.length; i++) {
+      const plane = this.activePlanes[i];
+      plane.updateProps((p) => {
+        p.params[1][0] = radiusSize;
+        // p.params[1][1] = h;
+        // p.params[1][2] = 0;
+        // p.params[1][3] = 0;
+      });
+    }
   }
 
   public runPlanes() {
@@ -178,6 +180,9 @@ export default class App {
       const x = e.clientX - rect.left; // CSS px
       const y = e.clientY - rect.top; // CSS px
 
+      this.rawMouse.x = e.clientX - rect.left;
+      this.rawMouse.y = e.clientY - rect.top;
+
       // debug
 
       if (this.plane) {
@@ -206,10 +211,29 @@ export default class App {
         time += 0.05;
         this.scene.run(time);
 
-        if (this.plane) {
-          this.plane.updateProps((p) => {
-            p.params[0][2] = time;
-          });
+        this.easedMouse.x += (this.rawMouse.x - this.easedMouse.x) * 0.03;
+        this.easedMouse.y += (this.rawMouse.y - this.easedMouse.y) * 0.03;
+
+        // this.updateCameraAxis("x", this.easedMouse.x / 10);
+
+        const canvas = this.engine.getCanvas();
+        const rect = canvas.getBoundingClientRect();
+        const w = rect.width;
+        const h = rect.height;
+
+        const endCameraX = (this.easedMouse.x * 10) / w - 5;
+        const endCameraY = (this.easedMouse.y * 10) / h - 5;
+        // this.updateCameraAxis("x", endCameraX);
+        // this.updateCameraAxis("y", endCameraY);
+
+        if (this.activePlanes) {
+          for (let i = 0; i < this.activePlanes.length; i++) {
+            const plane = this.activePlanes[i];
+            plane.updateProps((p) => {
+              // console.log(this.tempRnArray);
+              p.params[0][2] = time + this.tempRnArray[i] * 10;
+            });
+          }
         }
       }
       this.engine.render();
@@ -279,33 +303,179 @@ export default class App {
       addressModeV: "repeat",
     });
 
-    const plane = new Plane(
-      device,
-      format,
-      planeShaderModule,
-      planeTexture,
-      planeSampler,
-      {
-        posX: 0,
-        posY: 0,
-        posZ: 5,
-        rotX: 0,
-        rotY: 0,
-        rotZ: 0,
-        scaleX: 1,
-        scaleY: 1,
-        scaleZ: 1,
-        color: [1.0, 0, 0, 1.0],
-        useTexture: false,
-        params: [
-          [0.0, 0.0, 0.0, 0.0],
-          [0.0, 0.0, 0.0, 0.0],
-        ],
+    setTimeout(() => {
+      for (let i = 0; i < this.activePlanes.length; i++) {
+        const plane = this.activePlanes[i];
+        plane.updateProps((p) => {
+          p.params[0][0] = 1;
+          p.params[0][1] = 7;
+          p.params[1][0] = 8.5;
+          // p.params[1][1] = h;
+          // p.params[1][2] = 0;
+          // p.params[1][3] = 0;
+        });
       }
-    );
-    this.scene.add(plane);
+    }, 20);
 
-    this.plane = plane;
+    const COUNT = 12;
+    const COLS = 6;
+    const SX = 4;
+    const SY = 4;
+    const angle = Math.PI * 0.25; // 45° tip around Y
+    const c = Math.cos(angle);
+    const s = Math.sin(angle);
+    const offsetX = 4;
+    const offsetY = 8;
+    for (let i = 0; i < COUNT; i++) {
+      const col = i % COLS; // 0…COLS-1
+      const row = Math.floor(i / COLS); //    0…∞
+
+      // 2) un-rotated position
+      const x0 = col * SX - offsetX;
+      const y0 = row * SY - offsetY; // your vertical offset
+      const z0 = 0;
+
+      // 3) rotate that point around world-Y
+      const posX = 0; //x0 * c + z0 * s;
+      const posZ = i; //-x0 * s + z0 * c;
+      const posY = 0; //y0;
+      const plane = new Plane(
+        device,
+        format,
+        planeShaderModule,
+        planeTexture,
+        planeSampler,
+        {
+          posX,
+          posY,
+          posZ,
+          rotX: 0, //Math.PI * 1,
+          rotY: 0, //angle, // * Math.random() * 10, // so the faces point “into” the grid-plane
+          rotZ: 0,
+          scaleX: 2,
+          scaleY: 2,
+          scaleZ: 2,
+          color: [Math.random(), Math.random(), Math.random(), 1],
+          useTexture: false,
+          params: [
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+          ],
+        }
+      );
+      this.scene.add(plane);
+      this.activePlanes.push(plane);
+
+      // Animate the plane
+      const tween = gsap.to(plane.getProps(), {
+        // posX: Math.random() * Math.random() * 10,
+        // posY: posY + Math.random() * 1 - 0,
+        posZ: Math.random() * Math.random() * 8 + 4,
+        // rotX: 0,
+        // rotY: angle,
+        // rotZ: Math.random() * Math.PI * 2,
+        // scaleX: Math.random() * 4 + 0.5,
+        // scaleY: Math.random() * 4 + 0.5,
+        delay: Math.random() * 5,
+        duration: 10, // + Math.random() * 3,
+        repeat: -1,
+        yoyo: true,
+        ease: "power4.inOut",
+        onUpdate: () => plane.updateCameraTransform(),
+        onComplete: () => {
+          console.log("oncomplete");
+        },
+        onRepeat: () => {
+          console.log("onstart");
+          plane.updateProps((p) => {
+            p.params[1][0] = Math.random() * 12;
+            // p.params[1][1] = h;
+            // p.params[1][2] = 0;
+            // p.params[1][3] = 0;
+          });
+        },
+      });
+
+      plane.addTween(tween);
+    }
+
+    const tempRnArray: any = [];
+    for (let i = 0; i < this.activePlanes.length; i++) {
+      tempRnArray.push(Math.random());
+    }
+    this.tempRnArray = tempRnArray;
+    console.log(tempRnArray);
+    /*
+    const COUNT_R = 64;
+    const COLS_R = 8;
+    const SX_R = 2;
+    const SY_R = 2;
+    const angle_R = -Math.PI * 0.25; // 45° tip around Y
+    const c_R = Math.cos(angle_R);
+    const s_R = Math.sin(angle_R);
+    const offsetX_R = 1;
+    const offsetY_R = 12;
+    for (let i = 0; i < COUNT_R; i++) {
+      const col = i % COLS_R; // 0…COLS-1
+      const row = Math.floor(i / COLS_R); //    0…∞
+
+      // 2) un-rotated position
+      const x0 = col * SX_R + offsetX_R;
+      const y0 = row * SY_R - offsetY_R; // your vertical offset
+      const z0 = 0;
+
+      // 3) rotate that point around world-Y
+      const posX = x0 * c_R + z0 * s_R;
+      const posZ = -x0 * s_R + z0 * c_R;
+      const posY = y0;
+      const plane = new Plane(
+        device,
+        format,
+        planeShaderModule,
+        planeTexture,
+        planeSampler,
+        {
+          posX,
+          posY,
+          posZ,
+          rotX: 0,
+          rotY: angle_R, // so the faces point “into” the grid-plane
+          rotZ: 0,
+          scaleX: 1,
+          scaleY: 1,
+          scaleZ: 1,
+          color: [Math.random(), Math.random(), Math.random(), 1],
+          useTexture: false,
+          params: [
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+          ],
+        }
+      );
+      this.scene.add(plane);
+      this.activePlanes.push(plane);
+
+      // Animate the plane
+      const tween = gsap.to(plane.getProps(), {
+        // posX: posX + i * 0.01,
+        // posY: posY + Math.random() * 1 - 0,
+        // posZ: Math.random() * rnMultiplierPos - 5,
+        // rotX: Math.random() * Math.PI * 2,
+        // rotY: Math.random() * Math.PI * 0.002,
+        // rotZ: Math.random() * Math.PI * 2,
+        scaleX: Math.random() * 4 + 0.5,
+        // scaleY: Math.random() * 4 + 0.5,
+        duration: 2 + Math.random() * 3,
+        repeat: -1,
+        yoyo: true,
+        ease: "power4.inOut",
+        onUpdate: () => plane.updateCameraTransform(),
+      });
+
+      plane.addTween(tween);
+    }
+      */
+
     this.updateResolution();
 
     // setTimeout(() => {

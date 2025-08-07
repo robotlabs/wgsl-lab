@@ -146,7 +146,7 @@ fn getCornerDistortion(st: vec2<f32>, time: f32) -> vec2<f32> {
   var speed = transform.params[0][1];
   var time = transform.params[0][2] / speed;
   // st += getCornerDistortion(st, time);
-  st.y = st.y - sin(time) / 2;
+  // st.y = st.y - sin(time) / 2;
   
   var finalColor = vec3<f32>(0.0);
   
@@ -223,5 +223,6 @@ fn getCornerDistortion(st: vec2<f32>, time: f32) -> vec2<f32> {
 let luminance = dot(finalColor, vec3<f32>(0.299, 0.587, 0.114));
 let alpha = smoothstep(0.0, 0.1, luminance); // Fade from transparent to opaque
 
+return vec4<f32>(finalColor, 1.0);
 return vec4<f32>(finalColor, alpha);
 }

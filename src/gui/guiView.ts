@@ -34,9 +34,9 @@ export class GUIView {
     };
 
     this.customParams = {
-      nrIterations: 2,
-      speedAnim: 2,
-      radiusSize: 1,
+      nrIterations: 1,
+      speedAnim: 7,
+      radiusSize: 8.5,
     };
 
     this.pane = new Pane();
